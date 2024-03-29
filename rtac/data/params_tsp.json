@@ -1,0 +1,8 @@
+{
+
+"-ps": {"paramtype": "categorical", "valtype": "str", "values": ["ps1", "ps2", "ps3", "ps4", "ps5", "ps6", "two_opt"], "default": "two_opt"},
+"-a": {"paramtype": "continuous", "minval": 0.0001, "maxval": 0.9999, "default": 0.9},
+"-mni": {"paramtype": "discrete", "minval": 1, "maxval": 100, "default": 3},
+"-miim": {"paramtype": "discrete", "minval": 1, "maxval": 100, "default": 10}
+
+}

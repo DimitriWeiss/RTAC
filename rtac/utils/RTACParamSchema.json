@@ -1,0 +1,271 @@
+{	
+	"$id": "RTACParameterSchema",
+	"title": "Configuration Space Definition Schema.",
+	"description": "JsonSchema to validate the configuration space definition provided to RTAC.",
+	"type": "object",
+	"additionalProperties":
+	{
+		"type": "object",
+		"required": ["paramtype"],
+		"additionalProperties": false,
+		"properties": 
+		{
+			"paramtype": 
+			{
+				"type": "string",
+				"enum": ["categorical", "discrete", "continuous", "binary"],
+				"description": "Declare if the parameter is categorical, continuous, discrete or binary"
+			},
+			"minval": 
+			{
+				"type": ["integer", "number"],
+				"description": "Lowest value the parameter can take."
+			},
+			"maxval": 
+			{
+				"type": ["integer", "number"],
+				"description": "Highest value the parameter can take."
+			},
+			"valtype": 
+			{
+				"type": "string",
+				"enum": ["str", "int"],
+				"description": "Set the values of the categorical parameter to strings (set to str) or integers (set to int)."
+			},
+			"values": 
+			{
+				"type": "array",
+				"description": "Set the possible parameter values as strings in an array"
+			},
+			"default": 
+			{
+				"type": ["integer", "number", "string"],
+				"description": "Set the default value of this parameter"
+			},
+			"splitbydefault": 
+			{
+				"type": "boolean",
+				"description": "Set to true if you want the range of the log distribution to be split by the default value"
+			},
+			"distribution": 
+			{
+				"type": "string",
+				"enum": ["log", "uniform"],
+				"description": "Set the distribution of the random generation of this parameter to << uniform >> or << log >>. Default is uniform."
+			},
+			"logonpos": 
+			{
+				"type": "boolean",
+				"description": "If log is set, set to true if log distribution should be on the positive part of the parameter range, if minval is negative"
+			},
+			"logonneg": 
+			{
+				"type": "boolean",
+				"description": "If log is set, set to true if log distribution should be on the negative part of the parameter range, if minval is negative"
+			},
+			"probabpos": 
+			{
+				"type": "number",
+				"minimum": 0,
+  				"exclusiveMaximum": 1,
+				"description": "Set value between zero and one for probability of the positive side of the parameter range, if minval is negative"
+			},
+			"probabneg": 
+			{
+				"type": "number",
+				"minimum": 0,
+  				"exclusiveMaximum": 1,
+				"description": "Set value between zero and one for probability of the negative side of the parameter range, if minval is negative"
+			},
+			"probabilityzero": 
+			{
+				"type": "number",
+				"minimum": 0,
+  				"exclusiveMaximum": 1,
+				"description": "If the value zero into the parameter generation while using log distribution is included you can set a \n number between zero and one for the probability of zero randomly accuring"
+			},
+			"includezero": 
+			{
+				"type": "boolean",
+				"description": "Set to true if you want to include the value zero into the parameter generation while using log distribution"
+			},
+			"flag": 
+			{
+				"type": "boolean",
+				"description": "If the parameter is actually a flag, not a parameter with values."
+			}
+		},
+
+		
+		
+		"allOf":
+		[{
+			"if": 
+			{
+				"properties": 
+				{
+					"paramtype": {"const": "continuous"}
+				}
+			},
+			"then": 
+			{
+				"required": ["minval", "maxval"],
+				"properties": 
+				{
+					"minval": 
+					{
+						"type": ["number"]
+					},
+					"maxval": 
+					{
+						"type": ["number"]
+					},
+					"default": 
+					{
+						"type": ["number"]
+					}
+				}
+			}
+		},
+		{
+			"if": 
+			{
+				"properties": 
+				{
+					"paramtype": {"const": "discrete"}
+				}
+			},
+			"then":
+			{
+				"required": ["minval", "maxval"],
+				"properties": 
+				{
+					"minval": 
+					{
+						"type": ["integer"]
+					},
+					"maxval": 
+					{
+						"type": ["integer"]
+					},
+					"default": 
+					{
+						"type": ["integer"]
+					}
+				}
+			}
+		},
+		{
+			"if": 
+			{
+				"properties": 
+				{
+					"paramtype": {"const": "binary"}
+				}
+			},
+			"then":
+			{
+				"required": ["default"],
+				"properties": 
+				{
+					"default": 
+					{
+						"type": ["integer", "string"]
+					}
+				}
+			}
+		},
+		{
+			"if": 
+			{
+				"properties": 
+				{
+					"valtype": {"const": "int"},
+					"paramtype": {"const": "categorical"}
+				}
+			},
+			"then":
+			{
+				"required": ["minval", "maxval", "valtype"],
+				"properties": 
+				{
+					"minval": 
+					{
+						"type": ["integer"]
+					},
+					"maxval": 
+					{
+						"type": ["integer"]
+					}
+				}
+			}
+		},
+		{
+			"if": 
+			{
+				"properties": 
+				{
+					"valtype": {"const": "str"},
+					"paramtype": {"const": "categorical"}
+				}
+			},
+			"then":
+			{
+				"required": ["values", "valtype"],
+				"properties": 
+				{
+					"default": 
+					{
+						"type": ["string"]
+					},
+					"values": 
+					{
+						"type": ["array"]
+					}
+				}
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"splitbydefault": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"logonpos": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"logonneg": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"probabpos": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"probabneg": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"includezero": ["distribution"]
+			}
+		},
+		{
+			"dependentRequired": 
+			{
+				"probabilityzero": ["distribution"]
+			}
+		}]
+	}
+}

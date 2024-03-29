@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Folders
+rtac/logs/Cadical_ReACTR
+rtac/logs/TSP_Q_ReACTR
+rtac/logs/TSP_RT_ReACTR
+rtac/data/instances/power_law_easy
+rtac/data/solvers/cadical
+
+# Specific files
+rtac/data/cadical_params.pcs
+rtac/data/cadical_scenario.txt
+rtac/data/params_cadical.json
+rtac/data/params_glucose.json
+rtac/data/power_law_easy_instances.txt
+rtac/wrapper/cadical.py
+
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Sphinx documentation
+docs/_build/
+
+# pyenv
+.python-version
+
+# mkdocs documentation
+/site

@@ -1,0 +1,28 @@
+--verbosity 1
+--number_cores 1
+--timeout 3
+--contenders 50
+--keeptop 3
+--pws
+--usedata y
+--experimental y
+--chance 2
+--mutate 100
+--kill 50
+--train_number 1
+--train_rounds 0
+--nc_pca_f 33
+--nc_pca_p 55
+--jfm linear
+--omega 0.000001
+--gamma 10
+--alpha 0.02
+--ac 4
+--paramlimit 1100000
+--baselineperf
+--cpplt 89
+--log_folder logs
+--wrapper wrapper.lacidac
+--wrapper_name Lacidac
+--feature_gen feature_gen/lacidac_feats.py
+--param_file rtac/tests/test_data/params_lacidac.json
