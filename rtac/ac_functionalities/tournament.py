@@ -16,7 +16,7 @@ from ac_functionalities.rtac_data import (
     TARunStatus
 )
 from ac_functionalities.ta_runner import BaseTARunner
-from ac_functionalities.rtac_data import Configuration, RTACData
+from ac_functionalities.rtac_data import Configuration, RTACData, ACMethod
 from ac_functionalities.logs import RTACLogs
 import argparse
 
@@ -64,13 +64,11 @@ class AbstractTournament(ABC):
         :param tourn_nr: Number of the tournament during this RTAC run.
         :type tourn_nr: int
         """
-        ...
 
     @abstractmethod
     def watch_tournament(self):
         """Function to observe the tournament and enforce the timelimit
         scenario.timeout if reached according to the RTAC method used."""
-        ...
 
     def close_tournament(self, process: subprocess.Popen) -> None:
         """Function that initiates termination of all target algorithm runs.
@@ -83,6 +81,8 @@ class AbstractTournament(ABC):
         print(f'\nClosing tournament Nr. {self.tourn_nr}',
               f'(Tournament ID: {self.tourn_id})',
               f'due to timeout ({self.scenario.timeout}s).\n')
+        if self.scenario.objective_min:
+            time.sleep(1)  # extra time for TAs to shut down and print results
         for core in range(self.scenario.number_cores):
             if self.rtac_data.status[core] not in (2, 3):
                 self.rtac_data.status[core] = 5
@@ -169,3 +169,35 @@ class Tournament(AbstractTournament):
 
             if currenttime >= self.scenario.timeout:
                 self.close_tournament(self.rtac_data.process)
+
+
+class Tournamentpp(Tournament):
+    """Tournament class with functions needed for ReACTR method tournaments."""
+
+
+def tournament_factory(scenario: argparse.Namespace, ta_runner: BaseTARunner,
+                       rtac_data: RTACData, logs: RTACLogs) -> Tournament:
+    """Class factory to return the initialized TournamentManager class
+    appropriate to the RTAC method scenario.ac.
+
+    :param scenario: Namespace containing all settings for the RTAC.
+    :type scenario: argparse.Namespace
+    :param ta_runner: Target algorithm runner object.
+    :type: BaseTARunner
+    :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+    :type rtac_data: RTACData
+    :param logs: Object containing loggers and logging functions.
+    :type: RTACLogs
+    :returns: Inititialized Tournament object matching the RTAC method
+        of the scenario.
+    :rtype: Tournament
+    """
+    if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
+        return Tournament(scenario, ta_runner, rtac_data, logs)
+    elif scenario.ac is ACMethod.ReACTRpp:
+        return Tournamentpp(scenario, ta_runner, rtac_data, logs)
+
+
+if __name__ == '__main__':
+    pass

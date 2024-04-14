@@ -25,12 +25,10 @@ class AbstractConfigGen(ABC):
     @abstractmethod
     def __init__(self, scenario: argparse.Namespace):
         """Initialize configuration generation class."""
-        ...
 
     @abstractmethod
     def generate(self) -> Configuration:
         """Generates and returns configuration."""
-        ...
 
 
 class DefaultConfigGen(AbstractConfigGen):

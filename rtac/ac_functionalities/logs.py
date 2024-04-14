@@ -43,9 +43,16 @@ class AbstractLogs(ABC):
             + str(scenario.ac).split('.')[1]
         if not os.path.isdir(self.log_path):
             os.makedirs(self.log_path)
+        self.experimental = scenario.experimental
         if not scenario.resume:
-            filelist = \
-                [f for f in os.listdir(self.log_path) if f.endswith('.log')]
+            if not self.experimental:
+                filelist = \
+                    [f for f in os.listdir(self.log_path)
+                     if f.endswith('.log')]
+            else:
+                filelist = \
+                    [f for f in os.listdir(self.log_path)
+                     if f.endswith('.log') and 'tourn_0' not in f]
             for f in filelist:
                 os.remove(os.path.join(self.log_path, f))
         self.objective_min = scenario.objective_min
@@ -167,7 +174,7 @@ class AbstractLogs(ABC):
 
     @abstractmethod
     def load_data(self) -> Any:
-        ...
+        """Loads the data of either last logged, or first tournament."""
 
 
 class RTACLogs(AbstractLogs):
@@ -226,10 +233,9 @@ class RTACLogs(AbstractLogs):
         self.scores_log.addHandler(s_fh)
         self.scores_log.info(str(scores))
 
-    def load_data(self) -> tuple[dict[str: Configuration],
-                                 dict[str: tuple[int, int]],
-                                 dict[str: Configuration],
-                                 int]:
+    def load_data(self, tourn_nr: int | None = None) \
+        -> tuple[dict[str: Configuration], dict[str: tuple[int, int]],
+                 dict[str: Configuration], int]:
         """Loads data necessary for resuming the algorithm configuration from
         last logged state of ReACTR.
 
@@ -238,8 +244,9 @@ class RTACLogs(AbstractLogs):
         :rtype: tuple[dict[str: Configuration], dict[str: tuple[int, int]],
             dict[str: Configuration], int]
         """
-        with open(f'{self.log_path}/tourn_nr.log') as f:
-            tourn_nr = int(f.readline().strip())
+        if tourn_nr is None:
+            with open(f'{self.log_path}/tourn_nr.log') as f:
+                tourn_nr = int(f.readline().strip())
 
         with open(f'{self.log_path}/pool_tourn_{tourn_nr}.log', 'r') as f:
             pool = eval(f.readline())
@@ -250,6 +257,11 @@ class RTACLogs(AbstractLogs):
         with open(f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log',
                   'r') as f:
             contender_ids = eval(f.readline())
+
+        if self.experimental:
+            os.remove(f'{self.log_path}/pool_tourn_{tourn_nr}.log')
+            os.remove(f'{self.log_path}/scores_tourn_{tourn_nr}.log')
+            os.remove(f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log')
 
         contender_dict = {}
         for ci in contender_ids:

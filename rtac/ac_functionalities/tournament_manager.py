@@ -2,16 +2,19 @@
 method used."""
 
 from abc import ABC, abstractmethod
+import argparse
 from ac_functionalities.tournament import Tournament
-from ac_functionalities.result_processing import ResultProcessing
-from ac_functionalities.rtac_data import TARunStatus
-from ac_functionalities.rtac_data import RTACData
+from ac_functionalities.result_processing import processing_factory
+from ac_functionalities.rtac_data import TARunStatus, RTACData, ACMethod
+from ac_functionalities.ta_runner import BaseTARunner
+from ac_functionalities.logs import RTACLogs
 
 
 class AbstractTournamentManager(ABC):
     """Abstract tournament manager class."""
 
-    def __init__(self, scenario, ta_runner, logs, rtac_data) -> None:
+    def __init__(self, scenario: argparse.Namespace, ta_runner: BaseTARunner,
+                 logs: RTACLogs, rtac_data: RTACData) -> None:
         """Initialize tournamnt management class with data and objects
         necessary for RTAC method used. If self.scenario.resume, data of last
         logged tournament is loaded and algorithm configuration is performed
@@ -35,11 +38,17 @@ class AbstractTournamentManager(ABC):
         self.tournament = Tournament(self.scenario, self.ta_runner,
                                      self.rtac_data, self.logs)
 
-        self.res_process = ResultProcessing(self.scenario, self.logs)
+        self.res_process = processing_factory(self.scenario, self.logs)
 
         if self.scenario.resume:
             self.res_process.pool, self.res_process.scores, \
                 self.contender_dict, self.tourn_nr = self.logs.load_data()
+            self.res_process.contender_dict = self.contender_dict
+
+        elif self.scenario.experimental:
+            self.res_process.pool, self.res_process.scores, \
+                self.contender_dict, self.tourn_nr \
+                = self.logs.load_data(tourn_nr=0)
             self.res_process.contender_dict = self.contender_dict
 
         else:
@@ -54,7 +63,6 @@ class AbstractTournamentManager(ABC):
         """Setting the results of the tournament and status of the target
         algorithm runs to the rtac_data.TournamentStats object according to
         the RTAC method used."""
-        ...
 
     @abstractmethod
     def solve_instance(self, instance: str, rtac_data: RTACData) -> RTACData:
@@ -69,7 +77,6 @@ class AbstractTournamentManager(ABC):
             throughout the rtac modules
         :rtype: RTACData
         """
-        ...
 
 
 class TournamentManager(AbstractTournamentManager):
@@ -88,7 +95,7 @@ class TournamentManager(AbstractTournamentManager):
             self.tourn_stats.TARuns[tarun].status = \
                 TARunStatus(self.rtac_data.status[tr])
 
-    def solve_instance(self, instance, rtac_data):
+    def solve_instance(self, instance: str, rtac_data: RTACData) -> RTACData:
         """Solving the problem instance according to the ReACTR implementation.
         :param instance: path to the problem instance to solve.
 
@@ -117,7 +124,8 @@ class TournamentManager(AbstractTournamentManager):
         if self.scenario.verbosity == 2:
             message = 'Results:' + str(self.rtac_data.ta_res[:]) + '\n' \
                 + 'Runtimes: ' + str(self.rtac_data.ta_res_time[:]) + '\n' \
-                + 'Runtimes with overhead: ' + str(self.rtac_data.ta_rtac_time[:])
+                + 'Runtimes with overhead: ' \
+                + str(self.rtac_data.ta_rtac_time[:])
             print(message)
             self.logs.general_log(message)
         self.set_tourn_status()
@@ -131,3 +139,27 @@ class TournamentManager(AbstractTournamentManager):
         self.tourn_nr += 1
 
         return self.rtac_data
+
+
+def tourn_manager_factory(scenario: argparse.Namespace,
+                          ta_runner: BaseTARunner, logs: RTACLogs,
+                          rtac_data: RTACData) -> AbstractTournamentManager:
+    """Class factory to return the initialized TournamentManager class
+    appropriate to the RTAC method scenario.ac.
+
+    :param scenario: Namespace containing all settings for the RTAC.
+    :type scenario: argparse.Namespace
+    :param ta_runner: Target algorithm runner object.
+    :type: BaseTARunner
+    :param logs: Object containing loggers and logging functions.
+    :type: RTACLogs
+    :returns: Inititialized TournamentManager object matching the RTAC method
+        of the scenario.
+    :rtype: BaseTARunner
+    """
+    if scenario.ac in (ACMethod.ReACTR, ACMethod.ReACTRpp, ACMethod.CPPL):
+        return TournamentManager(scenario, ta_runner, logs, rtac_data)
+
+
+if __name__ == '__main__':
+    pass

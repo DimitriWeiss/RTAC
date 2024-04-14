@@ -29,7 +29,6 @@ class AbstractWrapper(ABC):
             problem instance with.v
         :type config: Configuration
         """
-        ...
 
     @abstractmethod
     def start(self, params: Any, timelimit: int,

@@ -47,6 +47,11 @@ class TARunStatus(Enum):
     timeout = 5
 
 
+class InterimMeaning(Enum):
+    increase = 1
+    decrease = 2
+
+
 @dataclass
 class DiscreteParameter:
     paramtype: str
@@ -141,7 +146,6 @@ class AbstractRTACData(ABC):
     @abstractmethod
     def __init__(self, scenario: argparse.Namespace) -> None:
         """Initialize all data structures needed for the RTAC."""
-        ...
 
 
 class RTACData(AbstractRTACData):
@@ -188,30 +192,21 @@ class RTACDatapp(RTACData):
     """Class to handle picklable data structures needed to coordinate
     and process tournaments of the ReACTR++ implementation."""
 
-    def __init__(self, scenario: argparse.Namespace) -> None:
-        super().__init__()
+    def __init__(self, scenario: argparse.Namespace,
+                 interim_meaning: list[InterimMeaning],
+                 interim_weights: list[float]) -> None:
+        RTACData.__init__(self, scenario)
         """Initialize additional data structures needed for ReACTR++
         tournaments.
 
         :param scenario: Namespace containing all settings for the RTAC.
         :type scenario: argparse.Namespace
         """
-        if scenario.wrapper == 'cadical':
-            self.interim = Manager().list(
-                [scenario.wrapper.output_list 
-                 for core in range(scenario.number_cores)])
-        elif scenario.wrapper == 'glucose':
-            self.interim = Manager().list(
-                [scenario.wrapper.output_list
-                 for core in range(scenario.number_cores)])
-        elif scenario.wrapper == 'cplex':
-            self.interim = Manager().list(
-                [scenario.wrapper.output_list
-                 for core in range(scenario.number_cores)])
-        elif scenario.wrapper == 'd-sat2':
-            self.interim = Manager().list(
-                [scenario.wrapper.output_list
-                 for core in range(scenario.number_cores)])
+        self.interim_meaning = interim_meaning
+        self.interim_weights = interim_weights
+        self.interim = Manager().list(
+            [[None for _ in range(len(interim_meaning))]
+             for core in range(scenario.number_cores)])
 
         # Initialize parallel solving data
         self.interim_res = [[0 for s in range(3)]
@@ -222,7 +217,8 @@ class GBData(RTACDatapp):
     """Class to handle picklable data structures needed to coordinate
     and process tournaments of the Gray-Box implementation."""
 
-    def __init__(self, scenario: argparse.Namespace) -> None:
+    def __init__(self, scenario: argparse.Namespace,
+                 interim_meaning: list[InterimMeaning]) -> None:
         super().__init__()
         """Initialize additional data structures needed for Gray-Box
         tournaments.
@@ -262,7 +258,9 @@ class GBData(RTACDatapp):
             Manager().list([None for core in range(scenario.number_cores)])
 
 
-def rtacdata_factory(scenario: argparse.Namespace) \
+def rtacdata_factory(scenario: argparse.Namespace,
+                     interim_meaning: list[InterimMeaning] = None,
+                     interim_weights: list[float] = None) \
         -> AbstractRTACData:
     """Class factory to return the initialized class with data structures
     appropriate to the RTAC method scenario.ac.
@@ -276,9 +274,9 @@ def rtacdata_factory(scenario: argparse.Namespace) \
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
         return RTACData(scenario)
     elif scenario.ac == ACMethod.ReACTRpp:
-        return RTACDatapp(scenario)
+        return RTACDatapp(scenario, interim_meaning, interim_weights)
     elif scenario.ac == ACMethod.GRAYBOX:
-        return GBData(scenario)
+        return GBData(scenario, interim_meaning, interim_weights)
 
 
 if __name__ == "__main__":

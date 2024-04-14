@@ -4,7 +4,12 @@ the next tournament ar performed."""
 from abc import ABC, abstractmethod
 from ac_functionalities.config_gens import DefaultConfigGen, RandomConfigGen
 from ac_functionalities.ranking import trueskill
-from ac_functionalities.rtac_data import RTACData, Configuration
+from ac_functionalities.rtac_data import (
+    RTACData,
+    Configuration,
+    ACMethod,
+    InterimMeaning
+)
 from ac_functionalities.logs import RTACLogs
 from multiprocessing import Value
 import argparse
@@ -13,6 +18,7 @@ import sys
 import numpy as np
 import uuid
 import copy
+from scipy.stats import rankdata
 
 
 class contender(object):
@@ -42,7 +48,6 @@ class AbstractResultProcessing(ABC):
     @abstractmethod
     def init_data(self) -> None:
         """Initialize tournament result processing data."""
-        ...
 
     @abstractmethod
     def process_results(self, rtac_data: RTACData) -> None:
@@ -53,17 +58,14 @@ class AbstractResultProcessing(ABC):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
-        ...
 
     @abstractmethod
     def manage_pool(self) -> None:
         """Replace contenders in pool if necessary."""
-        ...
 
     @abstractmethod
     def select_contenders(self) -> None:
         """Select contenders for next tournament/problem instance."""
-        ...
 
     @abstractmethod
     def process_tourn(self, rtac_data: RTACData) -> Value:
@@ -74,7 +76,6 @@ class AbstractResultProcessing(ABC):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
-        ...
 
     def get_contender_dict(self) -> dict[str: Configuration]:
         """Returns contender_dict.
@@ -88,6 +89,7 @@ class AbstractResultProcessing(ABC):
 
 
 class ResultProcessing(AbstractResultProcessing):
+    """Process results of prvious tournament."""
 
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
         """Initialize tournament result processing class as necessary for
@@ -159,6 +161,32 @@ class ResultProcessing(AbstractResultProcessing):
 
         return self.contender_dict
 
+    def get_winner(self, times: list[float], res: list[float]) \
+            -> tuple[int, list[int]]:
+        """Get index of the winning configuration and ranks.
+
+        :param times: List of time results of previous tournament.
+        :type times: list[float]
+        :param res: List of objective results of previous tournament.
+        :type res: list[float]
+        :returns: Index of winner and ranks.
+        :rtype: tuple[int, list[int]]
+        """
+        if not self.scenario.objective_min:
+            winner = times.index(min(times))
+
+        else:
+            winner = res.index(min(res))
+
+        ranks = []
+        for core in range(self.scenario.number_cores):
+            if core == winner:
+                ranks.append(1)
+            else:
+                ranks.append(2)
+
+        return winner, ranks
+
     def process_results(self, rtac_data: RTACData) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance
@@ -179,11 +207,7 @@ class ResultProcessing(AbstractResultProcessing):
         res = list(self.rtac_data.ta_res[:])
         self.rtac_data.best_res = min(res)
 
-        if not self.scenario.objective_min:
-            winner = times.index(min(times))
-
-        else:
-            winner = res.index(min(res))
+        winner, ranks = self.get_winner(times, res)
 
         if self.scenario.verbosity in (1, 2):
             res = list(self.rtac_data.ta_res[:])
@@ -202,19 +226,13 @@ class ResultProcessing(AbstractResultProcessing):
 
         # Set the results of the tournament
         individuals = [None] * self.scenario.number_cores
+        contender_ids = list(self.contender_dict.keys())
         for core in range(self.scenario.number_cores):
-            contender_ids = list(self.contender_dict.keys())
-            rank = (self.scores[contender_ids[core]][0], 
-                    self.scores[contender_ids[core]][1])
-            individuals[core] = contender_ids[core]
+            skill = (self.scores[contender_ids[core]][0], 
+                     self.scores[contender_ids[core]][1])
             individuals[core] = contender()
-            individuals[core].skill = rank
-
-        for core in range(self.scenario.number_cores):
-            if core == winner:
-                individuals[core].rank = 1
-            else:
-                individuals[core].rank = 2
+            individuals[core].skill = skill
+            individuals[core].rank = ranks[core]
 
             if self.scenario.verbosity == 2:
                 print('Contender', contender_ids[core], 'has the rank',
@@ -373,8 +391,130 @@ class ResultProcessing(AbstractResultProcessing):
             self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
 
         if self.scenario.verbosity in (1, 2):
+            if self.rtac_data.winner.value == 0:
+                winner = None
+            else:
+                winner = self.rtac_data.winner.value
             print('\n\n')
-            print('Winner was', self.rtac_data.winner.value)
+            print('Winner was', winner)
             print('\n\n')
 
         return self.rtac_data.winner.value
+
+
+class ResultProcessingpp(ResultProcessing):
+    """Process results of prvious tournament."""
+
+    def duplicates(self, ranks: list[int], rank: float) -> list[int]:
+        """List the indices of the result in the results list.
+
+        :param ranks: List of objective results of previous tournament.
+        :type ranks: list[int]
+        :param rank: a single result.
+        :type rank: float
+        :returns: list of indices of this result in the results list.
+        :rtype: list[int]
+        """
+        return [i for i, x in enumerate(ranks) if x == rank]
+
+    def get_winner(self, times: list[float], res: list[float]) \
+            -> tuple[int, list[int]]:
+        """Get index of the winning configuration including last known
+        intermidiate outputs to break ties. Additionally output complete
+        ranking to compute more detailed assessment with trueskill.
+
+        :param times: List of time results of previous tournament.
+        :type times: list[float]
+        :param res: List of objective results of previous tournament.
+        :type res: list[float]
+        :returns: Index of winner and ranks.
+        :rtype: tuple[int, list[int]]
+        """
+        if not self.scenario.objective_min:
+            winner = times.index(min(times))
+
+        else:
+            winner = res.index(min(res))
+
+        interim_sorted = [[self.rtac_data.interim[j][i]
+                          for j in range(self.scenario.number_cores)]
+                          for i, _ in enumerate(self.rtac_data.interim[0])]
+
+        interim_sorted = np.array(interim_sorted)
+        interim_sorted = interim_sorted.astype(float)
+
+        for i, isort in enumerate(interim_sorted):
+            if self.rtac_data.interim_meaning[i] is \
+                    InterimMeaning.decrease:
+                interim_sorted[i] = rankdata(isort,
+                                             method='dense',
+                                             nan_policy="propagate")
+            elif self.rtac_data.interim_meaning[i] is \
+                    InterimMeaning.increase:
+                interim_sorted[i] = rankdata([-1 * i if i is not None
+                                              else None for i in isort],
+                                             method='dense',
+                                             nan_policy="propagate")
+
+        ranks = [0 for core in range(self.scenario.number_cores)]
+
+        for _, isort in enumerate(interim_sorted):
+            for r, _ in enumerate(ranks):
+                ranks[r] += isort[r]
+
+        if self.scenario.objective_min:
+            res_ranks = rankdata(res, method='dense', nan_policy="propagate")
+
+            duplicates = []
+
+            for rank in sorted(set(res_ranks)):
+                duplicates.append(self.duplicates(res_ranks, rank))
+            
+            for duplicate in duplicates:
+                if len(duplicate) > 1:
+                    interim_ranks = [ranks[dup] for dup in duplicate]
+                    tie_winner = \
+                        duplicate[interim_ranks.index(min(interim_ranks))]
+                    interim_ranks = rankdata(interim_ranks, method='dense')
+                    interim_ranks -= min(interim_ranks)
+                    for d, ir in zip(duplicate, interim_ranks):
+                        for r, _ in enumerate(res_ranks):
+                            if d == r and r != winner and r != tie_winner:
+                                res_ranks[r] += interim_ranks[ir]
+                            else:
+                                res_ranks[r] += max(interim_ranks)
+
+            ranks = res_ranks
+
+        ranks = rankdata(ranks, method='dense')
+
+        ranks[winner] = 0
+
+        return winner, ranks
+
+
+def processing_factory(scenario, logs) -> AbstractResultProcessing:
+    """Class factory to return the initialized class with data structures
+    appropriate to the RTAC method scenario.ac.
+
+    :param scenario: Namespace containing all settings for the RTAC.
+    :type scenario: argparse.Namespace
+    :returns: Inititialized BaseTARunner object matching the RTAC method of
+        the scenario.
+    :rtype: BaseTARunner
+    """
+    if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
+        return ResultProcessing(scenario, logs)
+
+    elif scenario.ac == ACMethod.ReACTRpp:
+        return ResultProcessingpp(scenario, logs)
+
+    '''
+
+    elif scenario.ac == ACMethod.GRAYBOX:
+        return GBTARunner(scenario)
+    '''
+
+
+if __name__ == "__main__":
+    pass

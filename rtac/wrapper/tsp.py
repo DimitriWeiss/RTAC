@@ -7,7 +7,7 @@ import time
 import sys
 import os
 from wrapper.abstract_wrapper import AbstractWrapper
-from ac_functionalities.rtac_data import Configuration
+from ac_functionalities.rtac_data import Configuration, InterimMeaning
 from ac_functionalities.ta_runner import non_block_read
 
 sys.path.append(os.getcwd())
@@ -132,3 +132,95 @@ class TSP_Q(TSP_RT):
             config_list.append(str(param))
 
         return config_list
+
+
+class TSP_RTpp(TSP_RT):
+    """Python-TSP Wrapper for runtime minimization scenario. Annealing factor
+    'a' is fixed to have a fair comparison of runtime performance. Additional
+    functions for ReACTR++ implementation."""
+
+    def interim_info(self) -> list[InterimMeaning]:
+        """Gives information about whether a higher or a lower level of the
+        entry is a sign of higher quality of the configuration regarding the
+        target algorithm run.
+
+        :return: List of InterimMeaning - is a higher or lower value better.
+        :rtype: list[InterimMeaning] or None
+        """
+
+        self.interim_meaning = [InterimMeaning.decrease]
+
+        return self.interim_meaning
+
+    def check_output(self, ta_output: bytes) -> list[float] | None:
+        """Parsing runtime output of the target algorithm.
+
+        :param ta_output: Output of the target algorithm.
+        :type ta_output: bytes
+        :return: List of intermediate output values if provided by TA.
+        :rtype: list[float] or None
+        """
+        if ta_output != b'':
+            b = str(ta_output.strip())
+            # Check for progress
+            if 'Temperature' in b:
+                b = b.split(' ')
+                # Assumption: the lower the temperature, the closer the TA is
+                # to finding the solution. Solution Quality is not regarded in
+                # this example, we configure for runtime only here.
+                temp = float(b[1][:-1])
+                interim = [temp]
+
+                return interim
+            else:
+                return None
+        else:
+            return None
+
+
+class TSP_Qpp(TSP_Q, TSP_RTpp):
+    """Python-TSP Wrapper for cost minimization scenario. Annealing factor
+    is not fixed. If TA is much faster than the time limit but still yields a
+    better solution it is not a problem. Additional functions for ReACTR++
+    implementation."""
+
+    def interim_info(self) -> list[InterimMeaning]:
+        """Gives information about whether a higher or a lower level of the
+        entry is a sign of higher quality of the configuration regarding the
+        target algorithm run.
+
+        :return: List of InterimMeaning - is a higher or lower value better.
+        :rtype: list[InterimMeaning] or None
+        """
+        self.interim_meaning = [InterimMeaning.decrease,
+                                InterimMeaning.increase,
+                                InterimMeaning.decrease,
+                                InterimMeaning.increase]
+
+        return self.interim_meaning
+
+    def check_output(self, ta_output) -> list[float] | None:
+        """Parsing runtime output of the target algorithm.
+
+        :param ta_output: Output of the target algorithm.
+        :type ta_output: bytes
+        :return: List of intermediate output values if provided by TA.
+        :rtype: list[float] or None
+        """
+        if ta_output != b'':
+            b = str(ta_output.strip())
+            # Check for progress
+            if 'Temperature' in b:
+                b = b.split(' ')
+                
+                temp = float(b[1][:-1])
+                k = float(b[6].split('/')[0])
+                k_acc = float(b[8].split('/')[0])
+                k_noimp = float(b[10][:-1])
+                interim = [temp, k, k_acc, k_noimp]
+
+                return interim
+            else:
+                return None
+        else:
+            return None

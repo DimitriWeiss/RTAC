@@ -21,6 +21,7 @@
 /data/instances/travellingsalesman/instance_23.json
 /data/instances/travellingsalesman/instance_24.json
 /data/instances/travellingsalesman/instance_25.json
+/data/instances/travellingsalesman/instance_26.json
 /data/instances/travellingsalesman/instance_27.json
 /data/instances/travellingsalesman/instance_28.json
 /data/instances/travellingsalesman/instance_29.json
@@ -35,6 +36,7 @@
 /data/instances/travellingsalesman/instance_38.json
 /data/instances/travellingsalesman/instance_39.json
 /data/instances/travellingsalesman/instance_40.json
+/data/instances/travellingsalesman/instance_41.json
 /data/instances/travellingsalesman/instance_42.json
 /data/instances/travellingsalesman/instance_43.json
 /data/instances/travellingsalesman/instance_44.json
@@ -50,6 +52,7 @@
 /data/instances/travellingsalesman/instance_54.json
 /data/instances/travellingsalesman/instance_55.json
 /data/instances/travellingsalesman/instance_56.json
+/data/instances/travellingsalesman/instance_57.json
 /data/instances/travellingsalesman/instance_58.json
 /data/instances/travellingsalesman/instance_59.json
 /data/instances/travellingsalesman/instance_60.json
@@ -64,9 +67,6 @@
 /data/instances/travellingsalesman/instance_69.json
 /data/instances/travellingsalesman/instance_70.json
 /data/instances/travellingsalesman/instance_71.json
-/data/instances/travellingsalesman/instance_26.json
-/data/instances/travellingsalesman/instance_41.json
-/data/instances/travellingsalesman/instance_57.json
 /data/instances/travellingsalesman/instance_72.json
 /data/instances/travellingsalesman/instance_73.json
 /data/instances/travellingsalesman/instance_74.json

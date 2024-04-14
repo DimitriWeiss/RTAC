@@ -5,7 +5,7 @@
 --keeptop 2
 --pws
 --usedata y
---experimental y
+--experimental
 --chance 25
 --mutate 10
 --kill 5

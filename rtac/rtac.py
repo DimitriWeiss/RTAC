@@ -4,9 +4,10 @@ method."""
 from abc import ABC, abstractmethod
 import argparse
 import sys
+import importlib
 from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
-from ac_functionalities.rtac_data import rtacdata_factory as rtacdata
-from ac_functionalities.tournament_manager import TournamentManager
+from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
+from ac_functionalities.tournament_manager import tourn_manager_factory as TM
 from ac_functionalities.result_processing import ResultProcessing
 from ac_functionalities.logs import RTACLogs
 
@@ -21,31 +22,36 @@ class AbstractRTAC(ABC):
         :param scenario: Namespace containing all settings for the RTAC.
         :type scenario: argparse.Namespace
         """
+        self.huge_float = sys.float_info.max * 1e-100
         self.scenario = scenario
         if self.scenario.baselineperf:
             self.scenario.number_cores = 1
         self.logs = RTACLogs(self.scenario)
         self.logs.scenario_log(self.scenario)
-        self.rtac_data = rtacdata(self.scenario)
         self.ta_runner = ta_runner
-        self.tournament_manager = TournamentManager(self.scenario,
-                                                    self.ta_runner,
-                                                    self.logs,
-                                                    self.rtac_data)
         self.result_processing = ResultProcessing(self.scenario,
                                                   self.logs)
+        self.init_tournament_manager()
+
+    def init_tournament_manager(self) -> None:
+        self.rtac_data = rtacdata(self.scenario)
+        self.tournament_manager = TM(self.scenario, self.ta_runner, self.logs,
+                                     self.rtac_data)
+
+    def init_rtac_data(self) -> None:
+        """Initializes new RTAC data."""
+        if self.tournament_manager.tourn_nr > 0:
+            self.rtac_data = rtacdata(self.scenario)
 
     @abstractmethod
     def solve_instance(self, instance: str) -> None:
         """Solves problem instance and performs all associated
         functionalities."""
-        ...
 
     @abstractmethod
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:
         """Plots results of the logged RTAC run and saves figure."""
-        ...
 
 
 class RTAC(AbstractRTAC):
@@ -57,8 +63,7 @@ class RTAC(AbstractRTAC):
         :param instance: Path to the problem instance file.
         :type instance: str
         """
-        if self.tournament_manager.tourn_nr > 0:
-            self.rtac_data = rtacdata(self.scenario)
+        self.init_rtac_data()
 
         self.rtac_data = self.tournament_manager.solve_instance(instance,
                                                                 self.rtac_data)
@@ -71,12 +76,14 @@ class RTAC(AbstractRTAC):
                 print(f'Solved instance {instance} in',
                       f'{self.rtac_data.newtime}s.')
         else:
-            if self.rtac_data.best_res == sys.float_info.max * 1e-100:
+            if self.rtac_data.best_res == self.huge_float:
                 print(f'Instance {instance} could not be solved within',
                       f'{self.scenario.timeout}s.')
             else:
                 print(f'Solved instance {instance} with objective value',
                       f'{self.rtac_data.best_res}.')
+
+        print(self.scenario.ac)
 
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:
@@ -91,3 +98,43 @@ class RTAC(AbstractRTAC):
             ...
         elif times:
             ...
+
+
+class RTACpp(RTAC):
+    """Implementation of ReACTR++."""
+
+    def init_tournament_manager(self) -> None:
+        module = importlib.import_module(self.scenario.wrapper)
+        name = self.scenario.wrapper_name
+        wrapper = getattr(module, name)()
+        self.interim_meaning = wrapper.interim_info()
+        self.rtac_data = \
+            rtacdata(self.scenario, self.interim_meaning)
+        self.tournament_manager = TM(self.scenario, self.ta_runner, self.logs,
+                                     self.rtac_data)
+
+    def init_rtac_data(self) -> None:
+        """Initializes new RTAC data. Override for ReACTR++ implementation."""
+        if self.tournament_manager.tourn_nr > 0:
+            self.rtac_data = \
+                rtacdata(self.scenario, self.interim_meaning)
+
+
+def rtac_factory(scenario: argparse.Namespace) -> AbstractRTAC:
+    """Class factory to return the initialized RTAC class
+    appropriate to the RTAC method scenario.ac.
+
+    :param scenario: Namespace containing all settings for the RTAC.
+    :type scenario: argparse.Namespace
+    :returns: Inititialized AbstractRTAC object matching the RTAC method
+        of the scenario.
+    :rtype: AbstractRTAC
+    """
+    if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
+        return RTAC(scenario)
+    elif scenario.ac is ACMethod.ReACTRpp:
+        return RTACpp(scenario)
+
+
+if __name__ == '__main__':
+    pass

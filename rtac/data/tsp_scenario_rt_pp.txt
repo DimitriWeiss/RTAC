@@ -1,0 +1,27 @@
+--verbosity 1
+--number_cores 8
+--timeout 5
+--contenders 30
+--keeptop 2
+--pws
+--usedata y
+--experimental
+--chance 25
+--mutate 10
+--kill 5
+--train_number 0
+--train_rounds 1
+--nc_pca_f 3
+--nc_pca_p 5
+--jfm polynomial
+--omega 0.0001
+--gamma 1
+--alpha 0.2
+--ac 2
+--paramlimit 100000
+--cpplt 8
+--log_folder logs
+--wrapper wrapper.tsp
+--wrapper_name TSP_RTpp
+--feature_gen feature_gen/tsp_feats.py
+--param_file data/params_tsp.json

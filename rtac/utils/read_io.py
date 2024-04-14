@@ -22,7 +22,7 @@ sys.path.append(os.getcwd())
 
 
 def translate_params(config_space: dict[str, dict]) \
-        -> dict[str, DiscreteParameter | ContinuousParameter 
+        -> dict[str, DiscreteParameter | ContinuousParameter
                 | CategoricalParameter | BinaryParameter]:
     """Translate configuration space nested dict to dict of dataclasses.
 
@@ -89,9 +89,6 @@ def read_args(scenario: str = None,
     parser.add_argument('-ud', '--usedata', type=str, default=None, 
                         help='''Type y if data of prior run should 
                         be used. []''')
-    parser.add_argument('-exp', '--experimental', type=str, default=None, 
-                        help='''Type y if data of prior run should 
-                        be used for experiment. []''')
     parser.add_argument('-ch', '--chance', type=int, default=25, 
                         help='''Chance to replace gene randomly 
                         in percent (int: 0 - 100) for ReACTR/ReACTR++.
@@ -164,6 +161,11 @@ def read_args(scenario: str = None,
                         default=False, 
                         help='''Set flag \'-om\' or \'--objective_min\' if
                         optimizing for objective value minimization.''')
+    parser.add_argument('-exp', '--experimental', 
+                        action=argparse.BooleanOptionalAction,
+                        default=False, 
+                        help='''Set flag data of tournament 0 from logs are to
+                        be used for experiment.''')
 
     # Read arguments from scenario file if provided and override them
     if scenario is not None:
@@ -201,6 +203,7 @@ def read_args(scenario: str = None,
     scenario.ac = ACMethod(scenario.ac)
 
     return scenario
+
 
 if __name__ == "__main__":
     pass

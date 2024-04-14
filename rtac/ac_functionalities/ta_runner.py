@@ -37,7 +37,7 @@ def non_block_read(ta_output: bytes, logs: RTACLogs = None) -> str:
         return ''
 
 
-class BaseTARunner(ABC):
+class AbstractTARunner(ABC):
     """Abstract TARunner."""
 
     @abstractmethod
@@ -51,8 +51,8 @@ class BaseTARunner(ABC):
         :param logs: Object containing loggers and logging functions.
         :type: RTACLogs
         :param core: Number of the parallel run started on a core.
-        :type: int"""
-        ...
+        :type: int
+        """
 
     @abstractmethod
     def translate_config(self, config: Configuration) -> Any:
@@ -65,7 +65,6 @@ class BaseTARunner(ABC):
         :return: new representation of the configuration
         :rtype: Any
         """
-        ...
 
     @abstractmethod
     def start_run(self, instance: str, config: Configuration,
@@ -81,7 +80,6 @@ class BaseTARunner(ABC):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
-        ...
 
     @abstractmethod
     def check_output(self, ta_output: bytes) -> None:
@@ -91,21 +89,18 @@ class BaseTARunner(ABC):
         :param ta_output: subprocess.PIPE output.
         :type ta_output: bytes
         """
-        ...
 
     @abstractmethod
     def check_result(self) -> None:
         """If this contender solved the problem instance the rtac data is
         populated by the resulting information according to the RTAC method
         scenario.ac."""
-        ...
 
     @abstractmethod
     def kill_run(self) -> None:
         """Terminates this process/ target algorithm run, as well as the other
         contenders. Several layers of termination are included to ensure
         termination on different platforms."""
-        ...
 
     @abstractmethod
     def run(self, instance: str, config: Configuration,
@@ -122,10 +117,9 @@ class BaseTARunner(ABC):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
-        ...
 
 
-class TARunner(BaseTARunner):
+class BaseTARunner(AbstractTARunner):
     """Target algorithm runner for ReACTR implementation."""
     
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs,
@@ -272,7 +266,7 @@ class TARunner(BaseTARunner):
         while self.running:
             # Avoid checking output excessively often (cause  too much
             # overhead)
-            time.sleep(5e-8)  
+            time.sleep(5e-6)  
 
             ta_output = non_block_read(self.proc.stdout, self.logs)
 
@@ -283,7 +277,9 @@ class TARunner(BaseTARunner):
             # If objective minimization scenario
             if self.scenario.objective_min:
                 # and if time limit is reached, kill this target algorithm run
-                if time.time() - self.om_start >= self.scenario.timeout:
+                # + 1 sec extra time for the TA to shut down, wrap up and print
+                # the result, since it is important to know it
+                if time.time() - self.om_start >= self.scenario.timeout + 1:
                     self.kill_run()
             # If runtime minimization and one TA run solved instance, kill all
             # target algorithm runs
@@ -291,23 +287,48 @@ class TARunner(BaseTARunner):
                 self.kill_run()      
 
 
+class TARunnerpp(BaseTARunner):
+    """Target algorithm runner for ReACTR++ implementation."""
+
+    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs,
+                 core: int) -> None:
+        BaseTARunner.__init__(self, scenario, logs, core)
+        self.interim_check_increment = scenario.timeout / 150
+        self.interim_check_time = time.time()
+
+    def check_output(self, ta_output: bytes) -> None:
+        """Checks the output, if there was any, and declares instance as solved
+        by the contender, if the marker for it was present or outputs
+        intermediate target algorithm output.
+
+        :param ta_output: subprocess.PIPE output.
+        :type ta_output: bytes
+        """
+        if ta_output != b'':
+            if_solved = \
+                self.wrapper.check_if_solved(ta_output, non_block_read,
+                                             self.proc)
+
+            if if_solved is not None:
+                res, self.time, self.rtac_data.event = if_solved
+                self.rtac_data.ta_res[self.core] = res
+                self.rtac_data.ta_res_time[self.core] = self.time
+                self.rtac_data.status[self.core] = 2
+
+            if time.time() - self.interim_check_time \
+                    >= self.interim_check_increment:  # reduce frequency
+
+                self.interim_check_time = time.time()
+
+                interim = self.wrapper.check_output(ta_output)
+
+                if interim is not None:
+                    self.rtac_data.interim[self.core] = interim
+
+
 '''
-class TARunnerpp(TARunner):
-
-    def check_output(self, scenario):
-        self.line = non_block_read(self.proc.stdout)
-
-    def run(self, scenario):
-        self.proc = self.start_run()
-        while True:
-
-            self.check_output()
-            self.check_result()
-            if self.a == 1:
-                self.kill_run()
-
-
 class GBTARunner(TARunnerpp):
+    """Target algorithm runner for GrayBox implementation."""
 
     def check_output(self, scenario):
         self.line = non_block_read(self.proc.stdout)
@@ -326,27 +347,33 @@ class GBTARunner(TARunnerpp):
 '''
 
 
-def ta_runner_factory(scenario, logs, core):
-    """Class factory to return the initialized class with data structures
+def ta_runner_factory(scenario: argparse.Namespace, logs: RTACLogs,
+                      core: int) -> AbstractTARunner:
+    """Class factory to return the initialized target algorithm runner class
     appropriate to the RTAC method scenario.ac.
 
     :param scenario: Namespace containing all settings for the RTAC.
     :type scenario: argparse.Namespace
-    :returns: Inititialized BaseTARunner object matching the RTAC method of
+    :param logs: Object containing loggers and logging functions.
+    :type: RTACLogs
+    :param core: Number of the parallel run started on a core.
+    :type: int
+    :returns: Inititialized AbstractTARunner object matching the RTAC method of
         the scenario.
-    :rtype: BaseTARunner
+    :rtype: AbstractTARunner
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
-        return TARunner(scenario, logs, core)
-
-    '''
+        return BaseTARunner(scenario, logs, core)
 
     elif scenario.ac == ACMethod.ReACTRpp:
-        return TARunnerpp(scenario)
+        return TARunnerpp(scenario, logs, core)
+
+    '''
 
     elif scenario.ac == ACMethod.GRAYBOX:
         return GBTARunner(scenario)
     '''
+
 
 if __name__ == "__main__":
     pass
