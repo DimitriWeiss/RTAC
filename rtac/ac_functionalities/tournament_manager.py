@@ -53,7 +53,7 @@ class AbstractTournamentManager(ABC):
 
         else:
             self.tourn_nr = 0
-            self.contender_dict = self.res_process.init_data()
+            self.contender_dict = self.res_process.get_contender_dict()
 
         self.logs.init_rtac_logs()
         self.logs.init_ranking_logs()
@@ -141,6 +141,13 @@ class TournamentManager(AbstractTournamentManager):
         return self.rtac_data
 
 
+'''
+class GrayBoxTournamentManager(AbstractTournamentManager):
+    """Tournament manager class for the GrayBox implementation."""
+
+'''
+
+
 def tourn_manager_factory(scenario: argparse.Namespace,
                           ta_runner: BaseTARunner, logs: RTACLogs,
                           rtac_data: RTACData) -> AbstractTournamentManager:
@@ -159,6 +166,11 @@ def tourn_manager_factory(scenario: argparse.Namespace,
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.ReACTRpp, ACMethod.CPPL):
         return TournamentManager(scenario, ta_runner, logs, rtac_data)
+
+    '''
+    elif scenario.ac is ACMethod.GRAYBOX:
+        return GrayBoxTournamentManager(scenario, ta_runner, logs, rtac_data)
+    '''
 
 
 if __name__ == '__main__':

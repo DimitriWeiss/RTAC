@@ -8,7 +8,6 @@ import importlib
 from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
 from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
 from ac_functionalities.tournament_manager import tourn_manager_factory as TM
-from ac_functionalities.result_processing import ResultProcessing
 from ac_functionalities.logs import RTACLogs
 
 
@@ -29,8 +28,6 @@ class AbstractRTAC(ABC):
         self.logs = RTACLogs(self.scenario)
         self.logs.scenario_log(self.scenario)
         self.ta_runner = ta_runner
-        self.result_processing = ResultProcessing(self.scenario,
-                                                  self.logs)
         self.init_tournament_manager()
 
     def init_tournament_manager(self) -> None:
@@ -82,8 +79,6 @@ class RTAC(AbstractRTAC):
             else:
                 print(f'Solved instance {instance} with objective value',
                       f'{self.rtac_data.best_res}.')
-
-        print(self.scenario.ac)
 
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:

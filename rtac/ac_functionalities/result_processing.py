@@ -3,7 +3,7 @@ the next tournament ar performed."""
 
 from abc import ABC, abstractmethod
 from ac_functionalities.config_gens import DefaultConfigGen, RandomConfigGen
-from ac_functionalities.ranking import trueskill
+from ac_functionalities.ranking import trueskill, cppl
 from ac_functionalities.rtac_data import (
     RTACData,
     Configuration,
@@ -44,80 +44,8 @@ class AbstractResultProcessing(ABC):
         self.tourn_nr = 0
         self.contender_dict = {}
         self.huge_float = sys.float_info.max * 1e-100
-
-    @abstractmethod
-    def init_data(self) -> None:
-        """Initialize tournament result processing data."""
-
-    @abstractmethod
-    def process_results(self, rtac_data: RTACData) -> None:
-        """Perform tournament result processing necessary to replace contenders
-        in pool and select contenders for next tournament/problem instance.
-
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        """
-
-    @abstractmethod
-    def manage_pool(self) -> None:
-        """Replace contenders in pool if necessary."""
-
-    @abstractmethod
-    def select_contenders(self) -> None:
-        """Select contenders for next tournament/problem instance."""
-
-    @abstractmethod
-    def process_tourn(self, rtac_data: RTACData) -> Value:
-        """Manage result processing according to chosen realtime algorithm
-        configuration method.
-
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        """
-
-    def get_contender_dict(self) -> dict[str: Configuration]:
-        """Returns contender_dict.
-
-        :returns: Configuration selected to run in next
-        tournament/on next problem instance. Dictionary with configuration id
-        as key and Configuration object as value.
-        :rtype: dict[str: Configuration]
-        """
-        return self.contender_dict
-
-
-class ResultProcessing(AbstractResultProcessing):
-    """Process results of prvious tournament."""
-
-    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
-        """Initialize tournament result processing class as necessary for
-        ReACTR implementation.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
-        """
-        super().__init__(scenario, logs)
         self.pool = {}
-        self.scores = []
-
-    def find_best(self, current_dict: list, number: int) -> list:
-        """Find the configurations scored as best by trueskill.
-
-        :param current_dict: Dictionary with confguration ids as key and
-            trueskill scores (mu, sigma) as value.
-        :type current_dict: dict
-        :param current_dict: Number of best configurations to draw.
-        :type current_dict: int
-        :returns: List of best configurations.
-        :rtype: list
-        """
-        best_list = sorted(current_dict.items(), key=lambda kv: kv[1][1])
-
-        return best_list[:number]
+        self.init_data()
 
     def init_data(self) -> dict[str: Configuration]:
         """Initialize tournament result processing data according to ReACTR
@@ -152,14 +80,103 @@ class ResultProcessing(AbstractResultProcessing):
             random_pick = random.sample(list(self.pool.values()),
                                         self.scenario.number_cores)
 
+        for rp in random_pick:
+            self.contender_dict[rp.id] = rp
+
+    @abstractmethod
+    def process_results(self, rtac_data: RTACData) -> None:
+        """Perform tournament result processing necessary to replace contenders
+        in pool and select contenders for next tournament/problem instance.
+
+        :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+        :type rtac_data: RTACData
+        """
+
+    @abstractmethod
+    def manage_pool(self) -> None:
+        """Replace contenders in pool if necessary."""
+
+    @abstractmethod
+    def select_contenders(self) -> None:
+        """Select contenders for next tournament/problem instance."""
+
+    def process_tourn(self, rtac_data: RTACData) -> str:
+        """Manage result processing.
+
+        :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+        :type rtac_data: RTACData
+        :returns: ID of the configuration to have won the previous tournament
+        :rtype: str
+        """
+
+        if not self.scenario.baselineperf:
+            self.process_results(rtac_data)
+            if self.rtac_data.winner.value != 0:
+                self.manage_pool()
+            self.select_contenders()
+        else:
+            self.rtac_data = rtac_data
+            self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
+
+        if self.scenario.verbosity in (1, 2):
+            if self.rtac_data.winner.value == 0:
+                winner = None
+            else:
+                winner = self.rtac_data.winner.value
+            print('\n\n')
+            print('Winner was', winner)
+            print('\n\n')
+
+        return self.rtac_data.winner.value
+
+    def get_contender_dict(self) -> dict[str: Configuration]:
+        """Returns contender_dict.
+
+        :returns: Configuration selected to run in next
+        tournament/on next problem instance. Dictionary with configuration id
+        as key and Configuration object as value.
+        :rtype: dict[str: Configuration]
+        """
+        return self.contender_dict
+
+
+class ResultProcessing(AbstractResultProcessing):
+    """Processes results of previous tournament."""
+
+    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
+        """Initialize tournament result processing class as necessary for
+        ReACTR implementation.
+
+        :param scenario: Namespace containing all settings for the RTAC.
+        :type scenario: argparse.Namespace
+        :param logs: Object containing loggers and logging functions.
+        :type: RTACLogs
+        """
+        super().__init__(scenario, logs)
+        self.init_scores()
+
+    def init_scores(self) -> None:
+        """Initialize scores dict for trueskill."""
         self.scores = dict.fromkeys(list(self.pool.keys()), 
                                         (trueskill.INITIAL_MU,
                                          trueskill.INITIAL_SIGMA))
 
-        for rp in random_pick:
-            self.contender_dict[rp.id] = rp
+    def find_best(self, current_dict: list, number: int) -> list:
+        """Find the configurations scored as best by trueskill.
 
-        return self.contender_dict
+        :param current_dict: Dictionary with confguration ids as key and
+            trueskill scores (mu, sigma) as value.
+        :type current_dict: dict
+        :param current_dict: Number of best configurations to draw.
+        :type current_dict: int
+        :returns: List of best configurations.
+        :rtype: list
+        """
+        best_list = sorted(current_dict.items(), key=lambda kv: kv[1][1])
+
+        return best_list[:number]
 
     def get_winner(self, times: list[float], res: list[float]) \
             -> tuple[int, list[int]]:
@@ -371,36 +388,6 @@ class ResultProcessing(AbstractResultProcessing):
             print('\nNew contender list is:',
                   *self.contender_dict, '\n', sep='\n')
 
-    def process_tourn(self, rtac_data: RTACData) -> str:
-        """Manage result processing according to ReACTR implementation.
-
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :returns: ID of the configuration to have won the previous tournament
-        :rtype: str
-        """
-
-        if not self.scenario.baselineperf:
-            self.process_results(rtac_data)
-            if self.rtac_data.winner.value != 0:
-                self.manage_pool()
-            self.select_contenders()
-        else:
-            self.rtac_data = rtac_data
-            self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
-
-        if self.scenario.verbosity in (1, 2):
-            if self.rtac_data.winner.value == 0:
-                winner = None
-            else:
-                winner = self.rtac_data.winner.value
-            print('\n\n')
-            print('Winner was', winner)
-            print('\n\n')
-
-        return self.rtac_data.winner.value
-
 
 class ResultProcessingpp(ResultProcessing):
     """Process results of prvious tournament."""
@@ -493,6 +480,76 @@ class ResultProcessingpp(ResultProcessing):
         return winner, ranks
 
 
+class ResultProcessingCPPL(AbstractResultProcessing):
+    """Process results of previous tournament."""
+
+    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
+        """Initialize tournament result processing class as necessary for
+        CPPL implementation.
+
+        :param scenario: Namespace containing all settings for the RTAC.
+        :type scenario: argparse.Namespace
+        :param logs: Object containing loggers and logging functions.
+        :type: RTACLogs
+        """
+        super().__init__(scenario, logs)
+        self.init_data()
+        self.cppl = cppl.CPPL(self.scenario, self.pool)
+
+    def process_results(self, rtac_data: RTACData) -> None:
+        """Perform tournament result processing necessary to replace contenders
+        in pool and select contenders for next tournament/problem instance.
+
+        :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+        :type rtac_data: RTACData
+        """
+        self.cppl.process_results(rtac_data)
+
+    def manage_pool(self) -> None:
+        """Replace contenders in pool if necessary."""
+        self.cppl.manage_pool()
+
+    def select_contenders(self) -> None:
+        """Select contenders for next tournament/problem instance."""
+        self.contender_dict = cppl.select_contenders()
+
+        if self.scenario.verbosity == 2:
+            print('\nNew contender list is:',
+                  *self.contender_dict, '\n', sep='\n')
+
+
+'''
+class ResultProcessingGB(ResultProcessingCPPL):
+    """Process results of previous tournament."""
+
+    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
+        """Initialize tournament result processing class as necessary for
+        CPPL implementation.
+
+        :param scenario: Namespace containing all settings for the RTAC.
+        :type scenario: argparse.Namespace
+        :param logs: Object containing loggers and logging functions.
+        :type: RTACLogs
+        """
+        super().__init__(scenario, logs)
+        self.init_data()
+        self.cppl = cppl.CPPL(self.scenario)
+        self.model = costcla.init()
+
+    def process_results(self, rtac_data: RTACData) -> None:
+        """Perform tournament result processing necessary to replace contenders
+        in pool and select contenders for next tournament/problem instance.
+
+        :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+        :type rtac_data: RTACData
+        """
+        self.model = model.fit(training_data, training_y)
+        self.cppl.process_results(rtac_data)
+'''
+
+
 def processing_factory(scenario, logs) -> AbstractResultProcessing:
     """Class factory to return the initialized class with data structures
     appropriate to the RTAC method scenario.ac.
@@ -503,16 +560,19 @@ def processing_factory(scenario, logs) -> AbstractResultProcessing:
         the scenario.
     :rtype: BaseTARunner
     """
-    if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
+    if scenario.ac is ACMethod.ReACTR:
         return ResultProcessing(scenario, logs)
 
-    elif scenario.ac == ACMethod.ReACTRpp:
+    elif scenario.ac is ACMethod.ReACTRpp:
         return ResultProcessingpp(scenario, logs)
+
+    elif scenario.ac is ACMethod.CPPL:
+        return ResultProcessingCPPL(scenario, logs)
 
     '''
 
     elif scenario.ac == ACMethod.GRAYBOX:
-        return GBTARunner(scenario)
+        return ResultProcessingGB(scenario, logs)
     '''
 
 

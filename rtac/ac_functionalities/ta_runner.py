@@ -264,7 +264,7 @@ class BaseTARunner(AbstractTARunner):
         """
         self.start_run(instance, config, rtac_data)
         while self.running:
-            # Avoid checking output excessively often (cause  too much
+            # Avoid checking output excessively often (causes too much
             # overhead)
             time.sleep(5e-6)  
 

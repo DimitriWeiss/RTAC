@@ -4,7 +4,7 @@ import sys
 
 
 def main():
-    scenario = read_args('./data/tsp_scenario_q_pp.txt', sys.argv)
+    scenario = read_args('./data/tsp_scenario_rt.txt', sys.argv)
     instance_file = './data/travellingsalesman_instances.txt'
     instances = []
     with open(f'{instance_file}', 'r') as f:

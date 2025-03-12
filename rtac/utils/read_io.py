@@ -5,6 +5,7 @@ import sys
 import os
 import warnings
 import json
+from ConfigSpace.read_and_write import pcs_new
 from utils.json_validation import validateparams
 from ac_functionalities.rtac_data import (
     ACMethod,
@@ -76,7 +77,11 @@ def read_args(scenario: str = None,
     parser.add_argument('-wn', '--wrapper_name', type=str,
                         default='No wrapper class name.',
                         help='''Name of the wrapper class in the wrapper
-                        Module.''')
+                        module.''')
+    parser.add_argument('-fgn', '--feature_gen_name', type=str,
+                        default='No feature generator class name.',
+                        help='''Name of the feature generator class in the
+                        feature generator mddule.''')
     parser.add_argument('-to', '--timeout', type=int, default=300, 
                         help='''Stop solving single instance after 
                         (int) seconds. [300]''')
@@ -141,7 +146,8 @@ def read_args(scenario: str = None,
                         help='''Name of the directry to log in.''')
     parser.add_argument('-pf', '--param_file', type=str, 
                         default='No parameter file given!', 
-                        help='''Path to the parameter file in PCS format.''')
+                        help='''Path to the parameter file in PCS format or
+                        RTAC json format.''')
     parser.add_argument('-r', '--resume',
                         action=argparse.BooleanOptionalAction,
                         default=False,
@@ -182,18 +188,27 @@ def read_args(scenario: str = None,
     scenario, unknown = parser.parse_known_args()
 
     if os.path.exists(f'{scenario.param_file}'):
-        
-        with open(f'{scenario.param_file}', 'r') as f:
-            config_space = json.load(f)
 
-        if validateparams(config_space):
-            scenario.config_space = translate_params(config_space)
+        if '.json' in f'{scenario.param_file}':
+        
+            with open(f'{scenario.param_file}', 'r') as f:
+                config_space = json.load(f)
+
+            if validateparams(config_space):
+                scenario.config_space = translate_params(config_space)
+            else:
+                warnings.warn('\nParameter definition is not valid!\n \
+                    Add a valid json to scenario before starting \
+                    configuration.')
+
+        elif '.pcs' in f'{scenario.param_file}':
+            with open(f'{scenario.param_file}', 'r') as f:
+                scenario.config_space = pcs_new.read(f)
+
         else:
-            warnings.warn('\nParameter definition is not valid!\n \
-                Add a valid json to scenario before starting configuration.')
-    else:
-        warnings.warn(f'\nFile {scenario.param_file} does not exist!\n \
-            Add a valid json to scenario before starting configuration.')
+            warnings.warn(f'\nFile {scenario.param_file} does not exist!\n \
+                Add a valid json or pcs to scenario before starting \
+                configuration.')
 
     if len(unknown) > 0:
         us = str(set(unknown))[1:-1]
