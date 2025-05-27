@@ -1,5 +1,9 @@
 """Loading RTAC scenario from file or sys.args into an argparse.Namespace."""
 
+from utils.background_thread_control import set_background_thread_nr
+
+set_background_thread_nr()
+
 import argparse
 import sys
 import os
@@ -82,12 +86,19 @@ def read_args(scenario: str = None,
                         default='No feature generator class name.',
                         help='''Name of the feature generator class in the
                         feature generator mddule.''')
+    parser.add_argument('-fdp', '--feature_path', type=str,
+                        default='No feature directory path.',
+                        help='''Path to the directory with feature files,
+                        if existing.''')
     parser.add_argument('-to', '--timeout', type=int, default=300, 
                         help='''Stop solving single instance after 
                         (int) seconds. [300]''')
+    parser.add_argument('-rp', '--runtimePAR', type=int, default=1, 
+                        help='''Multiply -to by -rp,
+                        if instance not solved. [1]''')
     parser.add_argument('-c', '--contenders', type=int, default=30, 
                         help='The number of contenders in the pool. [30]')
-    parser.add_argument('-kt', '--keeptop', type=int, default=2, 
+    parser.add_argument('-kt', '--keeptop', type=int, default=4, 
                         help='''Number of top contenders to gbe part of
                         the tournament automatically for ReACTR/ReACTR++
                         (Rest is chosen randomly). [2]''')
@@ -105,16 +116,16 @@ def read_args(scenario: str = None,
                         help='''Contenders with a variance higher than 
                         this are killed and replaced (float) in
                         ReACTR/ReACTR++. [5]''')
-    parser.add_argument('-tn', '--train_number', type=float, default=None, 
-                        help='''How many of the first instances are to 
-                        be trained on before starting (int). [None] ''')
-    parser.add_argument('-tr', '--train_rounds', type=float, default=0, 
-                        help='''How many rounds are the first -tn instances 
-                        to be trained on (int). [1] ''')
     parser.add_argument('-fg', '--feature_gen', type=str,
                         default='', 
                         help='''Python wrapper to compute instance features
                         for given instance for CPPL/GBRAC.''')
+    parser.add_argument('-ipt', '--instance_pre_train', type=str,
+                        default=False, 
+                        help='''If the bandit ought to be pre-trained with 
+                        a set of instance features, provide the path to a
+                        test file with lists of features in each line, after
+                        this argument.''')
     parser.add_argument('-npf', '--nc_pca_f', type=int, default=3, 
                         help='''Number of the dimensions for the PCA of the 
                         instance features for CPPL/GBRAC.''')
@@ -124,12 +135,25 @@ def read_args(scenario: str = None,
     parser.add_argument('-jfm', '--jfm', type=str, default='polynomial', 
                         help='''Mode of the joined feature map
                         for CPPL/GBRAC.''')
-    parser.add_argument('-o', '--omega', type=float, default=0.0001, 
+    parser.add_argument('-o', '--omega', type=float, default=1.0, 
                         help='''Omega parameter for CPPL/GBRAC.''')
     parser.add_argument('-g', '--gamma', type=float, default=1, 
                         help='''Gamma parameter for CPPL/GBRAC.''')
     parser.add_argument('-a', '--alpha', type=float, default=0.2, 
                         help='''Alpha parameter for CPPL/GBRAC.''')
+    parser.add_argument('-e', '--epsilon', type=float, default=0.9, 
+                        help='''Epsilopn for epsilon-greedy selection. Set to
+                         0.0 for greedy selection. Setting epsilon avoids 
+                         convergence of confidence through oversampling 
+                         of a set of arms by forcing the sampling of rarely 
+                         seen arms.''')
+    parser.add_argument('-ka', '--kappa', type=float, default=1.0, 
+                        help='''Weight on confidence in pairwise comparison
+                        for discarding configurations from pool in CPPL.''')
+    parser.add_argument('-gen_mult', '--gen_mult', type=int, default=2, 
+                        help='''Factor by which to multiply the number of 
+                        configurations being generated before assessed by CPPL 
+                        to be inserted into pool.''')
     parser.add_argument('-ac', '--ac', type=int, default='1', 
                         help='''Choice of Algorithm Configuration method.
                         Choose from: ReACTR, ReACTRpp, CPPL, Gray-Box by
@@ -138,9 +162,32 @@ def read_args(scenario: str = None,
                         help='''Limit for the possible absolute value of 
                         a parameter for it to be normed to log space 
                         before CPPL comptation.''')
-    parser.add_argument('-ct', '--cpplt', type=int, default=8, 
-                        help='''Reset value of t influencing Bandit 
-                        Computations for CPPL/GBRAC.''')
+    parser.add_argument('-wb', '--win_bonus', type=float, default=0.2, 
+                        help='''Factor by which recent CPPL winner skill
+                        is boosted.''')
+    parser.add_argument('-wd', '--win_decay', type=float, default=0.8, 
+                        help='''Factor by which CPPL skill estimates are
+                        decaying over the course of the tournaments.''')
+    parser.add_argument('-rwb', '--recent_winner_boost', type=float,
+                        default=3.0, 
+                        help='''Absolute number by which the skill estimate
+                        of a recent CPPL winner is boosted.''')
+    parser.add_argument('-ff', '--forgetting_factor', type=float,
+                        default=0.98, 
+                        help='''Factor by which old observations are forgotten
+                        (theta_bar in CPPL). Necessary, since pool changes.''')
+    parser.add_argument('-on', '--obs_noise', type=float,
+                        default=1.0, 
+                        help='''Assumed obervation noise variance for theta_bar
+                         in CPPL.''')
+    parser.add_argument('-cr', '--cppl_reward', type=float,
+                        default=1.0, 
+                        help='''Reward of a winning arm in CPPL bandit model.
+                        ''')
+    parser.add_argument('-cpplt', '--cpplt', type=float,
+                        default=2, 
+                        help='''Value to which t in the CPPL bandit is reset to
+                         if the pool is changed.''')
     parser.add_argument('-lf', '--log_folder', type=str, 
                         default='logs', 
                         help='''Name of the directry to log in.''')
@@ -172,6 +219,23 @@ def read_args(scenario: str = None,
                         default=False, 
                         help='''Set flag data of tournament 0 from logs are to
                         be used for experiment.''')
+    parser.add_argument('-oit', '--online_instance_train', 
+                        action=argparse.BooleanOptionalAction,
+                        default=False, 
+                        help='''Enable condinued PCA fitting on incoming
+                        problem instances.''')
+    parser.add_argument('-epsg', '--epsilon_greedy', 
+                        action=argparse.BooleanOptionalAction,
+                        default=False, 
+                        help='''Enable epsilon greedy selection.''')
+    parser.add_argument('-ib', '--isolate_bandit', 
+                        action=argparse.BooleanOptionalAction,
+                        default=False, 
+                        help='''Runs bandit class in child processes to free 
+                        resources after use. Useful if if bandit resource use 
+                        collides with algorithm resource use but incurs higher 
+                        overhead due to pickling and loading of the bandit 
+                        class.''')
 
     # Read arguments from scenario file if provided and override them
     if scenario is not None:

@@ -3,21 +3,24 @@ the next tournament ar performed."""
 
 from abc import ABC, abstractmethod
 from ac_functionalities.config_gens import DefaultConfigGen, RandomConfigGen
-from ac_functionalities.ranking import trueskill, cppl
+from ac_functionalities.ranking import trueskill
 from ac_functionalities.rtac_data import (
     RTACData,
     Configuration,
     ACMethod,
-    InterimMeaning
+    InterimMeaning,
+    Generator
 )
 from ac_functionalities.logs import RTACLogs
-from multiprocessing import Value
 import argparse
 import random
 import sys
 import numpy as np
 import uuid
 import copy
+import multiprocessing
+import pickle
+import time
 from scipy.stats import rankdata
 
 
@@ -59,10 +62,10 @@ class AbstractResultProcessing(ABC):
             pass
         elif self.scenario.pws:
             # Initialize pool of contender configurations incl. default
-            default_config = self.default_config_gen.generate()
+            default_config = self.default_config_gen.generate(0)
             self.pool[default_config.id] = default_config
             for _ in range(self.scenario.contenders - 1):
-                random_config = self.random_config_gen.generate()
+                random_config = self.random_config_gen.generate(0)
                 self.pool[random_config.id] = random_config
 
             # Randomly initialize contender dict of first tournament
@@ -71,9 +74,9 @@ class AbstractResultProcessing(ABC):
             random_pick = random.sample(list(self.pool.values())[1:],
                                         self.scenario.number_cores - 1)
         else:
-            # Initialize pool of cntender configurations
+            # Initialize pool of contender configurations
             for _ in range(self.scenario.contenders):
-                random_config = self.random_config_gen.generate()
+                random_config = self.random_config_gen.generate(0)
                 self.pool[random_config.id] = random_config
 
             # Randomly initialize contender dict of first tournament
@@ -110,6 +113,7 @@ class AbstractResultProcessing(ABC):
         :returns: ID of the configuration to have won the previous tournament
         :rtype: str
         """
+        self.rtac_data = rtac_data
 
         if not self.scenario.baselineperf:
             self.process_results(rtac_data)
@@ -120,16 +124,12 @@ class AbstractResultProcessing(ABC):
             self.rtac_data = rtac_data
             self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
 
-        if self.scenario.verbosity in (1, 2):
-            if self.rtac_data.winner.value == 0:
-                winner = None
-            else:
-                winner = self.rtac_data.winner.value
-            print('\n\n')
-            print('Winner was', winner)
-            print('\n\n')
+        if self.rtac_data.winner.value == 0:
+            winner = None
+        else:
+            winner = self.rtac_data.winner.value
 
-        return self.rtac_data.winner.value
+        return winner
 
     def get_contender_dict(self) -> dict[str: Configuration]:
         """Returns contender_dict.
@@ -156,6 +156,7 @@ class ResultProcessing(AbstractResultProcessing):
         """
         super().__init__(scenario, logs)
         self.init_scores()
+        self.time_sum = 0
 
     def init_scores(self) -> None:
         """Initialize scores dict for trueskill."""
@@ -220,6 +221,27 @@ class ResultProcessing(AbstractResultProcessing):
                 self.rtac_data.ta_res_time[core] = self.scenario.timeout
 
         times = list(self.rtac_data.ta_res_time[:])
+        if self.scenario.verbosity == 2:
+            if not self.scenario.objective_min:
+                unit = 'seconds'
+            else:
+                unit = 'objective value'
+            self.time_sum += round(min(times), 3)
+            len_str = len('Instance nr. ' + str(self.tourn_nr) + ' : ' + str(
+                round(self.time_sum, 3)) + f' {unit} total')
+            print('\n')
+            print('-' * len_str)
+            if min(times) == self.scenario.timeout:
+                print('Instance nr.', self.tourn_nr, ':',
+                      round(self.time_sum, 3), f'{unit} total'
+                      ' *** TIMEOUT on instance')
+            else:
+                print('Instance nr.', self.tourn_nr, ':',
+                      round(self.time_sum, 3), f'{unit} total')
+
+            self.tourn_nr += 1
+            print('-' * len_str)
+            print('\n')
         self.rtac_data.newtime = min(times)
         res = list(self.rtac_data.ta_res[:])
         self.rtac_data.best_res = min(res)
@@ -232,7 +254,7 @@ class ResultProcessing(AbstractResultProcessing):
                 [self.contender_dict, [[r, t] for r, t in zip(res, times)]]
 
             print('\nResults of this tournament:\n \nContender', ' ' * 19,
-                  '   [Objective,Time]')
+                  '   [Objective, Time]')
             for a in zip(*tourn_results):
                 print(*a)
             print('\n')
@@ -299,7 +321,8 @@ class ResultProcessing(AbstractResultProcessing):
                     # Replace by randomly generated contender if chance
                     # is lower than self.scenario.chance
                     chance = np.random.uniform(1, 100, 1)
-                    mutated_individual = self.random_config_gen.generate()
+                    mutated_individual = \
+                        self.random_config_gen.generate(self.tourn_nr)
                     if chance <= self.scenario.chance:
                         del self.pool[contender_ids[core]]
                         new_contender_id = mutated_individual.id
@@ -342,7 +365,8 @@ class ResultProcessing(AbstractResultProcessing):
                         self.pool[new_contender_id] = \
                             Configuration(
                                 new_contender_id,
-                                self.pool[new_contender_id], [])
+                                self.pool[new_contender_id], [],
+                                Generator.crossover, self.tourn_nr)
                         if self.scenario.verbosity in (1, 2):
                             print('\nReplaced contender',
                                   f'{contender_ids[core]} by contender',
@@ -493,10 +517,93 @@ class ResultProcessingCPPL(AbstractResultProcessing):
         :type: RTACLogs
         """
         super().__init__(scenario, logs)
-        self.init_data()
-        self.cppl = cppl.CPPL(self.scenario, self.pool)
+        if self.scenario.isolate_bandit:
+            queue = multiprocessing.Queue()
+            p = multiprocessing.Process(target=self.init_cppl,
+                                        args=(self.scenario,
+                                              self.pool,
+                                              self.random_config_gen,
+                                              self.contender_dict,
+                                              queue))
+            p.start()
+            p.join()
+            self.bandit, self.bandit_models = queue.get()
+            self.sum = 0
+        else:
+            from ac_functionalities.ranking import cppl
+            self.cppl = cppl.CPPL(scenario, self.pool, self.contender_dict)
+            self.cppl.random_config_gen = self.random_config_gen
+            self.bandit = self.cppl.bandit
+            self.bandit_models = self.cppl.bandit_models
 
-    def process_results(self, rtac_data: RTACData) -> None:
+    def init_cppl(self, scenario, pool, random_config_gen, contender_dict,
+                  queue):
+        from ac_functionalities.ranking import cppl
+
+        cppl = cppl.CPPL(scenario, pool, contender_dict)
+        cppl.random_config_gen = random_config_gen
+        bandit = cppl.bandit
+        bandit_models = cppl.bandit_models
+
+        with open("cpplclass.pkl", "wb") as f:
+            pickle.dump(cppl, f)
+
+        queue.put((bandit, bandit_models))
+
+    def process_tourn(self, rtac_data: RTACData, instance: str) -> str:
+        """Manage result processing.
+
+        :param rtac_data: Object containing data and objects necessary
+            throughout the rtac modules.
+        :type rtac_data: RTACData
+        :returns: ID of the configuration to have won the previous tournament
+        :rtype: str
+        """
+        self.rtac_data = rtac_data
+
+        if not self.scenario.baselineperf:
+            self.process_results(rtac_data, instance)
+            if self.rtac_data.winner.value != 0:
+                self.manage_pool()
+        else:
+            self.rtac_data = rtac_data
+            self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
+
+        if self.rtac_data.winner.value == 0:
+            winner = None
+        else:
+            winner = self.rtac_data.winner.value
+
+        return winner
+
+    def cppl_process_results(self, contender_dict, scenario, rtac_data,
+                             instance, pool, ob, queue):
+
+        with open("cpplclass.pkl", "rb") as f:
+            cppl = pickle.load(f)
+
+        cppl.contender_dict = contender_dict
+        cppl.pool = pool
+        results = []
+        times = []
+        for core in range(scenario.number_cores):
+            times.append(rtac_data.ta_res_time[core])
+            results.append(rtac_data.ta_res[core])
+        if not ob:
+            cppl.results = times
+        else:
+            cppl.results = results
+        cppl.instance = instance
+        cppl.process_results()
+        bandit = cppl.bandit
+        bandit_models = cppl.bandit_models
+
+        with open("cpplclass.pkl", "wb") as f:
+            pickle.dump(cppl, f)
+
+        queue.put((bandit, bandit_models, results, times))
+
+    def process_results(self, rtac_data: RTACData, instance: str) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance.
 
@@ -504,15 +611,112 @@ class ResultProcessingCPPL(AbstractResultProcessing):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
-        self.cppl.process_results(rtac_data)
+        self.start_time = time.time()
+        if self.scenario.isolate_bandit:
+            queue = multiprocessing.Queue()
+            p = multiprocessing.Process(target=self.cppl_process_results,
+                                        args=(self.contender_dict,
+                                              self.scenario, self.rtac_data,
+                                              instance, self.pool, 
+                                              self.scenario.objective_min,
+                                              queue))
+            p.start()
+            p.join()
+            self.bandit, self.bandit_models, results, times = queue.get()
+        else:
+            self.cppl.contender_dict = self.contender_dict
+            self.cppl.pool = self.pool
+            results = []
+            times = []
+            for core in range(self.scenario.number_cores):
+                times.append(rtac_data.ta_res_time[core])
+                results.append(rtac_data.ta_res[core])
+            self.cppl.results = results
+            self.cppl.instance = instance
+            self.cppl.process_results()
+            self.bandit = self.cppl.bandit
+            self.bandit_models = self.cppl.bandit_models
+
+        self.rtac_data.newtime = min(times)
+        self.best_res = min(results)
+        if not self.scenario.objective_min:
+            self.winner = times.index(min(times))
+        else:
+            self.winner = results.index(min(results))
+        
+        res = list(self.rtac_data.ta_res[:])
+        self.rtac_data.best_res = min(res)
+
+        if self.scenario.verbosity in (1, 2):
+            times = list(self.rtac_data.ta_res_time[:])
+            res = list(self.rtac_data.ta_res[:])
+            tourn_results = \
+                [self.contender_dict, [[r, t] for r, t in zip(res, times)]]
+
+            print('\nResults of this tournament:\n \nContender', ' ' * 19,
+                  '   [Objective, Time]')
+            for a in zip(*tourn_results):
+                print(*a)
+            print('\n')
+            tr_str = ''
+            for tr in tourn_results:
+                tr_str += str(tr) + ' '
+            self.logs.general_log(f'Results of this tournament: {tr_str}')
+
+    def cppl_manage_pool(self, contender_dict, queue):
+        with open("cpplclass.pkl", "rb") as f:
+            cppl = pickle.load(f)
+
+        cppl.contender_dict = contender_dict
+
+        cppl.manage_pool()
+
+        queue.put((cppl.pool))
+
+        with open("cpplclass.pkl", "wb") as f:
+            pickle.dump(cppl, f)
 
     def manage_pool(self) -> None:
         """Replace contenders in pool if necessary."""
-        self.cppl.manage_pool()
+        if self.scenario.isolate_bandit:
+            queue = multiprocessing.Queue()
+            p = multiprocessing.Process(target=self.cppl_manage_pool,
+                                        args=(self.contender_dict, queue))
+            p.start()
+            p.join()
 
-    def select_contenders(self) -> None:
+            self.pool = queue.get()
+
+        else:
+            self.cppl.manage_pool()
+
+    def cppl_select_contenders(self, queue):
+        with open("cpplclass.pkl", "rb") as f:
+            cppl = pickle.load(f)
+
+        cppl.select_contenders()
+
+        contender_dict = cppl.contender_dict
+
+        with open("cpplclass.pkl", "wb") as f:
+            pickle.dump(cppl, f)
+
+        queue.put((contender_dict))
+
+    def select_contenders(self, instance) -> None:
         """Select contenders for next tournament/problem instance."""
-        self.contender_dict = cppl.select_contenders()
+
+        if self.scenario.isolate_bandit:
+            queue = multiprocessing.Queue()
+            p = multiprocessing.Process(target=self.cppl_select_contenders,
+                                        args=(queue, ))
+            p.start()
+            p.join()
+            self.contender_dict = queue.get()
+        else:
+            self.cppl.select_contenders()
+
+            self.contender_dict = self.cppl.contender_dict
 
         if self.scenario.verbosity == 2:
             print('\nNew contender list is:',

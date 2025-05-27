@@ -2,6 +2,7 @@
 
 import os
 import json
+import numpy
 
 
 class TSPFeats():
@@ -14,14 +15,12 @@ class TSPFeats():
         :type path: str
         """
         self.features = {}
-
-        path = os.fsencode(path)
     
         for file in os.listdir(path):
             filename = os.fsdecode(file)
             if filename.endswith(".json"): 
                 file_path = os.path.join(path, filename)
-                with open(file_path) as handle:
+                with open(file_path, 'r') as handle:
                     features = list(json.loads(handle.read()).values())
                 self.features[filename] = features
 
@@ -33,4 +32,11 @@ class TSPFeats():
         :returns: List of features for instance.
         :rtype: list
         """
-        return self.features[instance]
+        instance = instance.split('/')[-1]
+        feats = next((v for k, v in self.features.items() if instance in k),
+                     None)
+        for i, f in enumerate(feats):
+            if f[0] is None:
+                feats[i][0] = 0
+        
+        return numpy.asarray([item[0] for item in feats]).reshape(1, -1)

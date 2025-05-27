@@ -15,7 +15,8 @@ from ac_functionalities.rtac_data import (
     DiscreteParameter,
     ContinuousParameter,
     CategoricalParameter,
-    BinaryParameter
+    BinaryParameter,
+    Generator
 )
 
 
@@ -44,7 +45,7 @@ class DefaultConfigGen(AbstractConfigGen):
         self.config_space = scenario.config_space
         self.default_config = {}
 
-    def generate(self) -> Configuration:
+    def generate(self, tourn) -> Configuration:
         """Generates and stores default configuration.
 
         :returns: Default configuration.
@@ -70,7 +71,10 @@ class DefaultConfigGen(AbstractConfigGen):
                         self.scenario.config_space.get_default_configuration())
 
             self.default_config = \
-                Configuration(uuid.uuid4().hex, default_config, [])
+                Configuration(
+                    uuid.uuid4().hex, default_config, [],
+                    Generator.default, tourn
+                )
 
         return self.default_config
 
@@ -87,7 +91,7 @@ class RandomConfigGen(AbstractConfigGen):
         self.scenario = scenario
         self.config_space = scenario.config_space
 
-    def generate(self) -> Configuration:
+    def generate(self, tourn) -> Configuration:
         """Generates random configuration.
 
         :returns: Random configuration.
@@ -210,4 +214,6 @@ class RandomConfigGen(AbstractConfigGen):
             random_config = \
                 dict(self.scenario.config_space.sample_configuration(1))
 
-        return Configuration(uuid.uuid4().hex, random_config, [])
+        return Configuration(
+            uuid.uuid4().hex, random_config, [], Generator.random, tourn
+        )

@@ -1,0 +1,4 @@
+ps categorical {ps1, ps2, ps3, ps4, ps5, ps6, two_opt} [two_opt]
+a real [0.0001, 0.9999] [0.9]
+mni integer [1, 100] [3]
+miim integer [1, 100] [10]

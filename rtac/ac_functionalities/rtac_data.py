@@ -110,11 +110,20 @@ class Parameter(Enum):
     binary = BinaryParameter
 
 
+class Generator(Enum):
+    default = 0
+    random = 1
+    crossover = 2
+    cppl = 3
+
+
 @dataclass
 class Configuration:
     id: UUID
     conf: dict
     features: list
+    gen: Generator
+    gen_tourn: int
 
 
 @dataclass
@@ -177,9 +186,11 @@ class RTACData(AbstractRTACData):
             Array('d', [huge_res
                         for core in range(scenario.number_cores)])
         self.ta_res_time = \
-            Array('d', [0.0 for core in range(scenario.number_cores)])
+            Array('d', [scenario.timeout * scenario.runtimePAR
+                        for core in range(scenario.number_cores)])
         self.ta_rtac_time = \
-            Array('d', [0.0 for core in range(scenario.number_cores)])
+            Array('d', [scenario.timeout * scenario.runtimePAR
+                        for core in range(scenario.number_cores)])
 
         # Initialize parallel solving data
         self.process = ['process_{0}'.format(s) 

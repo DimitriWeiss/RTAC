@@ -1,10 +1,15 @@
 """This module contains classes that guide the RTAC process according to
 method."""
 
+from utils.background_thread_control import set_background_thread_nr
+
+set_background_thread_nr()
+
 from abc import ABC, abstractmethod
 import argparse
 import sys
 import importlib
+from multiprocessing.sharedctypes import Synchronized
 from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
 from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
 from ac_functionalities.tournament_manager import tourn_manager_factory as TM
@@ -65,8 +70,14 @@ class RTAC(AbstractRTAC):
         self.rtac_data = self.tournament_manager.solve_instance(instance,
                                                                 self.rtac_data)
 
+        print('\n')
+
         if not self.scenario.objective_min:
-            if self.rtac_data.newtime >= self.scenario.timeout:
+            if isinstance(self.rtac_data.newtime, Synchronized):
+                newtime = self.rtac_data.newtime.value
+            else:
+                newtime = self.rtac_data.newtime
+            if newtime >= self.scenario.timeout:
                 print(f'Instance {instance} could not be solved within',
                       f'{self.scenario.timeout}s.')
             else:
@@ -79,6 +90,10 @@ class RTAC(AbstractRTAC):
             else:
                 print(f'Solved instance {instance} with objective value',
                       f'{self.rtac_data.best_res}.')
+
+        print('\n')
+        print('Running next instance!\n')
+        print('.\n' * 3)
 
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:

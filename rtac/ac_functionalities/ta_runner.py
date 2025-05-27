@@ -3,6 +3,7 @@ through the wrapper are implemented."""
 
 from abc import ABC, abstractmethod
 from typing import Any
+from multiprocessing import Event
 import fcntl
 import os
 import sys
@@ -249,7 +250,7 @@ class BaseTARunner(AbstractTARunner):
                 pass
 
     def run(self, instance: str, config: Configuration,
-            rtac_data: RTACData) -> None:
+            rtac_data: RTACData, sync_event: Event) -> None:
         """Manages the target algorithm runner functions depending on state of
         the run.
 
@@ -262,6 +263,7 @@ class BaseTARunner(AbstractTARunner):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
+        sync_event.wait()
         self.start_run(instance, config, rtac_data)
         while self.running:
             # Avoid checking output excessively often (causes too much

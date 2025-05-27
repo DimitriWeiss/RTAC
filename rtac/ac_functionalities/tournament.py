@@ -9,6 +9,7 @@ import os
 import uuid
 import time
 import signal
+from utils.process_affinity import set_affinity_recursive
 from ac_functionalities.config_gens import DefaultConfigGen
 from ac_functionalities.rtac_data import (
     TournamentStats,
@@ -141,6 +142,8 @@ class Tournament(AbstractTournament):
             TournamentStats(self.tourn_id, tourn_nr, self.conf_id_list, None,
                             [], [], [], [], {})
 
+        sync_event = mp.Event()
+
         for core in range(self.scenario.number_cores):
             self.ta_runner = \
                 self.ta_runner_class(self.scenario, self.logs, core)
@@ -153,11 +156,17 @@ class Tournament(AbstractTournament):
             self.rtac_data.process[core] = \
                 mp.Process(target=self.ta_runner.run,
                            args=[self.instance, translated_config,
-                                 self.rtac_data])
+                                 self.rtac_data, sync_event])
 
         # Starting processes
         for core in range(self.scenario.number_cores):
             self.rtac_data.process[core].start()
+
+        sync_event.set()
+        time.sleep(0.01)
+
+        for core in range(self.scenario.number_cores):
+            set_affinity_recursive(self.rtac_data.process[core], core)
 
     def watch_tournament(self) -> None:
         """Function to observe the tournament and enforce the timelimit

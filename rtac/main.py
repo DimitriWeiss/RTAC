@@ -3,15 +3,13 @@ from rtac import rtac_factory
 import sys
 
 
-def main():
-    scenario = read_args('./data/tsp_scenario_rt.txt', sys.argv)
-    instance_file = './data/travellingsalesman_instances.txt'
+def main(scenario, instance_file):
+    '''Run RAC process on, potentially infinite, problem instance sequence.'''
+
     instances = []
     with open(f'{instance_file}', 'r') as f:
         for line in f:
             instances.append(line.strip())
-
-    print(scenario)
 
     rtac = rtac_factory(scenario)
 
@@ -20,4 +18,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    scenario = read_args('./data/tsp_scenario_rt_cppl.txt', sys.argv)
+    # scenario = read_args('./data/tsp_scenario_rt.txt', sys.argv)
+    # scenario = read_args('./data/cadical_scenario.txt', sys.argv)
+    # scenario = read_args('./data/cadical_scenario_rt_cppl.txt', sys.argv)
+    # scenario = read_args('./data/cadical_scenario_rt_cppl_100.txt', sys.argv)
+    instance_file = './data/travellingsalesman_instances.txt'
+    # instance_file = './data/power_law_easy_instances.txt'
+    # instance_file = './data/power_law_SAT_drift_100.txt'
+    # instance_file = './data/power_law_SAT_drift_1000.txt'
+
+    main(scenario, instance_file)

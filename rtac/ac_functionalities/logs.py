@@ -2,17 +2,22 @@
 instances/tournaments as well as stats about toournaments and results."""
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 import argparse
 import os
 import logging
+import joblib
+import numpy as np
+import copy
 from logging.handlers import RotatingFileHandler, BaseRotatingHandler
 from ac_functionalities.rtac_data import (
     Configuration,
     RTACData,
-    TournamentStats
+    TournamentStats,
+    ACMethod,
+    Generator
 )
-__all__ = ('Configuration',)
+__all__ = ('Configuration')
 
 
 class NewRotatingFileHandler(RotatingFileHandler):
@@ -36,6 +41,8 @@ class AbstractLogs(ABC):
         :param scenario: Namespace containing all settings for the RTAC.
         :type scenario: argparse.Namespace
         """
+        self.scenario = scenario
+        self.ranking = scenario.ac
         if not os.path.isdir(scenario.log_folder):
             os.makedirs(scenario.log_folder)
         self.log_path = scenario.log_folder + '/' \
@@ -183,6 +190,7 @@ class RTACLogs(AbstractLogs):
 
     def init_ranking_logs(self) -> None:
         """Initializes loggers for data concerning ReACTR."""
+
         # Set up pool logging
         self.pool_log = logging.getLogger('pool_log')
         self.pool_log.setLevel(logging.INFO)
@@ -190,27 +198,43 @@ class RTACLogs(AbstractLogs):
         p_fh.setLevel(logging.INFO)
         self.pool_log.addHandler(p_fh)
 
-        # Set up trueskill scores logging
-        self.scores_log = logging.getLogger('scores_log')
-        self.scores_log.setLevel(logging.INFO)
-        s_fh = logging.FileHandler(f'{self.log_path}/scores_tourn_0.log')
-        s_fh.setLevel(logging.INFO)
-        self.scores_log.addHandler(s_fh)
+        if self.ranking in (ACMethod.ReACTR, ACMethod.ReACTRpp):
+            # Set up trueskill scores logging
+            self.scores_log = logging.getLogger('scores_log')
+            self.scores_log.setLevel(logging.INFO)
+            s_fh = logging.FileHandler(f'{self.log_path}/scores_tourn_0.log')
+            s_fh.setLevel(logging.INFO)
+            self.scores_log.addHandler(s_fh)
+        elif self.ranking is ACMethod.CPPL:
+            # Set up bandit logging
+            self.bandit_log = logging.getLogger('bandit_log')
+            self.bandit_log.setLevel(logging.INFO)
+            b_fh = logging.FileHandler(f'{self.log_path}/bandit_tourn_0.log')
+            b_fh.setLevel(logging.INFO)
+            self.bandit_log.addHandler(b_fh)
 
     def ranking_log(self, pool: dict[str: Configuration],
-                    scores: dict[str: tuple[int, int]], tourn_nr: int,
-                    contender_dict: dict[str: Configuration]) -> None:
+                    assessment: dict[str: Any], tourn_nr: int,
+                    contender_dict: dict[str: Configuration],
+                    **kwargs) -> None:
         """Logs data concerning ReACTR.
 
         :param pool: Dictionary with configuration id as key and configuration
             as value with scenario.contenders == #items .
         :type pool: dict
-        :param scores: Dictionary with configuration id as key and tuple of Mu
-            and Sigma as trueskill performance assessments as value.
-        :type scores: dict
+        :param assessment: Dictionary with configuration id as key and 
+            assessment depending on the AC method used, e.g., trueskill scores,
+            or bandit model.
+        :type assessment: dict
         :param contender_dict: Dictionary with configuration id as key and
             configuration as value: contenders of the previous tournament.
         :type contender_dict: dict
+        **kwargs : dict, optional
+            Additional keyword arguments. Possible keys include:
+            
+            - `standard_scaler` sklearn
+            - `min_max_scaler` sklearn
+            - `pca_obj_params` sklearn
         """
         self.contender_dict_log.handlers.clear()
         cl_fh = logging.FileHandler(
@@ -224,18 +248,67 @@ class RTACLogs(AbstractLogs):
             f'{self.log_path}/pool_tourn_{tourn_nr}.log')
         p_fh.setLevel(logging.INFO)
         self.pool_log.addHandler(p_fh)
-        self.pool_log.info(str(pool))
 
-        self.scores_log.handlers.clear()
-        s_fh = logging.FileHandler(
-            f'{self.log_path}/scores_tourn_{tourn_nr}.log')
-        s_fh.setLevel(logging.INFO)
-        self.scores_log.addHandler(s_fh)
-        self.scores_log.info(str(scores))
+        serializable_pool = copy.deepcopy(pool)
+        for conf in serializable_pool.values():
+            conf.gen = conf.gen.name
+        self.pool_log.info(str(serializable_pool))
+
+        if self.ranking in (ACMethod.ReACTR, ACMethod.ReACTRpp):
+            self.scores_log.handlers.clear()
+            s_fh = logging.FileHandler(
+                f'{self.log_path}/scores_tourn_{tourn_nr}.log')
+            s_fh.setLevel(logging.INFO)
+            self.scores_log.addHandler(s_fh)
+            self.scores_log.info(str(assessment))
+        elif self.ranking is ACMethod.CPPL:
+            if not os.path.isdir(f'{self.log_path}/bandit_models'):
+                os.mkdir(f'{self.log_path}/bandit_models')
+            self.bm_path = f'{self.log_path}/bandit_models'
+            bandit_models = kwargs['bandit_models']
+            joblib.dump(
+                bandit_models['standard_scaler'],
+                f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
+            joblib.dump(
+                bandit_models['min_max_scaler'],
+                f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
+            joblib.dump(
+                bandit_models['one_hot_encoder'],
+                f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
+            joblib.dump(
+                bandit_models['pca_obj_params'],
+                f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
+            joblib.dump(
+                bandit_models['pca_obj_inst'],
+                f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+            self.bandit_log.handlers.clear()
+            b_fh = logging.FileHandler(
+                f'{self.log_path}/bandit_tourn_{tourn_nr}.log')
+            b_fh.setLevel(logging.INFO)
+            self.bandit_log.addHandler(b_fh)
+            self.bandit_log.info(str(assessment))
+
+    def parse_array(self, val):
+        if not isinstance(val, str):
+            return val
+
+        val = val.strip()
+
+        # Array-like: [1. 2. 3.]
+        if val.startswith('[') and val.endswith(']'):
+            val = val.strip("[]\n")
+            return np.fromstring(val, sep=' ')
+
+        # Scalar string: try to convert to int or float
+        try:
+            return int(val) if '.' not in val else float(val)
+        except ValueError:
+            raise ValueError(f"Cannot parse value: {val}")
 
     def load_data(self, tourn_nr: int | None = None) \
-        -> tuple[dict[str: Configuration], dict[str: tuple[int, int]],
-                 dict[str: Configuration], int]:
+        -> tuple[dict[str: Configuration], dict[str: Any],
+                 dict[str: Configuration], int,
+                 Optional[Any]]:
         """Loads data necessary for resuming the algorithm configuration from
         last logged state of ReACTR.
 
@@ -249,22 +322,64 @@ class RTACLogs(AbstractLogs):
                 tourn_nr = int(f.readline().strip())
 
         with open(f'{self.log_path}/pool_tourn_{tourn_nr}.log', 'r') as f:
-            pool = eval(f.readline())
+            line = f.readline()
+            pool = eval(line)
+            for conf in pool.values():
+                conf.gen = Generator[conf.gen]
 
-        with open(f'{self.log_path}/scores_tourn_{tourn_nr}.log', 'r') as f:
-            scores = eval(f.readline())
+        if self.ranking in (ACMethod.ReACTR, ACMethod.ReACTRpp):
+            with open(
+                    f'{self.log_path}/scores_tourn_{tourn_nr}.log', 'r') as f:
+                assessment = eval(f.readline())
+            if self.scenario.experimental:
+                assessment = dict(zip(list(pool.keys()), assessment.values()))
+        elif self.ranking is ACMethod.CPPL:
+            self.bm_path = f'{self.log_path}/bandit_models'
+            with open(
+                    f'{self.log_path}/bandit_tourn_{tourn_nr}.log', 'r') as f:
+                assessment = f.read()
+            #assessment = ast.literal_eval(assessment)
+            assessment = eval(assessment, {"array": np.array})
+            assessment = \
+                {k: self.parse_array(v) for k, v in assessment.items()}
+            standard_scaler = \
+                joblib.load(f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
+            min_max_scaler = \
+                joblib.load(f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
+            one_hot_encoder = \
+                joblib.load(f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
+            pca_obj_params = \
+                joblib.load(f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
+            pca_obj_inst = \
+                joblib.load(f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+            bandit_models = {'standard_scaler': standard_scaler,
+                             'min_max_scaler': min_max_scaler,
+                             'one_hot_encoder': one_hot_encoder,
+                             'pca_obj_params': pca_obj_params,
+                             'pca_obj_inst': pca_obj_inst}
 
         with open(f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log',
                   'r') as f:
             contender_ids = eval(f.readline())
 
         if self.experimental:
+            if self.ranking in (ACMethod.ReACTR, ACMethod.ReACTRpp):
+                os.remove(f'{self.log_path}/scores_tourn_{tourn_nr}.log')
+            elif self.ranking is ACMethod.CPPL:
+                os.remove(f'{self.log_path}/bandit_tourn_{tourn_nr}.log')
+                os.remove(f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
+                os.remove(f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
+                os.remove(f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
+                os.remove(f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
+                os.remove(f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
             os.remove(f'{self.log_path}/pool_tourn_{tourn_nr}.log')
-            os.remove(f'{self.log_path}/scores_tourn_{tourn_nr}.log')
             os.remove(f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log')
 
         contender_dict = {}
         for ci in contender_ids:
             contender_dict[ci] = pool[ci]
 
-        return pool, scores, contender_dict, tourn_nr
+        if self.ranking in (ACMethod.ReACTR, ACMethod.ReACTRpp):
+            return pool, assessment, contender_dict, tourn_nr
+        elif self.ranking is ACMethod.CPPL:
+            return pool, assessment, contender_dict, tourn_nr, bandit_models

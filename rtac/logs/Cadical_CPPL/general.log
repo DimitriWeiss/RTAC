@@ -1,0 +1,11 @@
+23/05/2025 23:33:23: Starting tournament 00e7c2df0aaf4e4b8b2146b5c85b53e5 (nr. 0) on instance /media/dweiss/Transcend7/CPPL_ML_gray_box/power_law_SAT_drift_1000/0000.cnf
+23/05/2025 23:33:55: Results:[1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.0, 1.7976931348623157e+208]
+Runtimes: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 21.45, 120.0]
+Runtimes with overhead: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 30.55, 120.0]
+23/05/2025 23:33:55: Winner of tournament 00e7c2df0aaf4e4b8b2146b5c85b53e5 (nr. 0) is 79aec6634aeb4aac965e010fa2e8fe60
+23/05/2025 23:33:55: Starting tournament c6eda6a153e947dabd7e2e801690ffc0 (nr. 1) on instance /media/dweiss/Transcend7/CPPL_ML_gray_box/power_law_SAT_drift_1000/0001.cnf
+23/05/2025 23:34:21: Results:[1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.7976931348623157e+208, 1.0, 1.7976931348623157e+208]
+Runtimes: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 16.79, 120.0]
+Runtimes with overhead: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 24.4, 120.0]
+23/05/2025 23:34:21: Winner of tournament c6eda6a153e947dabd7e2e801690ffc0 (nr. 1) is e8d235377a194c989db55a4b9811e1e2
+23/05/2025 23:34:21: Starting tournament 7edbf0f3066b4dabbb2743c7768dbac1 (nr. 2) on instance /media/dweiss/Transcend7/CPPL_ML_gray_box/power_law_SAT_drift_1000/0002.cnf
