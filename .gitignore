@@ -15,6 +15,8 @@ rtac/logs/Cadicalpp_CPPL_gb
 rtac/logs/TSP_Qpp_ReACTRpp
 rtac/logs/TSP_RT_CPPL
 rtac/logs/TSP_RTpp_ReACTRpp
+rtac/logs/Cadicalpp_ReACTR_gb
+rtac/logs/Cadicalpp_ReACTRpp_gb
 rtac/data/instances/power_law_easy
 rtac/data/solvers/cadical
 

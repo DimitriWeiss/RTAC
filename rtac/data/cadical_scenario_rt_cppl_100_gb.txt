@@ -22,7 +22,7 @@
 --paramlimit 100000
 --epsilon_greedy
 --gen_mult 2
---gray_box
+#--gray_box
 --gb_read_time 0.1 #1.0
 --nr_gb_feats 6
 #--isolate_bandit

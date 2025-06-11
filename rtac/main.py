@@ -36,8 +36,8 @@ if __name__ == '__main__':
     # scenario = read_args('./data/cadical_scenario_rt_cppl_100.txt', sys.argv)
     scenario = read_args('./data/cadical_scenario_rt_cppl_100_gb.txt', sys.argv)
     # instance_file = './data/travellingsalesman_instances.txt'
-    # instance_file = './data/power_law_easy_instances.txt'
-    instance_file = './data/power_law_SAT_drift_100.txt'
+    instance_file = './data/power_law_easy_instances.txt'
+    # instance_file = './data/power_law_SAT_drift_100.txt'
     # instance_file = './data/power_law_SAT_drift_1000.txt'
 
     main(scenario, instance_file)

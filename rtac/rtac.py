@@ -82,8 +82,7 @@ class RTAC(AbstractRTAC):
         print(f'Starting instance {instance}...')
 
         self.rtac_data = self.tournament_manager.solve_instance(instance,
-                                                                self.rtac_data,
-                                                                self)
+                                                                self.rtac_data)
 
         self.result_output(instance)
 

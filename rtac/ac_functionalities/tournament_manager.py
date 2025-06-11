@@ -83,7 +83,9 @@ class AbstractTournamentManager(ABC):
 
         if self.scenario.gray_box:
             self.es_tourn_nr = 0
-            self.tourn_nr_list = [self.tourn_nr]
+            #self.tourn_nr_list = [self.tourn_nr]
+
+        self.tourn_nr_list = [self.tourn_nr]
 
         self.logs.init_rtac_logs()
         self.logs.init_ranking_logs()
@@ -127,7 +129,7 @@ class AbstractTournamentManager(ABC):
         cores_start = [i for i in range(self.scenario.number_cores)]
         self.tournament.start_tournament(self.instance, self.contender_dict,
                                          self.tourn_nr, cores_start)
-        self.rtac_data = self.tournament.rtac_data = rtac_data
+        # self.rtac_data = self.tournament.rtac_data = rtac_data
         self.tournament.watch_tournament()
 
         # Update tournament status
@@ -146,7 +148,12 @@ class AbstractTournamentManager(ABC):
 
         self.instance_history.append(instance)
 
-        self.tourn_nr += 1
+        # self.tourn_nr += 1
+        self.tourn_nr = self.tourn_nr_list[-1] + 1
+        self.tourn_nr_list.append(self.tourn_nr)
+
+        self.res_process.tourn_nr = self.tourn_nr
+        self.tournament.tourn_nr = self.tourn_nr
 
     def general_logging(self, scenario=None, rtac_data=None,
                         tournamentstats=None, tourn_nr=None,
@@ -249,6 +256,7 @@ class TournamentManager(AbstractTournamentManager):
         :rtype: RTACData
         """
 
+        self.rtac_data = self.tournament.rtac_data = rtac_data
         tourn_nr = self.get_tourn_nr(rtac_data)
 
         self.kwargs = kwargs
@@ -277,6 +285,7 @@ class TournamentManagerCPPL(AbstractTournamentManager):
         :rtype: RTACData
         """
 
+        self.rtac_data = self.tournament.rtac_data = rtac_data
         tourn_nr = self.get_tourn_nr(rtac_data)
 
         self.kwargs = kwargs
@@ -362,6 +371,8 @@ class GrayBox:
 
                 self.tourn_nr = self.tourn_nr_list[-1] + 1
                 self.tourn_nr_list.append(self.tourn_nr)
+                self.res_process.tourn_nr = self.tourn_nr
+                self.tournament.tourn_nr = self.tourn_nr
 
                 self.finished.set()
                 gc.collect
