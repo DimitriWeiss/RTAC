@@ -10,6 +10,11 @@ __pycache__/
 rtac/logs/Cadical_ReACTR
 rtac/logs/TSP_Q_ReACTR
 rtac/logs/TSP_RT_ReACTR
+rtac/logs/Cadical_CPPL
+rtac/logs/Cadicalpp_CPPL_gb
+rtac/logs/TSP_Qpp_ReACTRpp
+rtac/logs/TSP_RT_CPPL
+rtac/logs/TSP_RTpp_ReACTRpp
 rtac/data/instances/power_law_easy
 rtac/data/solvers/cadical
 

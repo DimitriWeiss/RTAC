@@ -47,6 +47,9 @@ class AbstractTournament(ABC):
         
         if self.scenario.baselineperf:
             self.dcg = DefaultConfigGen(self.scenario)
+
+        if self.scenario.gray_box:
+            self.gb_model = None
     
     @abstractmethod
     def start_tournament(self, instance: str,
@@ -97,15 +100,33 @@ class AbstractTournament(ABC):
         :param process: Target algorithm run process.
         :type process: subprocess.Popen
         """
+        if core not in self.terminated_configs:
+            if self.scenario.verbosity == 2:             
+                print('Terminating configuration', self.conf_id_list[core],
+                      'running on core', core, 'in tournament', self.tourn_id,
+                      '( tournament Nr.', self.tourn_nr, ').')
+            if self.pid_alive(self.rtac_data.pids[core]):
+                try:
+                    os.kill(self.rtac_data.pids[core], signal.SIGKILL)
+                except Exception as e:
+                    message = \
+                        f'Tried killing pid {self.rtac_data.pids[core]} - ' \
+                        + str(e) \
+                        + ' - It was run with configuration' + \
+                        f' {self.conf_id_list[core]}'
+                    self.logs.general_log(message)
+            if process.is_alive():
+                process.terminate()
+                process.join()
+
+            self.terminated_configs.append(core)
+
+    def pid_alive(self, pid):
         try:
-            os.kill(self.rtac_data.pids[core], signal.SIGKILL)
-        except Exception as e:
-            message = \
-                f'Tried killing pid {self.rtac_data.pids[core]} - ' + str(e) \
-                + f' - It was run with configuration {self.conf_id_list[core]}'
-            self.logs.general_log(message)
-        process.terminate()
-        process.join()
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
 
 
 class Tournament(AbstractTournament):
@@ -113,7 +134,7 @@ class Tournament(AbstractTournament):
 
     def start_tournament(self, instance: str,
                          contender_dict: dict[str: Configuration],
-                         tourn_nr: int) -> None:
+                         tourn_nr: int, cores_start: list) -> None:
         """Sets up tournament data and information and starts the tournament
         with scenario.number_cores configured target algorithms running in
         paralel according to the ReACTR method.
@@ -127,14 +148,22 @@ class Tournament(AbstractTournament):
         :param tourn_nr: Number of the tournament during this RTAC run.
         :type tourn_nr: int
         """
+        self.terminated_configs = []
         self.instance = instance
         self.tourn_nr = tourn_nr
         if self.scenario.baselineperf:
             def_conf = self.dcg.generate()
             contender_dict = {def_conf.id: def_conf}
-        self.config_list = list(contender_dict.values())
-        self.conf_id_list = list(contender_dict.keys())
+        self.config_list = \
+            [list(contender_dict.values())[i]
+             if i in cores_start else None
+             for i in range(self.scenario.number_cores)]
+        self.conf_id_list = \
+            [list(contender_dict.keys())[i]
+             if i in cores_start else None
+             for i in range(self.scenario.number_cores)]
         self.tourn_id = uuid.uuid4().hex
+        self.rtac_data.tournID = self.tourn_id
         log_message = f'Starting tournament {self.tourn_id}' \
                       + f' (nr. {self.tourn_nr}) on instance {self.instance}'
         self.logs.general_log(log_message)
@@ -142,9 +171,9 @@ class Tournament(AbstractTournament):
             TournamentStats(self.tourn_id, tourn_nr, self.conf_id_list, None,
                             [], [], [], [], {})
 
-        sync_event = mp.Event()
+        self.sync_event = mp.Event()
 
-        for core in range(self.scenario.number_cores):
+        for core in cores_start:
             self.ta_runner = \
                 self.ta_runner_class(self.scenario, self.logs, core)
             contender = self.config_list[core]
@@ -156,16 +185,40 @@ class Tournament(AbstractTournament):
             self.rtac_data.process[core] = \
                 mp.Process(target=self.ta_runner.run,
                            args=[self.instance, translated_config,
-                                 self.rtac_data, sync_event])
+                                 self.rtac_data, self.sync_event])
 
         # Starting processes
-        for core in range(self.scenario.number_cores):
+        for core in cores_start:  # range(self.scenario.number_cores):
             self.rtac_data.process[core].start()
 
-        sync_event.set()
+        self.sync_event.set()
         time.sleep(0.01)
 
-        for core in range(self.scenario.number_cores):
+        for core in cores_start:
+            set_affinity_recursive(self.rtac_data.process[core], core)
+
+    def fill_tournament(self, cores_start: list):
+        for core in cores_start:
+            self.ta_runner = \
+                self.ta_runner_class(self.scenario, self.logs, core)
+            contender = self.config_list[core]
+            self.tournamentstats.TARuns[contender.id] = \
+                TARun(contender.id, contender.conf, 0, 0, TARunStatus.running)
+
+            translated_config = self.ta_runner.translate_config(contender)
+
+            self.rtac_data.process[core] = \
+                mp.Process(target=self.ta_runner.run,
+                           args=[self.instance, translated_config,
+                                 self.rtac_data, self.sync_event])
+
+        self.rtac_data.start = time.time()
+
+        # Starting processes
+        for core in cores_start:
+            self.rtac_data.process[core].start()
+
+        for core in cores_start:
             set_affinity_recursive(self.rtac_data.process[core], core)
 
     def watch_tournament(self) -> None:
@@ -177,6 +230,63 @@ class Tournament(AbstractTournament):
             currenttime = time.time() - self.rtac_data.start
 
             if currenttime >= self.scenario.timeout:
+                self.close_tournament(self.rtac_data.process)
+
+
+class Tournament_GB:
+    """Class that contains gray-box tournament functions to be inserted into 
+    tournament classes if scenario.gray_box is True."""
+
+    def watch_tournament_gray_box(self, early_tournament=False):
+        """Function to observe the tournament and enforce the timelimit
+        scenario.timeout if reached."""
+
+        gb_check_time = time.time()
+        self.gb_pw_inst_archive = []
+        self.pw_cores = []
+        self.mtp = {}
+        self.s_instances = []
+        self.term_list = []
+
+        while any(isinstance(proc, mp.Process) and proc.is_alive()
+                  for proc in self.rtac_data.process):
+            time.sleep(self.scenario.gb_read_time)
+            currenttime = time.time() - self.rtac_data.start
+
+            if not early_tournament and not self.terminated_configs:
+
+                X_pw, cores, self.s_instances, self.gb_pw_inst_archive, \
+                    self.mtp, self.pw_cores = \
+                    self.gray_box.prepare_predict_data(self.rtac_data.rec_data, 
+                                                       self.s_instances,
+                                                       self.gb_pw_inst_archive,
+                                                       self.mtp, self.pw_cores)
+                    
+                if self.gb_model is not None and len(X_pw) > 2 and \
+                        time.time() \
+                        - gb_check_time >= self.scenario.gb_read_time:
+
+                    pred = self.gray_box.classify_configs(
+                        X_pw, self.scenario.number_cores, self.gb_model
+                    )
+
+                    print('Predictions:', pred)
+
+                    if pred is not None:
+                        self.term_list = \
+                            self.gray_box.term_list(pred, cores,
+                                                    self.scenario.verbosity)
+
+                        for term in self.term_list:
+                            self.terminate_run(term,
+                                               self.rtac_data.process[term])
+
+                        self.tm.early_start()
+                    
+                gb_check_time = time.time()
+
+            if currenttime >= self.scenario.timeout:
+                print('Closing tourn', self.tourn_nr)
                 self.close_tournament(self.rtac_data.process)
 
 
@@ -203,9 +313,14 @@ def tournament_factory(scenario: argparse.Namespace, ta_runner: BaseTARunner,
     :rtype: Tournament
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
-        return Tournament(scenario, ta_runner, rtac_data, logs)
+        tournament = Tournament
     elif scenario.ac is ACMethod.ReACTRpp:
-        return Tournamentpp(scenario, ta_runner, rtac_data, logs)
+        tournament = Tournamentpp
+
+    if scenario.gray_box:
+        tournament.watch_tournament = Tournament_GB.watch_tournament_gray_box
+
+    return tournament(scenario, ta_runner, rtac_data, logs)
 
 
 if __name__ == '__main__':

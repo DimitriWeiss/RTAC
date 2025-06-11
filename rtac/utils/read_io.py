@@ -236,6 +236,15 @@ def read_args(scenario: str = None,
                         collides with algorithm resource use but incurs higher 
                         overhead due to pickling and loading of the bandit 
                         class.''')
+    parser.add_argument('-gb', '--gray_box', 
+                        action=argparse.BooleanOptionalAction,
+                        default=False, 
+                        help='''Enable gray-box RAC.''')
+    parser.add_argument('-gbrt', '--gb_read_time', type=float, default=0.1, 
+                        help='''Freuqency in which to check for gray-box 
+                        output in seconds.''')
+    parser.add_argument('-ngbf', '--nr_gb_feats', type=int, default=2, 
+                        help='''Number of gray-box features used.''')
 
     # Read arguments from scenario file if provided and override them
     if scenario is not None:

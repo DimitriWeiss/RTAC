@@ -48,6 +48,8 @@ class AbstractLogs(ABC):
         self.log_path = scenario.log_folder + '/' \
             + scenario.wrapper_name + '_' \
             + str(scenario.ac).split('.')[1]
+        if scenario.gray_box:
+            self.log_path += '_gb'
         if not os.path.isdir(self.log_path):
             os.makedirs(self.log_path)
         self.experimental = scenario.experimental
@@ -63,6 +65,7 @@ class AbstractLogs(ABC):
             for f in filelist:
                 os.remove(os.path.join(self.log_path, f))
         self.objective_min = scenario.objective_min
+        print('\n')
         print(f'Logging to {self.log_path}')
 
     def init_rtac_logs(self) -> None:
@@ -266,21 +269,31 @@ class RTACLogs(AbstractLogs):
                 os.mkdir(f'{self.log_path}/bandit_models')
             self.bm_path = f'{self.log_path}/bandit_models'
             bandit_models = kwargs['bandit_models']
-            joblib.dump(
-                bandit_models['standard_scaler'],
-                f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
-            joblib.dump(
-                bandit_models['min_max_scaler'],
-                f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
-            joblib.dump(
-                bandit_models['one_hot_encoder'],
-                f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
-            joblib.dump(
-                bandit_models['pca_obj_params'],
-                f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
-            joblib.dump(
-                bandit_models['pca_obj_inst'],
-                f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+            if tourn_nr == 0:
+                joblib.dump(
+                    bandit_models['standard_scaler'],
+                    f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
+                joblib.dump(
+                    bandit_models['min_max_scaler'],
+                    f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
+                joblib.dump(
+                    bandit_models['one_hot_encoder'],
+                    f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
+                joblib.dump(
+                    bandit_models['pca_obj_params'],
+                    f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
+                joblib.dump(
+                    bandit_models['pca_obj_inst'],
+                    f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+            elif self.scenario.online_instance_train and tourn_nr > 0:
+                joblib.dump(
+                    bandit_models['standard_scaler'],
+                    f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
+                joblib.dump(
+                    bandit_models['pca_obj_inst'],
+                    f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+            elif len(bandit_models) == 0:
+                pass
             self.bandit_log.handlers.clear()
             b_fh = logging.FileHandler(
                 f'{self.log_path}/bandit_tourn_{tourn_nr}.log')
@@ -335,21 +348,23 @@ class RTACLogs(AbstractLogs):
                 assessment = dict(zip(list(pool.keys()), assessment.values()))
         elif self.ranking is ACMethod.CPPL:
             self.bm_path = f'{self.log_path}/bandit_models'
+            if not self.scenario.online_instance_train:
+                tourn_nr = 0
             with open(
                     f'{self.log_path}/bandit_tourn_{tourn_nr}.log', 'r') as f:
                 assessment = f.read()
-            #assessment = ast.literal_eval(assessment)
+
             assessment = eval(assessment, {"array": np.array})
             assessment = \
                 {k: self.parse_array(v) for k, v in assessment.items()}
             standard_scaler = \
                 joblib.load(f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
             min_max_scaler = \
-                joblib.load(f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
+                joblib.load(f'{self.bm_path}/min_max_scaler_0.pkl')
             one_hot_encoder = \
-                joblib.load(f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
+                joblib.load(f'{self.bm_path}/one_hot_encoder_0.pkl')
             pca_obj_params = \
-                joblib.load(f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
+                joblib.load(f'{self.bm_path}/pca_obj_params_0.pkl')
             pca_obj_inst = \
                 joblib.load(f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
             bandit_models = {'standard_scaler': standard_scaler,
@@ -367,11 +382,9 @@ class RTACLogs(AbstractLogs):
                 os.remove(f'{self.log_path}/scores_tourn_{tourn_nr}.log')
             elif self.ranking is ACMethod.CPPL:
                 os.remove(f'{self.log_path}/bandit_tourn_{tourn_nr}.log')
-                os.remove(f'{self.bm_path}/standard_scaler_{tourn_nr}.pkl')
-                os.remove(f'{self.bm_path}/min_max_scaler_{tourn_nr}.pkl')
-                os.remove(f'{self.bm_path}/one_hot_encoder_{tourn_nr}.pkl')
-                os.remove(f'{self.bm_path}/pca_obj_params_{tourn_nr}.pkl')
-                os.remove(f'{self.bm_path}/pca_obj_inst_{tourn_nr}.pkl')
+                filelist = [f for f in os.listdir(self.bm_path)]
+                for f in filelist:
+                    os.remove(os.path.join(self.bm_path, f))
             os.remove(f'{self.log_path}/pool_tourn_{tourn_nr}.log')
             os.remove(f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log')
 
@@ -383,3 +396,7 @@ class RTACLogs(AbstractLogs):
             return pool, assessment, contender_dict, tourn_nr
         elif self.ranking is ACMethod.CPPL:
             return pool, assessment, contender_dict, tourn_nr, bandit_models
+
+
+if __name__ == '__main__':
+    pass

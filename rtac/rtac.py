@@ -9,7 +9,10 @@ from abc import ABC, abstractmethod
 import argparse
 import sys
 import importlib
+import threading
+import queue
 from multiprocessing.sharedctypes import Synchronized
+import multiprocessing as mp
 from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
 from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
 from ac_functionalities.tournament_manager import tourn_manager_factory as TM
@@ -59,7 +62,14 @@ class AbstractRTAC(ABC):
 class RTAC(AbstractRTAC):
     """Implementation of ReACTR."""
 
-    def solve_instance(self, instance: str) -> None:
+    def solve_instance(self, instance: str, next_instance: str = None,
+                       early_rtac_data=None) -> None:
+        if self.scenario.gray_box:
+            self.gray_box(instance, next_instance, early_rtac_data)
+        else:
+            self.black_box(instance)
+
+    def black_box(self, instance: str = None) -> None:
         """Solves problem instance and performs all associated functionalities.
 
         :param instance: Path to the problem instance file.
@@ -67,33 +77,87 @@ class RTAC(AbstractRTAC):
         """
         self.init_rtac_data()
 
+        print('\n\n')
+
+        print(f'Starting instance {instance}...')
+
         self.rtac_data = self.tournament_manager.solve_instance(instance,
-                                                                self.rtac_data)
+                                                                self.rtac_data,
+                                                                self)
 
-        print('\n')
+        self.result_output(instance)
 
-        if not self.scenario.objective_min:
-            if isinstance(self.rtac_data.newtime, Synchronized):
-                newtime = self.rtac_data.newtime.value
-            else:
-                newtime = self.rtac_data.newtime
-            if newtime >= self.scenario.timeout:
-                print(f'Instance {instance} could not be solved within',
-                      f'{self.scenario.timeout}s.')
-            else:
-                print(f'Solved instance {instance} in',
-                      f'{self.rtac_data.newtime}s.')
+    def gray_box(self, instance: str, next_instance: str = None,
+                 early_rtac_data=None) -> None:
+        """Solves problem instance and performs all associated functionalities.
+
+        :param instance: Path to the problem instance file.
+        :type instance: str
+        """
+        self.init_rtac_data()
+
+        self.instance = instance
+        self.early_instance = mp.Manager().list()
+        if next_instance:
+            self.early_instance = [next_instance]
+
+        print('\n\n')
+
+        if early_rtac_data is not None:
+            print(f'Starting instance {instance} with time advantage...')
+            rtac_data = early_rtac_data
         else:
-            if self.rtac_data.best_res == self.huge_float:
-                print(f'Instance {instance} could not be solved within',
-                      f'{self.scenario.timeout}s.')
-            else:
-                print(f'Solved instance {instance} with objective value',
-                      f'{self.rtac_data.best_res}.')
+            print(f'Starting instance {instance}...')
+            rtac_data = self.rtac_data
 
-        print('\n')
-        print('Running next instance!\n')
-        print('.\n' * 3)
+        self.rtac_thread = threading.Thread(
+            target=self.tournament_manager.solve_instance,
+            args=(instance, rtac_data),
+            kwargs={'rtac': self, 'next_instance': self.early_instance})
+        self.rtac_thread.start()
+
+    def provide_early_instance(self, early_instance):
+        self.early_instance.append(early_instance)
+
+    def wrap_up_gb(self):
+        self.rtac_thread.join()
+        self.rtac_data = self.tournament_manager.rtac_data
+        self.result_output(self.instance)
+
+    def result_output(self, instance):
+        if not self.rtac_data.skip:
+
+            print('\n')
+
+            if not self.scenario.objective_min:
+                if isinstance(self.rtac_data.newtime, Synchronized):
+                    newtime = self.rtac_data.newtime.value
+                else:
+                    newtime = self.rtac_data.newtime
+                if newtime >= self.scenario.timeout:
+                    print(f'Instance {instance} could not be solved within',
+                          f'{self.scenario.timeout}s.')
+                else:
+                    print(f'Solved instance {instance} in',
+                          f'{self.rtac_data.newtime}s.')
+            else:
+                if self.rtac_data.best_res == self.huge_float:
+                    print(f'Instance {instance} could not be solved within',
+                          f'{self.scenario.timeout}s.')
+                else:
+                    print(f'Solved instance {instance} with objective value',
+                          f'{self.rtac_data.best_res}.')
+
+            print('.\n' * 3)
+
+        else:
+            print('\n' * 2)
+            print('.\n' * 3)
+            print('* Instance', self.instance,
+                  'already solved in previous tournament.')
+            print('\n')
+            print('* Continuing')
+            print('.\n' * 3)
 
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:
@@ -119,7 +183,7 @@ class RTACpp(RTAC):
         wrapper = getattr(module, name)()
         self.interim_meaning = wrapper.interim_info()
         self.rtac_data = \
-            rtacdata(self.scenario, self.interim_meaning)
+            rtacdata(self.scenario, interim_meaning=self.interim_meaning)
         self.tournament_manager = TM(self.scenario, self.ta_runner, self.logs,
                                      self.rtac_data)
 
@@ -127,7 +191,7 @@ class RTACpp(RTAC):
         """Initializes new RTAC data. Override for ReACTR++ implementation."""
         if self.tournament_manager.tourn_nr > 0:
             self.rtac_data = \
-                rtacdata(self.scenario, self.interim_meaning)
+                rtacdata(self.scenario, interim_meaning=self.interim_meaning)
 
 
 def rtac_factory(scenario: argparse.Namespace) -> AbstractRTAC:

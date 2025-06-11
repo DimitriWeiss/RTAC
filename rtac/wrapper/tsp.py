@@ -167,7 +167,7 @@ class TSP_RTpp(TSP_RT):
                 b = b.split(' ')
                 # Assumption: the lower the temperature, the closer the TA is
                 # to finding the solution. Solution Quality is not regarded in
-                # this example, we configure for runtime only here.
+                # this example, we optimize for runtime.
                 temp = float(b[1][:-1])
                 interim = [temp]
 
@@ -178,7 +178,7 @@ class TSP_RTpp(TSP_RT):
             return None
 
 
-class TSP_Qpp(TSP_Q, TSP_RTpp):
+class TSP_Qpp(TSP_Q):
     """Python-TSP Wrapper for cost minimization scenario. Annealing factor
     is not fixed. If TA is much faster than the time limit but still yields a
     better solution it is not a problem. Additional functions for ReACTR++
@@ -224,3 +224,7 @@ class TSP_Qpp(TSP_Q, TSP_RTpp):
                 return None
         else:
             return None
+
+
+if __name__ == '__main__':
+    pass

@@ -1,44 +1,28 @@
 --verbosity 2
 --number_cores 8
---timeout 5
+--timeout 120
 --runtimePAR 1
 --contenders 30
 --keeptop 4
 --pws
+#--usedata y
 --experimental
---chance 25 #65
---mutate 10 #5
---instance_pre_train feature_gen/cad_features/pre_train_features.txt
+--chance 25
+--mutate 10
 --online_instance_train
 --nc_pca_f 3
 --nc_pca_p 5
 --jfm polynomial
---omega 0.5 # 0.5 #0.01 #0.001
+--omega 1.0
 --gamma 1
 --alpha 0.2
---epsilon 0.8
---kappa 0.1 #0.75 #0.01
---rho 0.8
---lambda_decay 0.1
---streak_break_hess_factor 0.8
---streak_break_grad_factor 0.9
---winner_change_hess_factor 0.9
---winner_change_gradient_factor 1.2
---overconfidence_counter 0.1
+--epsilon 0.9
+--kappa 1.0
 --ac 3
 --paramlimit 100000
---cpplt 2
-#--adaptive_gradient_weighting
-#--exponential_decay
-#--epsilon_greedy
-#--model_select_halving
-#--streak_breaking
-#--hess_resets
-#--t_resets
-#--kappa_overconfidence
-#--epsilon_overconfidence
-#--new_winner_push
-#--winner_insert
+--epsilon_greedy
+--gen_mult 2
+#--isolate_bandit
 --log_folder logs
 --wrapper wrapper.cadical
 --wrapper_name Cadical
@@ -46,3 +30,4 @@
 --feature_gen_name CadFeats
 --feature_path ./feature_gen/cad_features/Features_power_law_easy.csv
 --param_file data/params_cadical.json
+--instance_pre_train feature_gen/cad_features/pre_train_features.txt

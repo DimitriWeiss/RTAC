@@ -48,6 +48,7 @@ class AbstractResultProcessing(ABC):
         self.contender_dict = {}
         self.huge_float = sys.float_info.max * 1e-100
         self.pool = {}
+        self.time_sum = 0
         self.init_data()
 
     def init_data(self) -> dict[str: Configuration]:
@@ -87,7 +88,8 @@ class AbstractResultProcessing(ABC):
             self.contender_dict[rp.id] = rp
 
     @abstractmethod
-    def process_results(self, rtac_data: RTACData) -> None:
+    def process_results(self, rtac_data: RTACData,
+                        instance: str = None, tourn_nr: int = None) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance.
 
@@ -104,7 +106,7 @@ class AbstractResultProcessing(ABC):
     def select_contenders(self) -> None:
         """Select contenders for next tournament/problem instance."""
 
-    def process_tourn(self, rtac_data: RTACData) -> str:
+    def process_tourn(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> str:
         """Manage result processing.
 
         :param rtac_data: Object containing data and objects necessary
@@ -116,7 +118,7 @@ class AbstractResultProcessing(ABC):
         self.rtac_data = rtac_data
 
         if not self.scenario.baselineperf:
-            self.process_results(rtac_data)
+            self.process_results(rtac_data, instance, tourn_nr)
             if self.rtac_data.winner.value != 0:
                 self.manage_pool()
             self.select_contenders()
@@ -141,6 +143,33 @@ class AbstractResultProcessing(ABC):
         """
         return self.contender_dict
 
+    def result_summary_terminal(self, results, tourn_nr=None):
+        if tourn_nr:
+            self.tourn_nr = tourn_nr
+        if self.scenario.verbosity == 2:
+            if not self.scenario.objective_min:
+                unit = 'seconds'
+            else:
+                unit = 'objective value'
+            self.time_sum += round(min(results), 3)
+            len_str = len('Instance nr. ' + str(self.tourn_nr) + ' : ' + str(
+                round(self.time_sum, 3)
+            ) + f' {unit} total for solved instances')
+            print('\n')
+            print('-' * len_str)
+            if min(results) == self.scenario.timeout:
+                print('Instance nr.', self.tourn_nr, ':',
+                      round(self.time_sum, 3),
+                      f'{unit} total for solved instances',
+                      ' *** TIMEOUT on instance')
+            else:
+                print('Instance nr.', self.tourn_nr, ':',
+                      round(self.time_sum, 3),
+                      f'{unit} total for solved instances')
+
+            print('-' * len_str)
+            print('\n')
+
 
 class ResultProcessing(AbstractResultProcessing):
     """Processes results of previous tournament."""
@@ -156,7 +185,6 @@ class ResultProcessing(AbstractResultProcessing):
         """
         super().__init__(scenario, logs)
         self.init_scores()
-        self.time_sum = 0
 
     def init_scores(self) -> None:
         """Initialize scores dict for trueskill."""
@@ -205,7 +233,7 @@ class ResultProcessing(AbstractResultProcessing):
 
         return winner, ranks
 
-    def process_results(self, rtac_data: RTACData) -> None:
+    def process_results(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance
         according to ReACTR implementation.
@@ -221,27 +249,9 @@ class ResultProcessing(AbstractResultProcessing):
                 self.rtac_data.ta_res_time[core] = self.scenario.timeout
 
         times = list(self.rtac_data.ta_res_time[:])
-        if self.scenario.verbosity == 2:
-            if not self.scenario.objective_min:
-                unit = 'seconds'
-            else:
-                unit = 'objective value'
-            self.time_sum += round(min(times), 3)
-            len_str = len('Instance nr. ' + str(self.tourn_nr) + ' : ' + str(
-                round(self.time_sum, 3)) + f' {unit} total')
-            print('\n')
-            print('-' * len_str)
-            if min(times) == self.scenario.timeout:
-                print('Instance nr.', self.tourn_nr, ':',
-                      round(self.time_sum, 3), f'{unit} total'
-                      ' *** TIMEOUT on instance')
-            else:
-                print('Instance nr.', self.tourn_nr, ':',
-                      round(self.time_sum, 3), f'{unit} total')
 
-            self.tourn_nr += 1
-            print('-' * len_str)
-            print('\n')
+        self.result_summary_terminal(times)
+        
         self.rtac_data.newtime = min(times)
         res = list(self.rtac_data.ta_res[:])
         self.rtac_data.best_res = min(res)
@@ -283,7 +293,7 @@ class ResultProcessing(AbstractResultProcessing):
 
         if self.scenario.verbosity in (1, 2):
             print('\nSkills of the contenders from tournament:\n \nContender',
-                  ' ' * 31, '   (Mu', ' ' * 14, ', Sigma)')
+                  ' ' * 31, '   (Mu', ' ' * 14, ', Sigma', ' ' * 10, ')')
 
         # Update Scores
         for core in range(self.scenario.number_cores):
@@ -550,7 +560,7 @@ class ResultProcessingCPPL(AbstractResultProcessing):
 
         queue.put((bandit, bandit_models))
 
-    def process_tourn(self, rtac_data: RTACData, instance: str) -> str:
+    def process_tourn(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> str:
         """Manage result processing.
 
         :param rtac_data: Object containing data and objects necessary
@@ -562,9 +572,11 @@ class ResultProcessingCPPL(AbstractResultProcessing):
         self.rtac_data = rtac_data
 
         if not self.scenario.baselineperf:
-            self.process_results(rtac_data, instance)
+            self.process_results(rtac_data, instance, tourn_nr)
             if self.rtac_data.winner.value != 0:
                 self.manage_pool()
+            if not self.scenario.resume:
+                self.select_contenders(instance)
         else:
             self.rtac_data = rtac_data
             self.rtac_data.newtime = self.rtac_data.ta_res_time[0]
@@ -603,7 +615,7 @@ class ResultProcessingCPPL(AbstractResultProcessing):
 
         queue.put((bandit, bandit_models, results, times))
 
-    def process_results(self, rtac_data: RTACData, instance: str) -> None:
+    def process_results(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance.
 
@@ -612,6 +624,15 @@ class ResultProcessingCPPL(AbstractResultProcessing):
         :type rtac_data: RTACData
         """
         self.start_time = time.time()
+        results = []
+        times = []
+        for core in range(self.scenario.number_cores):
+            times.append(rtac_data.ta_res_time[core])
+            results.append(rtac_data.ta_res[core])
+        if not self.scenario.objective_min:
+            self.result_summary_terminal(times, tourn_nr)
+        else:
+            self.result_summary_terminal(results, tourn_nr)
         if self.scenario.isolate_bandit:
             queue = multiprocessing.Queue()
             p = multiprocessing.Process(target=self.cppl_process_results,
@@ -626,12 +647,10 @@ class ResultProcessingCPPL(AbstractResultProcessing):
         else:
             self.cppl.contender_dict = self.contender_dict
             self.cppl.pool = self.pool
-            results = []
-            times = []
-            for core in range(self.scenario.number_cores):
-                times.append(rtac_data.ta_res_time[core])
-                results.append(rtac_data.ta_res[core])
-            self.cppl.results = results
+            if not self.scenario.objective_min:
+                self.cppl.results = times
+            else:
+                self.cppl.results = results
             self.cppl.instance = instance
             self.cppl.process_results()
             self.bandit = self.cppl.bandit
@@ -723,37 +742,6 @@ class ResultProcessingCPPL(AbstractResultProcessing):
                   *self.contender_dict, '\n', sep='\n')
 
 
-'''
-class ResultProcessingGB(ResultProcessingCPPL):
-    """Process results of previous tournament."""
-
-    def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
-        """Initialize tournament result processing class as necessary for
-        CPPL implementation.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
-        """
-        super().__init__(scenario, logs)
-        self.init_data()
-        self.cppl = cppl.CPPL(self.scenario)
-        self.model = costcla.init()
-
-    def process_results(self, rtac_data: RTACData) -> None:
-        """Perform tournament result processing necessary to replace contenders
-        in pool and select contenders for next tournament/problem instance.
-
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        """
-        self.model = model.fit(training_data, training_y)
-        self.cppl.process_results(rtac_data)
-'''
-
-
 def processing_factory(scenario, logs) -> AbstractResultProcessing:
     """Class factory to return the initialized class with data structures
     appropriate to the RTAC method scenario.ac.
@@ -772,12 +760,6 @@ def processing_factory(scenario, logs) -> AbstractResultProcessing:
 
     elif scenario.ac is ACMethod.CPPL:
         return ResultProcessingCPPL(scenario, logs)
-
-    '''
-
-    elif scenario.ac == ACMethod.GRAYBOX:
-        return ResultProcessingGB(scenario, logs)
-    '''
 
 
 if __name__ == "__main__":

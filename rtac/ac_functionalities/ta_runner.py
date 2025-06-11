@@ -136,6 +136,9 @@ class BaseTARunner(AbstractTARunner):
         :type: int
         """
         self.scenario = scenario
+        if self.scenario.gray_box:
+            self.last_check = time.time()
+            self.clock_start = time.time()
         self.logs = logs
         self.core = core
         self.max_float = sys.float_info.max * 1e-100
@@ -176,6 +179,7 @@ class BaseTARunner(AbstractTARunner):
         self.rtac_data = rtac_data
 
         self.rtac_data.substart[self.core] = time.process_time_ns()
+        self.rtac_data.substart_wall[self.core] = time.time()
         if self.scenario.objective_min:
             self.om_start = time.time()
 
@@ -186,7 +190,7 @@ class BaseTARunner(AbstractTARunner):
         self.pid = self.proc.pid
         self.rtac_data.pids[self.core] = self.pid
         self.running = True
-        self.rtac_data.status[self.core] = 1
+        self.rtac_data.status[self.core] = 1  # TARunStatus.running
 
     def check_output(self, ta_output: bytes) -> None:
         """Checks the output, if there was any, and declares instance as solved
@@ -204,7 +208,10 @@ class BaseTARunner(AbstractTARunner):
                 res, self.time, self.rtac_data.event = if_solved
                 self.rtac_data.ta_res[self.core] = res
                 self.rtac_data.ta_res_time[self.core] = self.time
-                self.rtac_data.status[self.core] = 2
+                self.rtac_data.status[self.core] = 2  # TARunStatus.finished
+
+            if self.scenario.gray_box:
+                self.gb_record(ta_output)
 
     def check_result(self) -> None:
         """If this contender solved the problem instance the rtac data is
@@ -222,14 +229,14 @@ class BaseTARunner(AbstractTARunner):
             self.rtac_data.winner.value = self.config_id
         self.rtac_data.newtime = self.rtac_data.ta_res_time[self.core]
         self.running = False
-        self.rtac_data.status[self.core] = 2
+        self.rtac_data.status[self.core] = 2  # TARunStatus.finished
 
     def kill_run(self) -> None:
         """Terminates this process/ target algorithm run, as well as the other
         contenders. Several layers of termination are included to ensure
         termination on different platforms."""
         if self.rtac_data.status[self.core] != 2:
-            self.rtac_data.status[self.core] = 3
+            self.rtac_data.status[self.core] = 3  # TARunStatus.capped
         self.running = False
         self.proc.terminate()
         time.sleep(0.1)
@@ -238,7 +245,8 @@ class BaseTARunner(AbstractTARunner):
             time.sleep(0.1)
             if not self.scenario.objective_min:
                 for ii in range(self.scenario.number_cores):
-                    if self.rtac_data.substart[ii] - time.time() >= \
+                    if (self.rtac_data.substart[ii]
+                        - time.process_time_ns()) * 1e-9 >= \
                             self.rtac_data.newtime.value and \
                             ii != self.core:
                         os.kill(self.rtac_data.pids[ii], signal.SIGKILL)
@@ -282,10 +290,12 @@ class BaseTARunner(AbstractTARunner):
                 # + 1 sec extra time for the TA to shut down, wrap up and print
                 # the result, since it is important to know it
                 if time.time() - self.om_start >= self.scenario.timeout + 1:
+                    self.rtac_data.status[self.core] = 5  # TARunStatus.timeout
                     self.kill_run()
             # If runtime minimization and one TA run solved instance, kill all
             # target algorithm runs
             elif self.rtac_data.event == 1 or self.rtac_data.ev.is_set():
+                time.sleep(2)
                 self.kill_run()      
 
 
@@ -315,7 +325,7 @@ class TARunnerpp(BaseTARunner):
                 res, self.time, self.rtac_data.event = if_solved
                 self.rtac_data.ta_res[self.core] = res
                 self.rtac_data.ta_res_time[self.core] = self.time
-                self.rtac_data.status[self.core] = 2
+                self.rtac_data.status[self.core] = 2  # TARunStatus.finished
 
             if time.time() - self.interim_check_time \
                     >= self.interim_check_increment:  # reduce frequency
@@ -327,26 +337,35 @@ class TARunnerpp(BaseTARunner):
                 if interim is not None:
                     self.rtac_data.interim[self.core] = interim
 
+            if self.scenario.gray_box:
+                self.gb_record(ta_output)
 
-'''
-class GBTARunner(TARunnerpp):
-    """Target algorithm runner for GrayBox implementation."""
 
-    def check_output(self, scenario):
-        self.line = non_block_read(self.proc.stdout)
+def gb_record(self, ta_output: bytes) -> None:
+    now = time.time()
+    elapsed_time = now - self.last_check
+    if elapsed_time >= self.scenario.gb_read_time:
+        rt_feats = self.wrapper.check_output(ta_output)
+        if rt_feats is not None and \
+                rt_feats != self.rtac_data.RuntimeFeatures[self.core]:
 
-    def kill_run(self, scenario):
-        self.proc.kill()
+            self.rtac_data.RuntimeFeatures[self.core] = rt_feats
+            CPUTimeExpended = \
+                (
+                    time.process_time_ns() - self.rtac_data.substart[self.core]
+                ) * 1e-9
+            ClockTimeExpended = time.time() - self.clock_start
 
-    def run(self, scenario):
-        self.proc = self.start_run()
-        while True:
+            rt_record = {'core': self.core,
+                         'CPUTimeExpended': CPUTimeExpended,
+                         'ClockTimeExpended': ClockTimeExpended,
+                         'rt_feats': rt_feats}
 
-            self.check_output()
-            self.check_result()
-            if self.a == 1:
-                self.kill_run()
-'''
+            if rt_record not in self.rtac_data.rec_data[self.core].values():
+                self.rtac_data.rec_data[self.core][int(ClockTimeExpended)] = \
+                    rt_record
+
+        self.last_check = now
 
 
 def ta_runner_factory(scenario: argparse.Namespace, logs: RTACLogs,
@@ -365,16 +384,14 @@ def ta_runner_factory(scenario: argparse.Namespace, logs: RTACLogs,
     :rtype: AbstractTARunner
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
-        return BaseTARunner(scenario, logs, core)
-
+        tarunner = BaseTARunner
     elif scenario.ac == ACMethod.ReACTRpp:
-        return TARunnerpp(scenario, logs, core)
+        tarunner = TARunnerpp
 
-    '''
+    if scenario.gray_box:
+        tarunner.gb_record = gb_record
 
-    elif scenario.ac == ACMethod.GRAYBOX:
-        return GBTARunner(scenario)
-    '''
+    return tarunner(scenario, logs, core)
 
 
 if __name__ == "__main__":

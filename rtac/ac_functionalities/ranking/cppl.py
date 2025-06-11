@@ -98,6 +98,7 @@ class CPPL():
         self.t = 1
         self.Y_t = 0
         self.S_t = []
+        self.S_t_prior = []
         self.grad = np.zeros(self.dim, dtype=np.float32)
 
         self.pool_replacement = False
@@ -132,11 +133,23 @@ class CPPL():
                        'Y_t': self.Y_t,
                        'S_t': self.S_t,
                        'grad': np.array2string(self.grad, threshold=np.inf)}
-        self.bandit_models = {'standard_scaler': self.standard_scaler,
-                              'min_max_scaler': self.min_max_scaler,
-                              'one_hot_encoder': self.one_hot_enc,
-                              'pca_obj_params': self.pca_obj_params,
-                              'pca_obj_inst': self.pca_obj_inst}
+
+        if hasattr(self, 'X_t'):
+            self.bandit['X_t'] = np.array2string(self.X_t, threshold=np.inf)
+        if hasattr(self, 'hess'):
+            self.bandit['hess'] = np.array2string(self.hess, threshold=np.inf)
+
+        if self.tourn == 0:
+            self.bandit_models = {'standard_scaler': self.standard_scaler,
+                                  'min_max_scaler': self.min_max_scaler,
+                                  'one_hot_encoder': self.one_hot_enc,
+                                  'pca_obj_params': self.pca_obj_params,
+                                  'pca_obj_inst': self.pca_obj_inst}
+        elif self.scenario.online_instance_train:
+            self.bandit_models = {'standard_scaler': self.standard_scaler,
+                                  'pca_obj_inst': self.pca_obj_inst}
+        else:
+            self.bandit_models = {}
 
     def process_results(self, queue1=None, queue2=None):
 
@@ -206,27 +219,6 @@ class CPPL():
                 )
 
             results = self.results
-
-            if self.scenario.verbosity == 2:
-                if not self.scenario.objective_min:
-                    unit = 'seconds'
-                else:
-                    unit = 'objective value'
-                self.time_sum += round(min(results), 3)
-                len_str = len('Instance nr. ' + str(self.tourn) + ' : ' + str(
-                    round(self.time_sum, 3)) + f' {unit} total')
-                print('\n')
-                print('-' * len_str)
-                if min(results) == self.scenario.timeout:
-                    print('Instance nr.', self.tourn, ':',
-                          round(self.time_sum, 3), f'{unit} total'
-                          ' *** TIMEOUT on instance')
-                else:
-                    print('Instance nr.', self.tourn, ':',
-                          round(self.time_sum, 3), f'{unit} total')
-                print('-' * len_str)
-                print('\n')
-                self.tourn += 1
 
             # Get pool index of winner
             self.Y_t = min(range(len(results)), key=results.__getitem__)
@@ -305,7 +297,7 @@ class CPPL():
 
     def crossover(self, parents, nr_children, core):
 
-        parent_a, parent_b = parents #[core]
+        parent_a, parent_b = parents
 
         new_candids = []
         for child in range(nr_children):
@@ -478,7 +470,10 @@ class CPPL():
                       'by contender generated via', c.gen, '\n')
 
     def skill_and_confidence(self):
-        with threadpool_limits(limits=1):            
+        with threadpool_limits(limits=1):
+
+            self.S_t_prior = copy.deepcopy(self.S_t)
+
             # Estimated skill parameters
             self.v_hat = np.zeros(self.pool_size)
             for i in range(self.pool_size):
@@ -548,15 +543,16 @@ class CPPL():
                     -(self.v_hat)
                 ).argsort()[0:self.scenario.number_cores]
 
-            if self.scenario.verbosity in (1, 2):
+            if self.scenario.verbosity in (1, 2) and len(self.S_t_prior) != 0:
                 print('\nSkill and confidence assessment of the contenders',
                       'from tournament:\n \nContender',
-                      ' ' * 34, '   (v_hat', ' ' * 13, ', c_t)')
+                      ' ' * 34, '   ( v_hat', ' ' * 12, ', c_t', + 14 * ' ',
+                      ')')
                 pool_ids = list(self.pool.keys())
                 for core in range(self.scenario.number_cores):
-                    print(pool_ids[self.S_t[core]], 'assessment is:',
-                          '(', self.v_hat[self.S_t[core]], ',',
-                          self.c_t[self.S_t[core]], ')')
+                    print(pool_ids[self.S_t_prior[core]], 'assessment is:',
+                          '(', self.v_hat[self.S_t_prior[core]], ',',
+                          self.c_t[self.S_t_prior[core]], ')')
                 print('\n\n')
 
     def assess_children(self, transformed_configs, nd):
@@ -741,7 +737,7 @@ class CPPL():
                                                  for k in
                                                  self.cat_param_names]])
             # One-hot encoding increases impact of the feature in the model
-            # so we reduce the impact the number of binary features created
+            # so we reduce the impact by the number of binary features created
             normalized = []
             start = 0
             for cat in self.cat_values:

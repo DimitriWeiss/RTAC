@@ -21,6 +21,7 @@
 --ac 3
 --paramlimit 100000
 --epsilon_greedy
+--gen_mult 2
 #--isolate_bandit
 --log_folder logs
 --wrapper wrapper.cadical
