@@ -1,7 +1,6 @@
 -r requirements.txt
 irace @ git+https://github.com/DimitriWeiss/up-iracepy@main
 dask
-dask-jobqueue
 distributed
 click
 mock
