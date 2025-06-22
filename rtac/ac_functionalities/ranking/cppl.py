@@ -466,8 +466,9 @@ class CPPL():
 
             for c, d in zip(configs.values(), self.discard):
                 disc_id = list(self.pool.keys())[d]
-                print('Replaced cotender', disc_id,
-                      'by contender generated via', c.gen, '\n')
+                if self.scenario.verbosity == 2:
+                    print('Replaced contender', disc_id,
+                          'by contender generated via', c.gen, '\n')
 
     def skill_and_confidence(self):
         with threadpool_limits(limits=1):

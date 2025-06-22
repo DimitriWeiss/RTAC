@@ -7,12 +7,13 @@ import threading
 import time
 import copy
 import gc
+import sys
 from utils.clean_logs import remove_fuse_hidden_files as rfhf
 from collections import OrderedDict
+from multiprocessing.sharedctypes import Synchronized
 from ac_functionalities.tournament import tournament_factory
 from ac_functionalities.result_processing import processing_factory
 from ac_functionalities.rtac_data import TARunStatus, RTACData, ACMethod
-from ac_functionalities.rtac_data import rtacdata_factory as rtacdata
 from ac_functionalities.ta_runner import BaseTARunner
 from ac_functionalities.logs import RTACLogs
 from ac_functionalities.ranking.gray_box import Gray_Box
@@ -38,6 +39,7 @@ class AbstractTournamentManager(ABC):
             throughout the rtac modules.
         :type rtac_data: RTACData
         """
+        self.huge_float = sys.float_info.max * 1e-100
         self.scenario = scenario
         self.ta_runner = ta_runner
         self.rtac_data = rtac_data
@@ -125,6 +127,14 @@ class AbstractTournamentManager(ABC):
 
     def manage_tournament(self, instance: str, rtac_data: RTACData):
 
+        msg = f'#  Start solving instance {instance}...  #'
+        len_msg = len(msg)
+        print('#' * len_msg)
+        print('#' + ' ' * (len_msg - 2) + '#')
+        print(msg)
+        print('#' + ' ' * (len_msg - 2) + '#')
+        print('#' * len_msg)
+
         self.instance = instance
         cores_start = [i for i in range(self.scenario.number_cores)]
         self.tournament.start_tournament(self.instance, self.contender_dict,
@@ -176,7 +186,7 @@ class AbstractTournamentManager(ABC):
                           + ' advantage are:' + '\n\n' \
                           + 'Runtimes stated by TA: ' \
                           + str(rtac_data.ta_res_time[:]) + '\n' \
-                          + 'Runtimes measured: ' \
+                          + 'Runtimes with TA runner: ' \
                           + str(rtac_data.ta_rtac_time[:]) + '\n\n' \
                           + '* Cancelled configurations are set to timeout.' \
                           + '\n\n'
@@ -187,15 +197,15 @@ class AbstractTournamentManager(ABC):
                 rtac_data = self.adjust_time_results(rtac_data)
 
             else:
-                message = 'Instance' + str(instance) \
-                          + 'solved in tournament ' \
+                message = 'Instance ' + str(instance) \
+                          + ' solved in tournament ' \
                           + str(tournament.tourn_id) + '.\n\n'
             message += 'Objective values: ' + str(rtac_data.ta_res[:]) \
                 + '\n\n' \
                 + '* Cancelled configurations are set to Big M.' + '\n\n\n' \
                 + 'Runtimes stated by TA: ' \
                 + str(rtac_data.ta_res_time[:]) + '\n' \
-                + 'Runtimes measured: ' \
+                + 'Runtimes with TA runner: ' \
                 + str(rtac_data.ta_rtac_time[:]) + '\n\n' \
                 + '* Cancelled configurations are set to timeout.\n'
             if early_tourn:
@@ -215,23 +225,28 @@ class AbstractTournamentManager(ABC):
         self.logs.general_log(log_message)
 
     def adjust_time_results(self, rtac_data):
+        if all(res == self.scenario.timeout
+                for res in rtac_data.ta_res_time[:]):
+            self.finished.wait()
         for i, res in enumerate(rtac_data.ta_res_time):
-            if res != float(self.scenario.timeout):
+            if res != float(self.scenario.timeout) and i in self.term_list:
                 rtac_data.ta_res_time[i] = \
-                    max(0, round(
-                        res - min(self.rtac_data.ta_res_time), 2
-                    ))
+                    max(0,
+                        round(res - min(
+                            self.rtac_data.ta_res_time) + self.currenttime, 2
+                        ))
         for i, res in enumerate(rtac_data.ta_rtac_time):
-            if res != float(self.scenario.timeout):
+            if res != float(self.scenario.timeout) and i in self.term_list:
                 rtac_data.ta_rtac_time[i] = \
-                    max(0, round(
-                        res - min(self.rtac_data.ta_rtac_time), 2
-                    ))
+                    max(0,
+                        round(res - min(
+                            self.rtac_data.ta_rtac_time) + self.currenttime, 2
+                        ))
 
         return rtac_data
 
     def get_tourn_nr(self, rtac_data):
-        if not rtac_data.early_start_tournament:
+        if not bool(rtac_data.early_start_tournament.value):
             tourn_nr = self.tourn_nr
         else:
             tourn_nr = self.es_tourn_nr
@@ -335,10 +350,19 @@ class GrayBox:
             self.tournament.gray_box = self.gray_box
             self.tournament.gb_model = self.gb_model
 
-    def manage_tournament(self, instance: str, rtac_data: RTACData):
+    def manage_tournament(self, instance: str, rtac_data: RTACData, **kwargs):
         if instance not in self.instance_history:
             self.instance_history.append(instance)
-            if not rtac_data.early_start_tournament:
+            if self.kwargs['es_rtac_data'] is None:
+                msg = f'#  Start solving instance {instance}...  #'
+                len_msg = len(msg)
+                print('#' * len_msg)
+                print('#' + ' ' * (len_msg - 2) + '#')
+                print(msg)
+                print('#' + ' ' * (len_msg - 2) + '#')
+                print('#' * len_msg)
+
+                self.rtac_data = rtac_data
 
                 cores_start = [i for i in range(self.scenario.number_cores)]
                 self.finished = threading.Event()
@@ -352,7 +376,7 @@ class GrayBox:
                 self.tournament.tm = self
                 self.X_train = []
                 self.y_train, self.cost_mat_train = [], []
-                self.tournament.terminated_configs = False
+                self.tournament.terminated_configs = []
                 self.instance = instance
                 self.rtac_data = self.tournament.rtac_data = rtac_data
                 self.tournament.start_tournament(self.instance,
@@ -377,7 +401,16 @@ class GrayBox:
                 self.finished.set()
                 gc.collect
             else:
-                self.es_rtac_data = rtac_data
+                msg = f'#  Start solving instance {instance} ' + \
+                    'with time advantage...  #'
+                len_msg = len(msg)
+                print('#' * len_msg)
+                print('#' + ' ' * (len_msg - 2) + '#')
+                print(msg)
+                print('#' + ' ' * (len_msg - 2) + '#')
+                print('#' * len_msg)
+
+                self.es_rtac_data = self.kwargs['es_rtac_data']
 
                 cores_start = \
                     [core for core in range(self.scenario.number_cores)
@@ -390,7 +423,7 @@ class GrayBox:
                                                         self.ta_runner,
                                                         rtac_data,
                                                         self.logs)
-                self.es_tournament.rtac_data = self.early_rtac_data
+                self.es_tournament.rtac_data = self.es_rtac_data
                 contender_dict = self.res_process.get_contender_dict()
 
                 # Put best contender at indices of term_list
@@ -406,6 +439,7 @@ class GrayBox:
                                                     contender_dict,
                                                     self.es_tourn_nr,
                                                     cores_start)
+                self.es_tournament.tourn_nr = self.es_tourn_nr
                 
                 self.es_tournament.watch_tournament(early_tournament=True)
                 self.es_tournamentstats = self.es_tournament.tournamentstats
@@ -417,21 +451,26 @@ class GrayBox:
                                      tournament=self.es_tournament,
                                      early_tourn=True,
                                      instance=self.next_instance)
+                self.early_rtac_data.newtime = \
+                    min(self.es_rtac_data.ta_res_time[:])
                 results = []
                 if self.scenario.objective_min:
                     for core in range(self.scenario.number_cores):
-                        results.append(rtac_data.ta_res[core])
+                        results.append(self.es_rtac_data.ta_res[core])
                 else:
                     for core in range(self.scenario.number_cores):
-                        results.append(rtac_data.ta_res_time[core])
+                        results.append(self.es_rtac_data.ta_res_time[core])
 
                 self.res_process.\
                     result_summary_terminal(results, self.es_tourn_nr)
 
+                self.es_output(self.next_instance)
+
+                self.es_rtac_data.early_start_tournament.value = False
+                self.rtac_data.early_start_tournament.value = False
+
                 self.early_finished.set()
                 gc.collect
-                
-            time.sleep(1)
                
             self.rtac_data.skip = False
 
@@ -442,11 +481,13 @@ class GrayBox:
             # starting tournment
             self.rtac_data.skip = True
 
-    def early_start(self):
-        self.term_list = self.tournament.term_list
+    def early_start(self, currenttime):
+        self.term_list = copy.deepcopy(self.tournament.term_list)
         if self.next_instance:
-            self.early_finished = threading.Event()
             print('\n')
+            print('Next problem instance was provided!\n')
+            self.currenttime = currenttime
+            self.early_finished = threading.Event()
             for c in self.term_list:
                 self.rtac_data.status[c] = 4  # TARunStatus.terminated
                 self.tournament.terminate_run(c, self.rtac_data.process[c])
@@ -454,19 +495,20 @@ class GrayBox:
                 int(self.scenario.timeout - int(time.time() - (
                     max(self.tournament.rtac_data.substart_wall)
                 )))
-            self.tournament.terminated_configs = True
-            self.early_rtac_data = rtacdata(self.scenario)
+            self.tournament.terminated_configs = copy.deepcopy(self.term_list)
+            self.early_rtac_data = self.rtac_data.early_rtac_copy()
             for c in range(self.scenario.number_cores):
                 if c not in self.term_list:
                     # TARunStatus.awaiting_start -> 6
                     self.early_rtac_data.status[c] = 6
-            self.early_rtac_data.early_start_tournament = True
-            self.early_rtac_data.cores_start = self.term_list
+            self.early_rtac_data.early_start_tournament.value = True
+            self.rtac_data.early_start_tournament.value = True
+            self.early_rtac_data.cores_start = copy.deepcopy(self.term_list)
             self.es_tourn_nr = self.tourn_nr_list[-1] + 1
             self.tourn_nr_list.append(self.es_tourn_nr)
             print('\n')
-            print('Starting early tournament contenders.')
-            print('\n')
+            print(f'Letting contenders start early at {currenttime}s',
+                  'of runtime of previous tournament on freed cores.')
             self.rtac.solve_instance(self.next_instance,
                                      None, self.early_rtac_data)
 
@@ -491,12 +533,36 @@ class GrayBox:
             self.es_tournament.conf_id_list = \
                 [list(self.es_tournament.contender_dict.keys())[i]
                  if i in self.early_rtac_data.cores_start
-                 else self.es_tournament.config_list[i]
+                 else self.es_tournament.config_list[i].id
                  for i in range(self.scenario.number_cores)]
             self.es_tournament.scenario.timeout = self.scenario.timeout
             self.es_tournament.fill_tournament(
                 self.early_rtac_data.cores_start
             )
+
+    def es_output(self, instance):
+        print('\n')
+
+        if not self.es_scenario.objective_min:
+            if isinstance(self.early_rtac_data.newtime, Synchronized):
+                newtime = self.early_rtac_data.newtime.value
+            else:
+                newtime = self.early_rtac_data.newtime
+            if newtime >= self.es_scenario.timeout:
+                print(f'Instance {instance} could not be solved within',
+                      f'{self.es_scenario.timeout}s.')
+            else:
+                print(f'Solved instance {instance} in',
+                      f'{self.early_rtac_data.newtime}s.')
+        else:
+            if self.early_rtac_data.best_res == self.huge_float:
+                print(f'Instance {instance} could not be solved within',
+                      f'{self.es_scenario.timeout}s.')
+            else:
+                print(f'Solved instance {instance} with objective value',
+                      f'{self.early_rtac_data.best_res}.')
+
+        print('.\n' * 3)
 
 
 def tourn_manager_factory(scenario: argparse.Namespace,

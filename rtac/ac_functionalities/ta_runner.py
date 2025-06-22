@@ -276,7 +276,7 @@ class BaseTARunner(AbstractTARunner):
         while self.running:
             # Avoid checking output excessively often (causes too much
             # overhead)
-            time.sleep(5e-6)
+            time.sleep(0.005)  # time.sleep(5e-6)
 
             ta_output = non_block_read(self.proc.stdout, self.logs)
 

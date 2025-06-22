@@ -176,7 +176,7 @@ class RTACData(AbstractRTACData):
         self.tournID = 0
         self.cores_start = Manager().list(
             [core for core in range(scenario.number_cores)])
-        self.early_start_tournament = False
+        self.early_start_tournament = Value('b', False)  # False
         self.event = Value('i', 0)
         self.newtime = Value('d', float(scenario.timeout))
         self.best_res = Value('d', huge_res)
@@ -242,11 +242,56 @@ class GBData(RTACData):
         :param scenario: Namespace containing all settings for the RTAC.
         :type scenario: argparse.Namespace
         """
+        self.scenario = scenario
         self.rec_data = {core: Manager().dict()
                          for core in range(scenario.number_cores)}
 
         self.RuntimeFeatures = Manager().list(
             [[] for core in range(scenario.number_cores)])
+
+    def early_rtac_copy(self):
+        early_rtac_data = self.__class__.__new__(self.__class__)
+
+        overrides = {
+            'ev': Event(),
+            'cores_start': self.cores_start,
+            'early_start_tournament': Value('b', False),
+            'event': Value('i', 0),
+            'newtime': Value('d', float(self.scenario.timeout)),
+            'best_res': Value('d', sys.float_info.max * 1e-100),
+            'winner': Manager().Value('c', 0),
+            'status': Array('i',
+                            [0 for core in range(self.scenario.number_cores)]),
+            'pids': Array('i',
+                          [0 for core in range(self.scenario.number_cores)]),
+            'substart':
+            Array('d', [0.0 for core in range(self.scenario.number_cores)]),
+            'substart_wall':
+            Array('d', [0.0 for core in range(self.scenario.number_cores)]),
+            'ta_res':
+            Array('d', [sys.float_info.max * 1e-100
+                        for core in range(self.scenario.number_cores)]),
+            'ta_res_time':
+            Array('d', [self.scenario.timeout * self.scenario.runtimePAR
+                        for core in range(self.scenario.number_cores)]),
+            'ta_rtac_time':
+            Array('d', [self.scenario.timeout * self.scenario.runtimePAR
+                        for core in range(self.scenario.number_cores)]),
+            'process':
+            ['process_{0}'.format(s)
+             for s in range(self.scenario.number_cores)],
+            'start': time.time()
+        }
+
+        # Selectively deepcopy or shallow copy attributes
+        for key, value in self.__dict__.items():
+            if key in overrides:
+                setattr(early_rtac_data, key, overrides[key])
+            else:
+                # Safe to deepcopy
+                setattr(early_rtac_data, key, copy.deepcopy(value))
+
+        return early_rtac_data
 
 
 def rtacdata_factory(scenario: argparse.Namespace, **kwargs) \
@@ -272,6 +317,7 @@ def rtacdata_factory(scenario: argparse.Namespace, **kwargs) \
 
         rtacdata_init = rtacdata.__init__
         rtacdata_copy.__init__ = GBData.__init__
+        rtacdata_copy.early_rtac_copy = GBData.early_rtac_copy
 
         return rtacdata_copy(scenario, rtacdata_init, **kwargs)
 

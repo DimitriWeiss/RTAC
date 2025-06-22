@@ -5,7 +5,6 @@
 --contenders 30
 --keeptop 4
 --pws
-#--usedata y
 --experimental
 --chance 25
 --mutate 10
@@ -22,18 +21,14 @@
 --paramlimit 100000
 --epsilon_greedy
 --gen_mult 2
-#--gray_box
---gb_read_time 0.1 #1.0
+--gray_box
+--gb_read_time 0.1
 --nr_gb_feats 6
-#--isolate_bandit
 --log_folder logs
 --wrapper wrapper.cadical
 --wrapper_name Cadicalpp
 --feature_gen feature_gen.cadical_feats
 --feature_gen_name CadFeats
 --feature_path ./feature_gen/cad_features/Features_power_law_SAT_drift_100.csv
---instance_pre_train ./feature_gen/cad_features//pre_train_features_100.txt
+--instance_pre_train ./feature_gen/cad_features/pre_train_features_100.txt
 --param_file data/params_cadical.json
-#--feature_path ./feature_gen/cad_features/Features_power_law_easy.csv
-#--param_file data/params_cadical.json
-#--instance_pre_train feature_gen/cad_features/pre_train_features.txt

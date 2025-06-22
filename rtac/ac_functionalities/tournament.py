@@ -74,7 +74,7 @@ class AbstractTournament(ABC):
         """Function to observe the tournament and enforce the timelimit
         scenario.timeout if reached according to the RTAC method used."""
 
-    def close_tournament(self, process: subprocess.Popen) -> None:
+    def close_tournament(self) -> None:
         """Function that initiates termination of all target algorithm runs.
 
         :param process: Target algorithm run process.
@@ -84,13 +84,14 @@ class AbstractTournament(ABC):
         self.rtac_data.event = 1
         print(f'\nClosing tournament Nr. {self.tourn_nr}',
               f'(Tournament ID: {self.tourn_id})',
-              f'due to timeout ({self.scenario.timeout}s).\n')
+              f'due to timeout ({self.scenario.timeout}s) at ',
+              f'{self.currenttime}s.\n')
         if self.scenario.objective_min:
             time.sleep(1)  # extra time for TAs to shut down and print results
         for core in range(self.scenario.number_cores):
             if self.rtac_data.status[core] not in (2, 3):
                 self.rtac_data.status[core] = 5
-            self.terminate_run(core, process[core])
+            self.terminate_run(core, self.rtac_data.process[core])
 
     def terminate_run(self, core: int, process: subprocess.Popen) -> None:
         """Function that enforces termination of a target algorithm run.
@@ -230,7 +231,8 @@ class Tournament(AbstractTournament):
             currenttime = time.time() - self.rtac_data.start
 
             if currenttime >= self.scenario.timeout:
-                self.close_tournament(self.rtac_data.process)
+                self.currenttime = currenttime
+                self.close_tournament()
 
 
 class Tournament_GB:
@@ -248,12 +250,14 @@ class Tournament_GB:
         self.s_instances = []
         self.term_list = []
 
-        while any(isinstance(proc, mp.Process) and proc.is_alive()
-                  for proc in self.rtac_data.process):
+        while any(isinstance(p, mp.Process) and p.is_alive()
+                  for p in self.rtac_data.process):
             time.sleep(self.scenario.gb_read_time)
             currenttime = time.time() - self.rtac_data.start
 
             if not early_tournament and not self.terminated_configs:
+
+                '''
 
                 X_pw, cores, self.s_instances, self.gb_pw_inst_archive, \
                     self.mtp, self.pw_cores = \
@@ -261,7 +265,7 @@ class Tournament_GB:
                                                        self.s_instances,
                                                        self.gb_pw_inst_archive,
                                                        self.mtp, self.pw_cores)
-                    
+
                 if self.gb_model is not None and len(X_pw) > 2 and \
                         time.time() \
                         - gb_check_time >= self.scenario.gb_read_time:
@@ -269,25 +273,22 @@ class Tournament_GB:
                     pred = self.gray_box.classify_configs(
                         X_pw, self.scenario.number_cores, self.gb_model
                     )
-
-                    print('Predictions:', pred)
-
                     if pred is not None:
-                        self.term_list = \
+                        self.term_list = self.tournamentstats.kills = \
                             self.gray_box.term_list(pred, cores,
                                                     self.scenario.verbosity)
+                        if self.term_list:
 
-                        for term in self.term_list:
-                            self.terminate_run(term,
-                                               self.rtac_data.process[term])
-
-                        self.tm.early_start()
+                            self.tm.early_start(currenttime)
+                '''
+                self.term_list = [1, 3]
+                self.tm.early_start(currenttime)
                     
                 gb_check_time = time.time()
 
             if currenttime >= self.scenario.timeout:
-                print('Closing tourn', self.tourn_nr)
-                self.close_tournament(self.rtac_data.process)
+                self.currenttime = currenttime
+                self.close_tournament()
 
 
 class Tournamentpp(Tournament):

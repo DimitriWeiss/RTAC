@@ -254,15 +254,16 @@ class Gray_Box():
         worse_than_avg = \
             [core for core, rank in ranks.items() if rank >= avg_rank]
 
-        if verbosity == 2:
-            print("Better counts:", dict(better_counts))
-            print("Ranks:", ranks)
-            print("Average rank:", avg_rank)
-            print("Worse than average:", worse_than_avg)
-
-        if avg_rank != 1.0:
+        if len(set(better_counts.values())) == 1:
             return []
         else:
+            if verbosity == 2:
+                print('\n\n')
+                print('GRAY BOX PAIRWSE COMPARISON STATS:')
+                print("Better counts:", dict(better_counts))
+                print("Ranks:", ranks)
+                print("Average rank:", avg_rank)
+                print("Worse than average:", worse_than_avg)
             return worse_than_avg
 
 

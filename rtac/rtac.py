@@ -10,13 +10,14 @@ import argparse
 import sys
 import importlib
 import threading
-import queue
 from multiprocessing.sharedctypes import Synchronized
 import multiprocessing as mp
 from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
 from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
 from ac_functionalities.tournament_manager import tourn_manager_factory as TM
 from ac_functionalities.logs import RTACLogs
+import faulthandler
+faulthandler.enable()
 
 
 class AbstractRTAC(ABC):
@@ -37,6 +38,8 @@ class AbstractRTAC(ABC):
         self.logs.scenario_log(self.scenario)
         self.ta_runner = ta_runner
         self.init_tournament_manager()
+        self.es = False
+        self.early_instance = mp.Manager().list([None])
 
     def init_tournament_manager(self) -> None:
         self.rtac_data = rtacdata(self.scenario)
@@ -62,6 +65,10 @@ class AbstractRTAC(ABC):
 class RTAC(AbstractRTAC):
     """Implementation of ReACTR."""
 
+    def __init__(self, scenario: argparse.Namespace) -> None:
+        AbstractRTAC.__init__(self, scenario)
+        self.rtac_thread = [None, None]
+
     def solve_instance(self, instance: str, next_instance: str = None,
                        early_rtac_data=None) -> None:
         if self.scenario.gray_box:
@@ -79,8 +86,6 @@ class RTAC(AbstractRTAC):
 
         print('\n\n')
 
-        print(f'Starting instance {instance}...')
-
         self.rtac_data = self.tournament_manager.solve_instance(instance,
                                                                 self.rtac_data)
 
@@ -93,35 +98,42 @@ class RTAC(AbstractRTAC):
         :param instance: Path to the problem instance file.
         :type instance: str
         """
-        self.init_rtac_data()
-
-        self.instance = instance
-        self.early_instance = mp.Manager().list()
+        if instance != self.early_instance[0]:
+            self.instance = instance
+        elif self.early_instance[0] is not None:
+            self.es_instance = instance
+        
         if next_instance:
             self.early_instance = [next_instance]
 
         print('\n\n')
 
         if early_rtac_data is not None:
-            print(f'Starting instance {instance} with time advantage...')
-            rtac_data = early_rtac_data
+            self.es = True
+            es_rtac_data = early_rtac_data
+            thread_idx = 1
         else:
-            print(f'Starting instance {instance}...')
-            rtac_data = self.rtac_data
+            self.init_rtac_data()
+            es_rtac_data = None
+            thread_idx = 0
 
-        self.rtac_thread = threading.Thread(
+        self.rtac_thread[thread_idx] = threading.Thread(
             target=self.tournament_manager.solve_instance,
-            args=(instance, rtac_data),
-            kwargs={'rtac': self, 'next_instance': self.early_instance})
-        self.rtac_thread.start()
+            args=(instance, self.rtac_data),
+            kwargs={'rtac': self, 'next_instance': self.early_instance,
+                    'es_rtac_data': es_rtac_data})
+        self.rtac_thread[thread_idx].start()
 
     def provide_early_instance(self, early_instance):
-        self.early_instance.append(early_instance)
+        self.early_instance[0] = early_instance
 
     def wrap_up_gb(self):
-        self.rtac_thread.join()
+        for rtac_thread in self.rtac_thread:
+            if isinstance(rtac_thread, threading.Thread):
+                rtac_thread.join()
         self.rtac_data = self.tournament_manager.rtac_data
         self.result_output(self.instance)
+        self.early_instance = mp.Manager().list([None])
 
     def result_output(self, instance):
         if not self.rtac_data.skip:
@@ -147,15 +159,6 @@ class RTAC(AbstractRTAC):
                     print(f'Solved instance {instance} with objective value',
                           f'{self.rtac_data.best_res}.')
 
-            print('.\n' * 3)
-
-        else:
-            print('\n' * 2)
-            print('.\n' * 3)
-            print('* Instance', self.instance,
-                  'already solved in previous tournament.')
-            print('\n')
-            print('* Continuing')
             print('.\n' * 3)
 
     def plot_performances(self, results: bool = False,

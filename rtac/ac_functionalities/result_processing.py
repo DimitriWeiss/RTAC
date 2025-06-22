@@ -106,7 +106,8 @@ class AbstractResultProcessing(ABC):
     def select_contenders(self) -> None:
         """Select contenders for next tournament/problem instance."""
 
-    def process_tourn(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> str:
+    def process_tourn(self, rtac_data: RTACData, instance: str = None,
+                      tourn_nr: int = None) -> str:
         """Manage result processing.
 
         :param rtac_data: Object containing data and objects necessary
@@ -146,11 +147,12 @@ class AbstractResultProcessing(ABC):
     def result_summary_terminal(self, results, tourn_nr=None):
         if tourn_nr:
             self.tourn_nr = tourn_nr
-        if self.scenario.verbosity == 2:
+        if self.scenario.verbosity == 2 and self.scenario.experimental:
             if not self.scenario.objective_min:
                 unit = 'seconds'
             else:
                 unit = 'objective value'
+
             self.time_sum += round(min(results), 3)
             len_str = len('Instance nr. ' + str(self.tourn_nr) + ' : ' + str(
                 round(self.time_sum, 3)
@@ -233,7 +235,8 @@ class ResultProcessing(AbstractResultProcessing):
 
         return winner, ranks
 
-    def process_results(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> None:
+    def process_results(self, rtac_data: RTACData, instance: str = None,
+                        tourn_nr: int = None) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance
         according to ReACTR implementation.
@@ -248,10 +251,15 @@ class ResultProcessing(AbstractResultProcessing):
             if self.rtac_data.ta_res[core] == self.huge_float:
                 self.rtac_data.ta_res_time[core] = self.scenario.timeout
 
+        if not self.scenario.objective_min:
+            results = list(self.rtac_data.ta_res_time[:])
+        else:
+            results = list(self.rtac_data.ta_res[:])
+
+        self.result_summary_terminal(results)
+
         times = list(self.rtac_data.ta_res_time[:])
 
-        self.result_summary_terminal(times)
-        
         self.rtac_data.newtime = min(times)
         res = list(self.rtac_data.ta_res[:])
         self.rtac_data.best_res = min(res)
@@ -457,57 +465,66 @@ class ResultProcessingpp(ResultProcessing):
         else:
             winner = res.index(min(res))
 
-        interim_sorted = [[self.rtac_data.interim[j][i]
-                          for j in range(self.scenario.number_cores)]
-                          for i, _ in enumerate(self.rtac_data.interim[0])]
+        if not any(elem is None for sublist in self.rtac_data.interim
+                   for elem in sublist):
 
-        interim_sorted = np.array(interim_sorted)
-        interim_sorted = interim_sorted.astype(float)
+            ranks = [0 for core in range(self.scenario.number_cores)]
 
-        for i, isort in enumerate(interim_sorted):
-            if self.rtac_data.interim_meaning[i] is \
-                    InterimMeaning.decrease:
-                interim_sorted[i] = rankdata(isort,
-                                             method='dense',
-                                             nan_policy="propagate")
-            elif self.rtac_data.interim_meaning[i] is \
-                    InterimMeaning.increase:
-                interim_sorted[i] = rankdata([-1 * i if i is not None
-                                              else None for i in isort],
-                                             method='dense',
-                                             nan_policy="propagate")
+            interim_sorted = [[self.rtac_data.interim[j][i]
+                              for j in range(self.scenario.number_cores)]
+                              for i, _ in enumerate(self.rtac_data.interim[0])]
 
-        ranks = [0 for core in range(self.scenario.number_cores)]
+            interim_sorted = np.array(interim_sorted)
+            interim_sorted = interim_sorted.astype(float)
 
-        for _, isort in enumerate(interim_sorted):
-            for r, _ in enumerate(ranks):
-                ranks[r] += isort[r]
+            for i, isort in enumerate(interim_sorted):
+                if self.rtac_data.interim_meaning[i] is \
+                        InterimMeaning.decrease:
+                    interim_sorted[i] = rankdata(isort,
+                                                 method='dense',
+                                                 nan_policy="propagate")
+                elif self.rtac_data.interim_meaning[i] is \
+                        InterimMeaning.increase:
+                    interim_sorted[i] = rankdata([-1 * i if i is not None
+                                                  else None for i in isort],
+                                                 method='dense',
+                                                 nan_policy="propagate")
 
-        if self.scenario.objective_min:
-            res_ranks = rankdata(res, method='dense', nan_policy="propagate")
+            for _, isort in enumerate(interim_sorted):
+                for r, _ in enumerate(ranks):
+                    ranks[r] += isort[r]
 
-            duplicates = []
+            if self.scenario.objective_min:
+                res_ranks = rankdata(res, method='dense', nan_policy="propagate")
 
-            for rank in sorted(set(res_ranks)):
-                duplicates.append(self.duplicates(res_ranks, rank))
-            
-            for duplicate in duplicates:
-                if len(duplicate) > 1:
-                    interim_ranks = [ranks[dup] for dup in duplicate]
-                    tie_winner = \
-                        duplicate[interim_ranks.index(min(interim_ranks))]
-                    interim_ranks = rankdata(interim_ranks, method='dense')
-                    interim_ranks -= min(interim_ranks)
-                    for d, ir in zip(duplicate, interim_ranks):
-                        for r, _ in enumerate(res_ranks):
-                            if d == r and r != winner and r != tie_winner:
-                                res_ranks[r] += interim_ranks[ir]
-                            else:
-                                res_ranks[r] += max(interim_ranks)
+                duplicates = []
 
-            ranks = res_ranks
+                for rank in sorted(set(res_ranks)):
+                    duplicates.append(self.duplicates(res_ranks, rank))
+                
+                for duplicate in duplicates:
+                    if len(duplicate) > 1:
+                        interim_ranks = [ranks[dup] for dup in duplicate]
+                        if not all(np.isnan(ir) for ir in interim_ranks):
+                            tie_winner = \
+                                duplicate[interim_ranks.index(min(interim_ranks))]
+                            interim_ranks = rankdata(interim_ranks, method='dense')
+                            interim_ranks -= min(interim_ranks)
+                            for d, ir in zip(duplicate, interim_ranks):
+                                for r, _ in enumerate(res_ranks):
+                                    if d == r and r != winner and r != tie_winner:
+                                        res_ranks[r] += interim_ranks[ir]
+                                    elif np.isnan(max(interim_ranks)):
+                                        res_ranks[r] += self.scenario.number_cores
+                                    else:
+                                        res_ranks[r] += max(interim_ranks)
 
-        ranks = rankdata(ranks, method='dense')
+                ranks = res_ranks
+
+            ranks = rankdata(ranks, method='dense')
+
+        else:
+            ranks = [1 for core in range(self.scenario.number_cores)]
 
         ranks[winner] = 0
 
@@ -560,7 +577,8 @@ class ResultProcessingCPPL(AbstractResultProcessing):
 
         queue.put((bandit, bandit_models))
 
-    def process_tourn(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> str:
+    def process_tourn(self, rtac_data: RTACData, instance: str = None,
+                      tourn_nr: int = None) -> str:
         """Manage result processing.
 
         :param rtac_data: Object containing data and objects necessary
@@ -615,7 +633,8 @@ class ResultProcessingCPPL(AbstractResultProcessing):
 
         queue.put((bandit, bandit_models, results, times))
 
-    def process_results(self, rtac_data: RTACData, instance: str = None, tourn_nr: int = None) -> None:
+    def process_results(self, rtac_data: RTACData, instance: str = None,
+                        tourn_nr: int = None) -> None:
         """Perform tournament result processing necessary to replace contenders
         in pool and select contenders for next tournament/problem instance.
 
