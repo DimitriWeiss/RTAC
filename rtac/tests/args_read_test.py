@@ -9,7 +9,7 @@ class TestArgsRead(unittest.TestCase):
     default = {'verbosity': 0, 'wrapper': 'No wrapper chosen!',
                'wrapper_name': 'No wrapper class name.', 
                'timeout': 300, 'contenders': 30, 'keeptop': 4, 'pws': False,
-               'usedata': None, 'experimental': False, 'chance': 25,
+               'experimental': False, 'chance': 25,
                'mutate': 10, 'kill': 5,
                'feature_gen': '', 'nc_pca_f': 3,
                'nc_pca_p': 5, 'jfm': 'polynomial', 'omega': 1.0, 'gamma': 1,
@@ -20,7 +20,7 @@ class TestArgsRead(unittest.TestCase):
 
     scen_file = {'verbosity': 1, 'wrapper': 'wrapper.lacidac',
                  'wrapper_name': 'Lacidac', 'timeout': 3, 'contenders': 50,
-                 'keeptop': 3, 'pws': True, 'usedata': 'y',
+                 'keeptop': 3, 'pws': True,
                  'experimental': True, 'chance': 2, 'mutate': 100,
                  'kill': 50.0,
                  'feature_gen': 'feature_gen/lacidac_feats.py',
