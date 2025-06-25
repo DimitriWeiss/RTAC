@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.config_gens &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.config_gens</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.config_gens</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains functions for configuration generation.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">ParamType</span><span class="p">,</span>
+    <span class="n">ValType</span><span class="p">,</span>
+    <span class="n">Distribution</span><span class="p">,</span>
+    <span class="n">DiscreteParameter</span><span class="p">,</span>
+    <span class="n">ContinuousParameter</span><span class="p">,</span>
+    <span class="n">CategoricalParameter</span><span class="p">,</span>
+    <span class="n">BinaryParameter</span><span class="p">,</span>
+    <span class="n">Generator</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="AbstractConfigGen"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.AbstractConfigGen">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractConfigGen</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class for generation of configurations.&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize configuration generation class.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AbstractConfigGen.generate"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.AbstractConfigGen.generate">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Configuration</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates and returns configuration.&quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="DefaultConfigGen"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.DefaultConfigGen">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DefaultConfigGen</span><span class="p">(</span><span class="n">AbstractConfigGen</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate default configuration.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize default configuration class.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_space</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_config</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="DefaultConfigGen.generate"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.DefaultConfigGen.generate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tourn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Configuration</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates and stores default configuration.</span>
+
+<span class="sd">        :returns: Default configuration.</span>
+<span class="sd">        :rtype: ac_functionalities.rtac_data.Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_config</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;.json&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="n">default_config</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">default_config</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">default</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># If default not defined, define naively</span>
+                        <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">paramtype</span> <span class="ow">in</span> \
+                                <span class="p">(</span><span class="n">ParamType</span><span class="o">.</span><span class="n">discrete</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">continuous</span><span class="p">):</span>
+                            <span class="n">default_config</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> \
+                                <span class="p">(</span><span class="n">definition</span><span class="o">.</span><span class="n">maxval</span> <span class="o">-</span> <span class="n">definition</span><span class="o">.</span><span class="n">minval</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">default_config</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;.pcs&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="n">default_config</span> <span class="o">=</span> \
+                    <span class="nb">dict</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span><span class="o">.</span><span class="n">get_default_configuration</span><span class="p">())</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_config</span> <span class="o">=</span> \
+                <span class="n">Configuration</span><span class="p">(</span>
+                    <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="n">default_config</span><span class="p">,</span> <span class="p">[],</span>
+                    <span class="n">Generator</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="n">tourn</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_config</span></div></div>
+
+
+<div class="viewcode-block" id="RandomConfigGen"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.RandomConfigGen">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RandomConfigGen</span><span class="p">(</span><span class="n">AbstractConfigGen</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate random configuration.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize random configuration class.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_space</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span>
+
+<div class="viewcode-block" id="RandomConfigGen.generate"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.RandomConfigGen.generate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tourn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Configuration</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates random configuration.</span>
+
+<span class="sd">        :returns: Random configuration.</span>
+<span class="sd">        :rtype: ac_functionalities.rtac_data.Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;.json&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+
+            <span class="n">random_config</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">BinaryParameter</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">valtype</span><span class="p">,</span> <span class="n">ValType</span><span class="o">.</span><span class="n">int</span><span class="p">):</span>
+                        <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">valtype</span><span class="p">,</span> <span class="n">ValType</span><span class="o">.</span><span class="n">str</span><span class="p">):</span>
+                        <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">CategoricalParameter</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">valtype</span> <span class="ow">is</span> <span class="n">ValType</span><span class="o">.</span><span class="n">int</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                            <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span>
+                                    <span class="n">parameter</span><span class="o">.</span><span class="n">minval</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">maxval</span><span class="p">)))</span>
+                    <span class="k">elif</span> <span class="n">parameter</span><span class="o">.</span><span class="n">valtype</span> <span class="ow">is</span> <span class="n">ValType</span><span class="o">.</span><span class="n">str</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                            <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">random_config</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>              
+
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span>
+                                <span class="p">(</span><span class="n">ContinuousParameter</span><span class="p">,</span> <span class="n">DiscreteParameter</span><span class="p">)):</span>
+                    <span class="n">minval</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">minval</span>
+                    <span class="n">maxval</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">maxval</span>
+
+                    <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">distribution</span> <span class="ow">is</span> <span class="n">Distribution</span><span class="o">.</span><span class="n">uniform</span><span class="p">:</span>
+                        <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">parameter</span><span class="o">.</span><span class="n">distribution</span> <span class="ow">is</span> <span class="n">Distribution</span><span class="o">.</span><span class="n">log</span><span class="p">:</span>
+                        <span class="n">tiny_float</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">min</span>
+                        <span class="n">probabpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">probabpos</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">includezero</span><span class="p">:</span>
+                            <span class="n">probabzero</span> <span class="o">=</span> \
+                                <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span>
+                                    <span class="nb">round</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">probabilityzero</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+                            <span class="n">probabneg</span> <span class="o">=</span> \
+                                <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span>
+                                    <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">probabpos</span> <span class="o">-</span> <span class="n">probabzero</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">probabneg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">probabpos</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+                        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">splitbydefault</span> <span class="ow">and</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">split_high</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+                            <span class="n">split_low</span> <span class="o">=</span> \
+                                <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">default</span> <span class="o">-</span> <span class="n">tiny_float</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">logonpos</span><span class="p">:</span>
+                                <span class="n">split_high</span> <span class="o">=</span> <span class="n">tiny_float</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">split_high</span> <span class="o">=</span> <span class="n">minval</span>
+                            <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">logonneg</span><span class="p">:</span>
+                                <span class="n">split_low</span> <span class="o">=</span> <span class="o">-</span><span class="n">tiny_float</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">split_low</span> <span class="o">=</span> <span class="n">maxval</span>
+
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">logonpos</span><span class="p">:</span>
+                            <span class="n">logmaxval</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+                            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                                    <span class="n">split_high</span><span class="p">,</span> <span class="n">logmaxval</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">split_high</span><span class="p">,</span> <span class="n">maxval</span><span class="p">))</span>
+
+                        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">probabpos</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">logonneg</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">minval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">logminval</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">minval</span><span class="p">)</span>
+                                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                                        <span class="n">split_low</span><span class="p">,</span> <span class="n">logminval</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+                            <span class="k">elif</span> <span class="n">minval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">logminval</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tiny_float</span><span class="p">)</span>
+                                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                                        <span class="n">split_low</span><span class="p">,</span> <span class="n">logminval</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+                            <span class="k">elif</span> <span class="n">minval</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">logminval</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">minval</span><span class="p">)</span>                        
+                                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                                        <span class="n">split_low</span><span class="p">,</span>
+                                        <span class="o">-</span><span class="n">logminval</span><span class="p">,</span>
+                                        <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="n">minval</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">split_low</span><span class="p">))</span>
+
+                        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">probabneg</span><span class="p">)</span>
+                        
+                        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">includezero</span><span class="p">:</span>
+                            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">probabzero</span><span class="p">)</span>
+
+                        <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">weights</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">DiscreteParameter</span><span class="p">):</span>
+                        <span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">random_config</span><span class="p">[</span><span class="n">param_name</span><span class="p">]))</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;.pcs&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="n">random_config</span> <span class="o">=</span> \
+                <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span><span class="o">.</span><span class="n">sample_configuration</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">Configuration</span><span class="p">(</span>
+            <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="n">random_config</span><span class="p">,</span> <span class="p">[],</span> <span class="n">Generator</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">tourn</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

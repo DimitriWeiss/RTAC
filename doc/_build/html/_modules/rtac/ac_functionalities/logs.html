@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.logs &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.logs</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.logs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains functions for logging the data between</span>
+<span class="sd">instances/tournaments as well as stats about toournaments and results.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RotatingFileHandler</span><span class="p">,</span> <span class="n">BaseRotatingHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">TournamentStats</span><span class="p">,</span>
+    <span class="n">ACMethod</span><span class="p">,</span>
+    <span class="n">Generator</span>
+<span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Configuration&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NewRotatingFileHandler"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.NewRotatingFileHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">NewRotatingFileHandler</span><span class="p">(</span><span class="n">RotatingFileHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwriting logging.handlers.RotatingFileHandler in order to log to the</span>
+<span class="sd">    same line in the file.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">BaseRotatingHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">delay</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxBytes</span> <span class="o">=</span> <span class="n">maxBytes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backupCount</span> <span class="o">=</span> <span class="n">backupCount</span></div>
+
+
+<div class="viewcode-block" id="AbstractLogs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractLogs</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with all functions and loggers concerning logging and loading</span>
+<span class="sd">    RTAC and tournament data.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes logging class, check if log directory exists and create</span>
+<span class="sd">        it if needed.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">log_folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">log_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">log_folder</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> \
+            <span class="o">+</span> <span class="n">scenario</span><span class="o">.</span><span class="n">wrapper_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> \
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">ac</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">+=</span> <span class="s1">&#39;_gb&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experimental</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">experimental</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scenario</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
+                <span class="n">filelist</span> <span class="o">=</span> \
+                    <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filelist</span> <span class="o">=</span> \
+                    <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;tourn_0&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective_min</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Logging to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractLogs.init_rtac_logs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.init_rtac_logs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_rtac_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes loggers for realtime algorithm configuration data</span>
+<span class="sd">        concerning all methods.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Set up general logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;main_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">g_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/general.log&#39;</span><span class="p">)</span>
+        <span class="n">g_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y %H:%M:%S:&#39;</span><span class="p">)</span>
+        <span class="n">g_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">g_fh</span><span class="p">)</span>
+
+        <span class="c1"># Set up winner trajectory logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner_trajectory</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;winner_trajectory_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner_trajectory</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">wt_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/winner.log&#39;</span><span class="p">)</span>
+        <span class="n">wt_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">wt_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner_trajectory</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">wt_fh</span><span class="p">)</span>
+
+        <span class="c1"># Set up tournament stats logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_stats_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;tourn_stats_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_stats_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">ts_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/tourn_stats.log&#39;</span><span class="p">)</span>
+        <span class="n">ts_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">ts_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_stats_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ts_fh</span><span class="p">)</span>
+
+        <span class="c1"># Set up logging of the last tournament number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;tourn_nr_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">tn_fh</span> <span class="o">=</span> <span class="n">NewRotatingFileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/tourn_nr.log&#39;</span><span class="p">,</span>
+                                       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tn_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> 
+        <span class="n">tn_fh</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">streamformatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">tn_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">streamformatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">tn_fh</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="c1"># Set up ta winning runtime logging</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;times_log&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">t_fh</span> <span class="o">=</span> <span class="n">NewRotatingFileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/times.log&#39;</span><span class="p">,</span>
+                                          <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">t_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> 
+            <span class="n">t_fh</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">streamformatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">t_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">streamformatter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">t_fh</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Set up ta results logging</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;results_log&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">r_fh</span> <span class="o">=</span> <span class="n">NewRotatingFileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/results.log&#39;</span><span class="p">,</span>
+                                          <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">r_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> 
+            <span class="n">r_fh</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">r_fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">streamformatter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">r_fh</span><span class="p">)</span>
+
+        <span class="c1"># Set up tournament contender list logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;contender_dict_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">cl_fh</span> <span class="o">=</span> \
+            <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/contender_dict_tourn_0.log&#39;</span><span class="p">)</span>
+        <span class="n">cl_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">cl_fh</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractLogs.general_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.general_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">general_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log message.</span>
+
+<span class="sd">        :param message: Any message provided.</span>
+<span class="sd">        :type message: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractLogs.scenario_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.scenario_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">scenario_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save scenario.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scenario.log&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sf</span><span class="p">:</span>
+            <span class="n">sf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scenario</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AbstractLogs.rtac_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.rtac_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rtac_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+                 <span class="n">tourn_stats</span><span class="p">:</span> <span class="n">TournamentStats</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Logs for realtime algorithm configuration data</span>
+<span class="sd">        concerning all methods.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        :param tourn_stats: Object containing statistics about the previous</span>
+<span class="sd">            tournament.</span>
+<span class="sd">        :type tourn_stats: TournamentStats</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winner_trajectory</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_stats_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tourn_stats</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tourn_stats</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="n">tourn_stats</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">tourn_stats</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractLogs.load_data"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.load_data">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the data of either last logged, or first tournament.&quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="RTACLogs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RTACLogs</span><span class="p">(</span><span class="n">AbstractLogs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with all functions and loggers concerning logging and loading</span>
+<span class="sd">    RTAC and tournament data for ReACTR implementation.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RTACLogs.init_ranking_logs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.init_ranking_logs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_ranking_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes loggers for data concerning ReACTR.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Set up pool logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;pool_log&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">p_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/pool_tourn_0.log&#39;</span><span class="p">)</span>
+        <span class="n">p_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">p_fh</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
+            <span class="c1"># Set up trueskill scores logging</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;scores_log&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">s_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scores_tourn_0.log&#39;</span><span class="p">)</span>
+            <span class="n">s_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">s_fh</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+            <span class="c1"># Set up bandit logging</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;bandit_log&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">b_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_tourn_0.log&#39;</span><span class="p">)</span>
+            <span class="n">b_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">b_fh</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RTACLogs.ranking_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.ranking_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ranking_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
+                    <span class="n">assessment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Logs data concerning ReACTR.</span>
+
+<span class="sd">        :param pool: Dictionary with configuration id as key and configuration</span>
+<span class="sd">            as value with scenario.contenders == #items .</span>
+<span class="sd">        :type pool: dict</span>
+<span class="sd">        :param assessment: Dictionary with configuration id as key and </span>
+<span class="sd">            assessment depending on the AC method used, e.g., trueskill scores,</span>
+<span class="sd">            or bandit model.</span>
+<span class="sd">        :type assessment: dict</span>
+<span class="sd">        :param contender_dict: Dictionary with configuration id as key and</span>
+<span class="sd">            configuration as value: contenders of the previous tournament.</span>
+<span class="sd">        :type contender_dict: dict</span>
+<span class="sd">        **kwargs : dict, optional</span>
+<span class="sd">            Additional keyword arguments. Possible keys include:</span>
+<span class="sd">            </span>
+<span class="sd">            - `standard_scaler` sklearn</span>
+<span class="sd">            - `min_max_scaler` sklearn</span>
+<span class="sd">            - `pca_obj_params` sklearn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">cl_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/contender_dict_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+        <span class="n">cl_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">cl_fh</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">p_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/pool_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+        <span class="n">p_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">p_fh</span><span class="p">)</span>
+
+        <span class="n">serializable_pool</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">serializable_pool</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">conf</span><span class="o">.</span><span class="n">gen</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">gen</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">serializable_pool</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">s_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scores_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+            <span class="n">s_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">s_fh</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">assessment</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_models&#39;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_models&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_models&#39;</span>
+            <span class="n">bandit_models</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;bandit_models&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tourn_nr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;standard_scaler&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/standard_scaler_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;min_max_scaler&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/min_max_scaler_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;one_hot_encoder&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/one_hot_encoder_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;pca_obj_params&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/pca_obj_params_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;pca_obj_inst&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/pca_obj_inst_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">online_instance_train</span> <span class="ow">and</span> <span class="n">tourn_nr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;standard_scaler&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/standard_scaler_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+                <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="n">bandit_models</span><span class="p">[</span><span class="s1">&#39;pca_obj_inst&#39;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/pca_obj_inst_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">bandit_models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">b_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+            <span class="n">b_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">b_fh</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">assessment</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RTACLogs.parse_array"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.parse_array">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Array-like: [1. 2. 3.]</span>
+        <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+        <span class="c1"># Scalar string: try to convert to int or float</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot parse value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RTACLogs.load_data"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.load_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> \
+        <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads data necessary for resuming the algorithm configuration from</span>
+<span class="sd">        last logged state of ReACTR.</span>
+
+<span class="sd">        :returns: Configuration pool, scores and contender list of previously</span>
+<span class="sd">            logged tournament, number of previously logged tournament.</span>
+<span class="sd">        :rtype: tuple[dict[str: Configuration], dict[str: tuple[int, int]],</span>
+<span class="sd">            dict[str: Configuration], int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tourn_nr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/tourn_nr.log&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">tourn_nr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/pool_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">conf</span><span class="o">.</span><span class="n">gen</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">gen</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scores_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">assessment</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
+                <span class="n">assessment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">assessment</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_models&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">online_instance_train</span><span class="p">:</span>
+                <span class="n">tourn_nr</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">assessment</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="n">assessment</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">assessment</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">})</span>
+            <span class="n">assessment</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">assessment</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">standard_scaler</span> <span class="o">=</span> \
+                <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/standard_scaler_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+            <span class="n">min_max_scaler</span> <span class="o">=</span> \
+                <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/min_max_scaler_0.pkl&#39;</span><span class="p">)</span>
+            <span class="n">one_hot_encoder</span> <span class="o">=</span> \
+                <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/one_hot_encoder_0.pkl&#39;</span><span class="p">)</span>
+            <span class="n">pca_obj_params</span> <span class="o">=</span> \
+                <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/pca_obj_params_0.pkl&#39;</span><span class="p">)</span>
+            <span class="n">pca_obj_inst</span> <span class="o">=</span> \
+                <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="si">}</span><span class="s1">/pca_obj_inst_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.pkl&#39;</span><span class="p">)</span>
+            <span class="n">bandit_models</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;standard_scaler&#39;</span><span class="p">:</span> <span class="n">standard_scaler</span><span class="p">,</span>
+                             <span class="s1">&#39;min_max_scaler&#39;</span><span class="p">:</span> <span class="n">min_max_scaler</span><span class="p">,</span>
+                             <span class="s1">&#39;one_hot_encoder&#39;</span><span class="p">:</span> <span class="n">one_hot_encoder</span><span class="p">,</span>
+                             <span class="s1">&#39;pca_obj_params&#39;</span><span class="p">:</span> <span class="n">pca_obj_params</span><span class="p">,</span>
+                             <span class="s1">&#39;pca_obj_inst&#39;</span><span class="p">:</span> <span class="n">pca_obj_inst</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/contender_dict_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">contender_ids</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scores_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/bandit_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+                <span class="n">filelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bm_path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/pool_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/contender_dict_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
+
+        <span class="n">contender_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ci</span> <span class="ow">in</span> <span class="n">contender_ids</span><span class="p">:</span>
+            <span class="n">contender_dict</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pool</span><span class="p">,</span> <span class="n">assessment</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">tourn_nr</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pool</span><span class="p">,</span> <span class="n">assessment</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">,</span> <span class="n">bandit_models</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

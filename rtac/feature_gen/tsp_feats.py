@@ -1,4 +1,4 @@
-"""Dummy feature generatr for TSP example."""
+"""Dummy feature generator for TSP example."""
 
 import os
 import json

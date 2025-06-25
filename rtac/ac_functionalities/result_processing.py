@@ -2,16 +2,19 @@
 the next tournament ar performed."""
 
 from abc import ABC, abstractmethod
-from ac_functionalities.config_gens import DefaultConfigGen, RandomConfigGen
-from ac_functionalities.ranking import trueskill
-from ac_functionalities.rtac_data import (
+from rtac.ac_functionalities.config_gens import (
+    DefaultConfigGen,
+    RandomConfigGen
+)
+from rtac.ac_functionalities.ranking import trueskill
+from rtac.ac_functionalities.rtac_data import (
     RTACData,
     Configuration,
     ACMethod,
     InterimMeaning,
     Generator
 )
-from ac_functionalities.logs import RTACLogs
+from rtac.ac_functionalities.logs import RTACLogs
 import argparse
 import random
 import sys
@@ -33,12 +36,15 @@ class AbstractResultProcessing(ABC):
     """Abstract class with functions to process tournament results."""
 
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs) -> None:
-        """Initialize tournament result processing class.
+        """
+        Initialize tournament result processing class.
 
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
+        Parameters
+        ----------
+        scenario
+            Namespace containing all settings for the RTAC.
+        logs
+            Object containing loggers and logging functions.
         """
         self.scenario = scenario
         self.logs = logs
@@ -557,7 +563,7 @@ class ResultProcessingCPPL(AbstractResultProcessing):
             self.bandit, self.bandit_models = queue.get()
             self.sum = 0
         else:
-            from ac_functionalities.ranking import cppl
+            from rtac.ac_functionalities.ranking import cppl
             self.cppl = cppl.CPPL(scenario, self.pool, self.contender_dict)
             self.cppl.random_config_gen = self.random_config_gen
             self.bandit = self.cppl.bandit
@@ -565,7 +571,7 @@ class ResultProcessingCPPL(AbstractResultProcessing):
 
     def init_cppl(self, scenario, pool, random_config_gen, contender_dict,
                   queue):
-        from ac_functionalities.ranking import cppl
+        from rtac.ac_functionalities.ranking import cppl
 
         cppl = cppl.CPPL(scenario, pool, contender_dict)
         cppl.random_config_gen = random_config_gen

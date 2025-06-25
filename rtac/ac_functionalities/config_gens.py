@@ -7,7 +7,7 @@ import uuid
 import random
 import math
 import numpy as np
-from ac_functionalities.rtac_data import (
+from rtac.ac_functionalities.rtac_data import (
     Configuration,
     ParamType,
     ValType,

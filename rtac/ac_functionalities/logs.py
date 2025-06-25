@@ -10,7 +10,7 @@ import joblib
 import numpy as np
 import copy
 from logging.handlers import RotatingFileHandler, BaseRotatingHandler
-from ac_functionalities.rtac_data import (
+from rtac.ac_functionalities.rtac_data import (
     Configuration,
     RTACData,
     TournamentStats,

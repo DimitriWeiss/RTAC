@@ -1,7 +1,7 @@
 """This module contains classes that guide the RTAC process according to
 method."""
 
-from utils.background_thread_control import set_background_thread_nr
+from rtac.utils.background_thread_control import set_background_thread_nr
 
 set_background_thread_nr()
 
@@ -12,10 +12,10 @@ import importlib
 import threading
 from multiprocessing.sharedctypes import Synchronized
 import multiprocessing as mp
-from ac_functionalities.ta_runner import ta_runner_factory as ta_runner
-from ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
-from ac_functionalities.tournament_manager import tourn_manager_factory as TM
-from ac_functionalities.logs import RTACLogs
+from rtac.ac_functionalities.ta_runner import ta_runner_factory as ta_runner
+from rtac.ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
+from rtac.ac_functionalities.tournament_manager import tourn_manager_factory as TM
+from rtac.ac_functionalities.logs import RTACLogs
 import faulthandler
 faulthandler.enable()
 

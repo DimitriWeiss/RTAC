@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.ta_runner &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.ta_runner</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.ta_runner</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;In this module classes to run the target algorithm and observe its output</span>
+<span class="sd">through the wrapper are implemented.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fcntl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ACMethod</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">RTACData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
+
+
+<div class="viewcode-block" id="non_block_read"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.non_block_read">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">non_block_read</span><span class="p">(</span><span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function for reading subprocess.PIPE output without blocking the</span>
+<span class="sd">    application until there is output. It looks up if there is output and</span>
+<span class="sd">    disconnects.</span>
+
+<span class="sd">    :param ta_output: subprocess.PIPE output.</span>
+<span class="sd">    :type ta_output: bytes</span>
+<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">    :type: RTACLogs</span>
+<span class="sd">    :returns: Either output as string or an empty string if nothing was there.</span>
+<span class="sd">    :rytpe: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">ta_output</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+    <span class="n">fl</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_GETFL</span><span class="p">)</span>
+    <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_SETFL</span><span class="p">,</span> <span class="n">fl</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ta_output</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+
+
+<div class="viewcode-block" id="AbstractTARunner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTARunner</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract TARunner.&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span>
+                 <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes target algorithm runner, loads and instantiates target</span>
+<span class="sd">        algorithm wrapper.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        :param core: Number of the parallel run started on a core.</span>
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AbstractTARunner.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.translate_config">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to the format</span>
+<span class="sd">        needed by the wrapper to pass to the target algorithm.</span>
+
+<span class="sd">        :param config: Configuration of parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :return: new representation of the configuration</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTARunner.start_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.start_run">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+                  <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts target algorithm run and populates data necessary for</span>
+<span class="sd">        corination of tournament members.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param config: Representation of the configuration</span>
+<span class="sd">        :type: Any</span>
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTARunner.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.check_output">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks the output, if there was any, and declares instance as solved</span>
+<span class="sd">        by the contender, if the marker for it was present.</span>
+
+<span class="sd">        :param ta_output: subprocess.PIPE output.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTARunner.check_result"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.check_result">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If this contender solved the problem instance the rtac data is</span>
+<span class="sd">        populated by the resulting information according to the RTAC method</span>
+<span class="sd">        scenario.ac.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTARunner.kill_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.kill_run">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminates this process/ target algorithm run, as well as the other</span>
+<span class="sd">        contenders. Several layers of termination are included to ensure</span>
+<span class="sd">        termination on different platforms.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTARunner.run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner.run">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+            <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manages the target algorithm runner functions depending on state of</span>
+<span class="sd">        the run according to the RTAC method scenario.ac.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param config: Configuration of parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="BaseTARunner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseTARunner</span><span class="p">(</span><span class="n">AbstractTARunner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Target algorithm runner for ReACTR implementation.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span>
+                 <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes target algorithm runner, loads and instantiates target</span>
+<span class="sd">        algorithm wrapper.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        :param core: Number of the parallel run started on a core.</span>
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_check</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clock_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core</span> <span class="o">=</span> <span class="n">core</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_float</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="mf">1e-100</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">wrapper</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">wrapper_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
+
+<div class="viewcode-block" id="BaseTARunner.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.translate_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to the format</span>
+<span class="sd">        needed by the wrapper to pass to the target algorithm.</span>
+
+<span class="sd">        :param config: Configuration of parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :return: new representation of the configuration</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_id</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">translated_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">translate_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">translated_config</span></div>
+
+<div class="viewcode-block" id="BaseTARunner.start_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.start_run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                  <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts target algorithm run and populates data necessary for</span>
+<span class="sd">        corination of tournament members.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param config: Representation of the configuration</span>
+<span class="sd">        :type: Any</span>
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">substart</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">substart_wall</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">om_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_cpu_time</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">pids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># TARunStatus.running</span></div>
+
+<div class="viewcode-block" id="BaseTARunner.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks the output, if there was any, and declares instance as solved</span>
+<span class="sd">        by the contender, if the marker for it was present.</span>
+
+<span class="sd">        :param ta_output: subprocess.PIPE output.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">if_solved</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">check_if_solved</span><span class="p">(</span><span class="n">ta_output</span><span class="p">,</span> <span class="n">non_block_read</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">if_solved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">if_solved</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># TARunStatus.finished</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gb_record</span><span class="p">(</span><span class="n">ta_output</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseTARunner.check_result"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.check_result">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If this contender solved the problem instance the rtac data is</span>
+<span class="sd">        populated by the resulting information.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subnow</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_rtac_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="nb">round</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_cpu_time</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ev</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_id</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># TARunStatus.finished</span></div>
+
+<div class="viewcode-block" id="BaseTARunner.kill_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.kill_run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">kill_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminates this process/ target algorithm run, as well as the other</span>
+<span class="sd">        contenders. Several layers of termination are included to ensure</span>
+<span class="sd">        termination on different platforms.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># TARunStatus.capped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">substart</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                        <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">())</span> <span class="o">*</span> <span class="mf">1e-9</span> <span class="o">&gt;=</span> \
+                            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span><span class="o">.</span><span class="n">value</span> <span class="ow">and</span> \
+                            <span class="n">ii</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">:</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">pids</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseTARunner.run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner.run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+            <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">sync_event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manages the target algorithm runner functions depending on state of</span>
+<span class="sd">        the run.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param config: Configuration of parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sync_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="c1"># Avoid checking output excessively often (causes too much</span>
+            <span class="c1"># overhead)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span>  <span class="c1"># time.sleep(5e-6)</span>
+
+            <span class="n">ta_output</span> <span class="o">=</span> <span class="n">non_block_read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">ta_output</span><span class="p">)</span>
+            <span class="c1"># If result entry is different to default, populate result lists</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_float</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">check_result</span><span class="p">()</span>
+            <span class="c1"># If objective minimization scenario</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+                <span class="c1"># and if time limit is reached, kill this target algorithm run</span>
+                <span class="c1"># + 1 sec extra time for the TA to shut down, wrap up and print</span>
+                <span class="c1"># the result, since it is important to know it</span>
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">om_start</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># TARunStatus.timeout</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_run</span><span class="p">()</span>
+            <span class="c1"># If runtime minimization and one TA run solved instance, kill all</span>
+            <span class="c1"># target algorithm runs</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ev</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_run</span><span class="p">()</span>      </div></div>
+
+
+<div class="viewcode-block" id="TARunnerpp"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.TARunnerpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TARunnerpp</span><span class="p">(</span><span class="n">BaseTARunner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Target algorithm runner for ReACTR++ implementation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span>
+                 <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">BaseTARunner</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">core</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_check_increment</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span> <span class="o">/</span> <span class="mi">150</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_check_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TARunnerpp.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.TARunnerpp.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks the output, if there was any, and declares instance as solved</span>
+<span class="sd">        by the contender, if the marker for it was present or outputs</span>
+<span class="sd">        intermediate target algorithm output.</span>
+
+<span class="sd">        :param ta_output: subprocess.PIPE output.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">if_solved</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">check_if_solved</span><span class="p">(</span><span class="n">ta_output</span><span class="p">,</span> <span class="n">non_block_read</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">if_solved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">if_solved</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># TARunStatus.finished</span>
+
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_check_time</span> \
+                    <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_check_increment</span><span class="p">:</span>  <span class="c1"># reduce frequency</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">interim_check_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+                <span class="n">interim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">ta_output</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">interim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">interim</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gb_record</span><span class="p">(</span><span class="n">ta_output</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="gb_record"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.gb_record">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">gb_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_check</span>
+    <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gb_read_time</span><span class="p">:</span>
+        <span class="n">rt_feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">ta_output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rt_feats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="n">rt_feats</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">RuntimeFeatures</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">RuntimeFeatures</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">rt_feats</span>
+            <span class="n">CPUTimeExpended</span> <span class="o">=</span> \
+                <span class="p">(</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">substart</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="mf">1e-9</span>
+            <span class="n">ClockTimeExpended</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock_start</span>
+
+            <span class="n">rt_record</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;core&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">,</span>
+                         <span class="s1">&#39;CPUTimeExpended&#39;</span><span class="p">:</span> <span class="n">CPUTimeExpended</span><span class="p">,</span>
+                         <span class="s1">&#39;ClockTimeExpended&#39;</span><span class="p">:</span> <span class="n">ClockTimeExpended</span><span class="p">,</span>
+                         <span class="s1">&#39;rt_feats&#39;</span><span class="p">:</span> <span class="n">rt_feats</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">rt_record</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">rec_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">rec_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">ClockTimeExpended</span><span class="p">)]</span> <span class="o">=</span> \
+                    <span class="n">rt_record</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_check</span> <span class="o">=</span> <span class="n">now</span></div>
+
+
+<div class="viewcode-block" id="ta_runner_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.ta_runner_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ta_runner_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span>
+                      <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractTARunner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized target algorithm runner class</span>
+<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+
+<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">    :type scenario: argparse.Namespace</span>
+<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">    :type: RTACLogs</span>
+<span class="sd">    :param core: Number of the parallel run started on a core.</span>
+<span class="sd">    :type: int</span>
+<span class="sd">    :returns: Inititialized AbstractTARunner object matching the RTAC method of</span>
+<span class="sd">        the scenario.</span>
+<span class="sd">    :rtype: AbstractTARunner</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">):</span>
+        <span class="n">tarunner</span> <span class="o">=</span> <span class="n">BaseTARunner</span>
+    <span class="k">elif</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="o">==</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">:</span>
+        <span class="n">tarunner</span> <span class="o">=</span> <span class="n">TARunnerpp</span>
+
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+        <span class="n">tarunner</span><span class="o">.</span><span class="n">gb_record</span> <span class="o">=</span> <span class="n">gb_record</span>
+
+    <span class="k">return</span> <span class="n">tarunner</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">core</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

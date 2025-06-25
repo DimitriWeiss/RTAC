@@ -8,15 +8,15 @@ import time
 import copy
 import gc
 import sys
-from utils.clean_logs import remove_fuse_hidden_files as rfhf
+from rtac.utils.clean_logs import remove_fuse_hidden_files as rfhf
 from collections import OrderedDict
 from multiprocessing.sharedctypes import Synchronized
-from ac_functionalities.tournament import tournament_factory
-from ac_functionalities.result_processing import processing_factory
-from ac_functionalities.rtac_data import TARunStatus, RTACData, ACMethod
-from ac_functionalities.ta_runner import BaseTARunner
-from ac_functionalities.logs import RTACLogs
-from ac_functionalities.ranking.gray_box import Gray_Box
+from rtac.ac_functionalities.tournament import tournament_factory
+from rtac.ac_functionalities.result_processing import processing_factory
+from rtac.ac_functionalities.rtac_data import TARunStatus, RTACData, ACMethod
+from rtac.ac_functionalities.ta_runner import BaseTARunner
+from rtac.ac_functionalities.logs import RTACLogs
+from rtac.ac_functionalities.ranking.gray_box import Gray_Box
 
 
 class AbstractTournamentManager(ABC):

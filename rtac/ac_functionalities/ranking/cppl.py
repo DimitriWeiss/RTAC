@@ -7,7 +7,7 @@ from collections import Counter
 from itertools import islice
 from ConfigSpace.configuration_space import ConfigurationSpace
 from ConfigSpace.hyperparameters.categorical import CategoricalHyperparameter
-from ac_functionalities.rtac_data import (
+from rtac.ac_functionalities.rtac_data import (
     Configuration,
     ParamType,
     Generator,

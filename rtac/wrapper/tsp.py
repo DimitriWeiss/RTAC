@@ -6,9 +6,9 @@ from typing import Any
 import time
 import sys
 import os
-from wrapper.abstract_wrapper import AbstractWrapper
-from ac_functionalities.rtac_data import Configuration, InterimMeaning
-from ac_functionalities.ta_runner import non_block_read
+from rtac.wrapper.abstract_wrapper import AbstractWrapper
+from rtac.ac_functionalities.rtac_data import Configuration, InterimMeaning
+from rtac.ac_functionalities.ta_runner import non_block_read
 
 sys.path.append(os.getcwd())
 
@@ -52,9 +52,18 @@ class TSP_RT(AbstractWrapper):
         time of the process
         :rtype: tuple[subprocess.Popen, int]
         """
-        proc = Popen(['python3', f'{self.path}/data/solvers/python-tsp.py',
+
+        # Absolute path to the current file
+        file_path = os.path.abspath(__file__)
+
+        # Directory containing the file
+        file_dir = os.path.dirname(file_path)
+        file_dir = file_dir.split('wrapper')[0]
+
+        proc = Popen(['python3',
+                      f'{file_dir}data/solvers/python-tsp.py',
                       *config, '-t', str(timeout), '-i',
-                      f'{self.path}/{instance}'],
+                      f'{file_dir}{instance}'],
                      stdout=PIPE)
 
         self.timeout = timeout

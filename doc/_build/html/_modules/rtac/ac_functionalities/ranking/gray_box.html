@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.ranking.gray_box &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.ranking.gray_box</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.ranking.gray_box</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">six</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">float</span> <span class="o">=</span> <span class="nb">float</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">sklearn_version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">packaging</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn.ensemble._base</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">base</span>
+<span class="c1"># Replacing/adding modules used in costcla based on deprecated sklearn modules</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;sklearn.ensemble.base&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;sklearn.externals.joblib&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">joblib</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;sklearn.externals.six&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">six</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;sklearn.externals.six.moves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">costcla.models.bagging</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bagging_mod</span>
+
+
+<span class="c1"># Patching np.int to int</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_patched_partition_estimators</span><span class="p">(</span><span class="n">n_estimators</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patched version of _partition_estimators with np.int replaced by int.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span> <span class="n">n_estimators</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">n_estimators</span><span class="p">)</span>
+
+    <span class="n">n_estimators_per_job</span> <span class="o">=</span> \
+        <span class="p">(</span><span class="n">n_estimators</span> <span class="o">//</span> <span class="n">n_jobs</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">n_estimators_per_job</span><span class="p">[:</span><span class="n">n_estimators</span> <span class="o">%</span> <span class="n">n_jobs</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">n_estimators_per_job</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">n_estimators_per_job</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">starts</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<span class="n">bagging_mod</span><span class="o">.</span><span class="n">_partition_estimators</span> <span class="o">=</span> <span class="n">_patched_partition_estimators</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">column_or_1d</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">costcla.metrics.costs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">costs_mod</span>
+
+
+<span class="c1"># Patching np.float to float</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_patched_cost_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">cost_mat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patched version of cost_loss with np.float replaced by float.&quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">column_or_1d</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_true</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">column_or_1d</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">*</span> <span class="n">cost_mat</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_pred</span> <span class="o">*</span> <span class="n">cost_mat</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">cost</span> <span class="o">+=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">y_pred</span> <span class="o">*</span> <span class="n">cost_mat</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">*</span> <span class="n">cost_mat</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+
+
+<span class="n">costs_mod</span><span class="o">.</span><span class="n">cost_loss</span> <span class="o">=</span> <span class="n">_patched_cost_loss</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">costcla.models.bagging</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseBagging</span>
+
+
+<span class="c1"># Patching CostCla to work with sklearn &gt;= 1.2</span>
+<span class="n">_original_init</span> <span class="o">=</span> <span class="n">BaseBagging</span><span class="o">.</span><span class="fm">__init__</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_patched_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">base_estimator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">n_estimators</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                  <span class="n">max_samples</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                  <span class="n">max_features</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                  <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">bootstrap_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">combination</span><span class="o">=</span><span class="s1">&#39;majority_voting&#39;</span><span class="p">,</span>
+                  <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="c1"># Handle estimator argument rename in sklearn &gt;= 1.2</span>
+    <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">sklearn_version</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;1.2&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseBagging</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">estimator</span><span class="o">=</span><span class="n">base_estimator</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseBagging</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">base_estimator</span><span class="o">=</span><span class="n">base_estimator</span><span class="p">,</span>
+            <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="n">max_samples</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_features</span> <span class="o">=</span> <span class="n">max_features</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap</span> <span class="o">=</span> <span class="n">bootstrap</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_features</span> <span class="o">=</span> <span class="n">bootstrap_features</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">combination</span> <span class="o">=</span> <span class="n">combination</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+
+<span class="n">BaseBagging</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">_patched_init</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">costcla.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CostSensitiveRandomPatchesClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threadpoolctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">threadpool_limits</span>
+
+
+<div class="viewcode-block" id="Gray_Box"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Gray_Box</span><span class="p">():</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gb_cla</span> <span class="o">=</span> <span class="n">CostSensitiveRandomPatchesClassifier</span>
+ 
+<div class="viewcode-block" id="Gray_Box.prepare_predict_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_predict_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_data</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span>
+                             <span class="n">mtp</span><span class="p">,</span> <span class="n">pair_cores</span><span class="p">):</span>
+
+        <span class="c1"># Get last timepoint of recording for configs, if there were any</span>
+        <span class="n">max_time_points</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">core</span><span class="p">,</span> <span class="n">rd</span> <span class="ow">in</span> <span class="n">rec_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">rk</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">rk</span><span class="p">:</span>
+                <span class="n">max_time_points</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rk</span><span class="p">)</span>
+
+        <span class="c1"># Do not waste time computing with unchanged records</span>
+        <span class="k">if</span> <span class="n">mtp</span> <span class="o">!=</span> <span class="n">max_time_points</span><span class="p">:</span>
+
+            <span class="n">mtp</span> <span class="o">=</span> <span class="n">max_time_points</span>
+            <span class="n">cores</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># Compute paiwise comparisons</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_time_points</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">recorded_cores</span> <span class="o">=</span> <span class="n">max_time_points</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">pw_instances</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">core_i</span> <span class="ow">in</span> <span class="n">recorded_cores</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">core_j</span> <span class="ow">in</span> <span class="n">recorded_cores</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">core_i</span> <span class="o">!=</span> <span class="n">core_j</span><span class="p">:</span>
+                            <span class="n">conf_i</span> <span class="o">=</span> <span class="n">rec_data</span><span class="p">[</span><span class="n">core_i</span><span class="p">][</span><span class="n">max_time_points</span><span class="p">[</span><span class="n">core_i</span><span class="p">]]</span>
+                            <span class="n">conf_j</span> <span class="o">=</span> <span class="n">rec_data</span><span class="p">[</span><span class="n">core_j</span><span class="p">][</span><span class="n">max_time_points</span><span class="p">[</span><span class="n">core_j</span><span class="p">]]</span>
+
+                            <span class="n">pw_inst</span> <span class="o">=</span> <span class="p">[</span>
+                                <span class="n">conf_i</span><span class="p">[</span><span class="s1">&#39;CPUTimeExpended&#39;</span><span class="p">],</span>
+                                <span class="o">*</span><span class="n">conf_i</span><span class="p">[</span><span class="s1">&#39;rt_feats&#39;</span><span class="p">],</span>
+                                <span class="n">conf_j</span><span class="p">[</span><span class="s1">&#39;CPUTimeExpended&#39;</span><span class="p">],</span>
+                                <span class="o">*</span><span class="n">conf_j</span><span class="p">[</span><span class="s1">&#39;rt_feats&#39;</span><span class="p">],</span>
+                                <span class="n">conf_i</span><span class="p">[</span><span class="s1">&#39;CPUTimeExpended&#39;</span><span class="p">]</span> 
+                                <span class="o">-</span> <span class="n">conf_j</span><span class="p">[</span><span class="s1">&#39;CPUTimeExpended&#39;</span><span class="p">],</span>
+                                <span class="o">*</span><span class="p">[</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> 
+                                  <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">conf_i</span><span class="p">[</span><span class="s1">&#39;rt_feats&#39;</span><span class="p">],</span>
+                                         <span class="n">conf_j</span><span class="p">[</span><span class="s1">&#39;rt_feats&#39;</span><span class="p">])]</span>
+                            <span class="p">]</span>
+
+                            <span class="c1"># if pw_inst:  # not in gb_pw_inst_archive:</span>
+                            <span class="n">pw_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pw_inst</span><span class="p">)</span>
+                            <span class="n">gb_pw_inst_archive</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pw_inst</span><span class="p">)</span>
+                            <span class="n">pair_cores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="p">[</span><span class="n">conf_i</span><span class="p">[</span><span class="s1">&#39;core&#39;</span><span class="p">],</span> <span class="n">conf_j</span><span class="p">[</span><span class="s1">&#39;core&#39;</span><span class="p">]])</span>
+                            <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">conf_i</span><span class="p">,</span> <span class="n">conf_j</span><span class="p">])</span>
+                            <span class="n">cores</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">core_i</span><span class="p">,</span> <span class="n">core_j</span><span class="p">])</span>
+
+                <span class="k">return</span> <span class="p">(</span><span class="n">pw_instances</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span>
+                        <span class="n">max_time_points</span><span class="p">,</span> <span class="n">pair_cores</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">([],</span> <span class="p">[],</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span> <span class="n">mtp</span><span class="p">,</span>
+                        <span class="n">pair_cores</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span> <span class="n">mtp</span><span class="p">,</span> <span class="n">pair_cores</span></div>
+
+<div class="viewcode-block" id="Gray_Box.prepare_train_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_train_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">winner</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span>
+                           <span class="n">y</span><span class="p">,</span> <span class="n">cost_mat</span><span class="p">):</span>
+
+        <span class="n">max_res</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">disregard</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cores</span><span class="p">,</span> <span class="n">instances</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">winner</span> <span class="ow">in</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">max_res</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">max_res</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">winner</span><span class="p">:</span>
+                    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 0 -&gt; i wins</span>
+                <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">winner</span><span class="p">:</span>
+                    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 1 -&gt; j wins</span>
+                <span class="k">elif</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">max_res</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">max_res</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                        <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Avoid invalid value in scalar divide (1.0 - cost / cost_base)</span>
+                <span class="c1"># in costcla==0.6 by using epsilon instead of 0</span>
+                <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.000001</span>
+                <span class="n">cost_mat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">max</span><span class="p">([</span><span class="n">epsilon</span><span class="p">,</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> <span class="n">max_res</span><span class="p">]),</span>
+                     <span class="nb">max</span><span class="p">([</span><span class="n">epsilon</span><span class="p">,</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">res</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">/</span> <span class="n">max_res</span><span class="p">]),</span>
+                     <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">disregard</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Delete instances that compare configurations that both timed out</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">disregard</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">X_train</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cost_mat</span></div>
+
+<div class="viewcode-block" id="Gray_Box.train_gb"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">train_gb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cost_mat_train</span><span class="p">,</span> <span class="n">cores</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="n">cores</span><span class="p">):</span>
+                <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cost_mat_train</span> <span class="o">=</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_train</span><span class="p">),</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cost_mat_train</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">CostSensitiveRandomPatchesClassifier</span><span class="p">(</span>
+                    <span class="n">combination</span><span class="o">=</span><span class="s1">&#39;weighted_voting&#39;</span><span class="p">,</span>
+                    <span class="n">max_samples</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">20</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">cost_mat_train</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Gray_Box.classify_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">classify_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="n">cores</span><span class="p">):</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># self.model = model</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X_pred</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">X_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_pred</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_pred</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_pred</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">predictions</span></div>
+
+<div class="viewcode-block" id="Gray_Box.term_list"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">term_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">):</span>
+
+        <span class="n">better_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cores</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">better_counts</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">better_counts</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Ensure all cores are represented (even with 0 count)</span>
+        <span class="n">all_cores</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">core</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">cores</span> <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">all_cores</span><span class="p">:</span>
+            <span class="n">better_counts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">core</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Convert to sorted list of (core, count)</span>
+        <span class="n">sorted_counts</span> <span class="o">=</span> \
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">better_counts</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Assign ranks (higher count = better rank = lower number)</span>
+        <span class="n">ranks</span> <span class="o">=</span> <span class="p">{</span><span class="n">core</span><span class="p">:</span> <span class="n">rank</span> <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="p">(</span><span class="n">core</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_counts</span><span class="p">)}</span>
+
+        <span class="c1"># Compute average of best and worst ranks</span>
+        <span class="n">max_rank</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ranks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">min_rank</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ranks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">avg_rank</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_rank</span> <span class="o">+</span> <span class="n">min_rank</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="c1"># Select cores better than avg_rank</span>
+        <span class="n">worse_than_avg</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="n">core</span> <span class="k">for</span> <span class="n">core</span><span class="p">,</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">rank</span> <span class="o">&gt;=</span> <span class="n">avg_rank</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">better_counts</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GRAY BOX PAIRWSE COMPARISON STATS:&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Better counts:&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">better_counts</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ranks:&quot;</span><span class="p">,</span> <span class="n">ranks</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average rank:&quot;</span><span class="p">,</span> <span class="n">avg_rank</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Worse than average:&quot;</span><span class="p">,</span> <span class="n">worse_than_avg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">worse_than_avg</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

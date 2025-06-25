@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.wrapper.abstract_wrapper &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.wrapper.abstract_wrapper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.wrapper.abstract_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The abstract target algorithm runner class is defined in this module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">non_block_read</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span>
+
+
+<div class="viewcode-block" id="AbstractWrapper"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractWrapper</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract target algorithm wrapper class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure target algorithm is executble by using absolute path to</span>
+<span class="sd">        target algorithm.&quot;&quot;&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="AbstractWrapper.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper.translate_config">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to the format</span>
+<span class="sd">        needed by the wrapper to pass to the target algorithm.</span>
+
+<span class="sd">        :param config: Configuration object of parameter values to run</span>
+<span class="sd">            problem instance with.v</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractWrapper.start"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper.start">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">timelimit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the target algorithm via subprocess.Popen with stdout to</span>
+<span class="sd">        subprocess.PIPE.</span>
+
+<span class="sd">        :param params: Parameters in a format as needed for target algorithm.</span>
+<span class="sd">        :type params: Any</span>
+<span class="sd">        :param timelimit: Maximum runtime allowed for target algorithm run in</span>
+<span class="sd">            seconds.</span>
+<span class="sd">        :type timelimit: int</span>
+<span class="sd">        :param instance: Path to problem instance.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :returns: Target algorithm via subprocess.Popen process and starting</span>
+<span class="sd">        time of the process</span>
+<span class="sd">        :rtype: tuple[subprocess.Popen, int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;echo&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">],</span>
+                     <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="n">proc_cpu_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">proc</span><span class="p">,</span> <span class="n">proc_cpu_time</span></div>
+
+<div class="viewcode-block" id="AbstractWrapper.check_if_solved"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper.check_if_solved">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_solved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nnr</span><span class="p">:</span> <span class="n">non_block_read</span><span class="p">,</span>
+                        <span class="n">proc</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+                            <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bytes output of the subprocess.Popen process running the target</span>
+<span class="sd">        algorithm is checked to determine if the problem instance is solved.</span>
+
+<span class="sd">        :param ta_output: Output of the target algorithm.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        :param nnr: Non blocking read function for accessing the</span>
+<span class="sd">            subprocess.PIPE output of the target algorithm</span>
+<span class="sd">        :type nnr: non_nlock_read</span>
+<span class="sd">        :param proc: Target algorithm run via subprocess.Popen process</span>
+<span class="sd">        :type proc: subprocess.Popen</span>
+<span class="sd">        :returns: Target algorithm result, runtime needed and event</span>
+<span class="sd">            (0 or 1, if solved), or None</span>
+<span class="sd">        :rtype: tuple[int | float, float, int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># Check if output is not empty bytes</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">class AbstractWrapperpp(AbstractWrapper):</span>
+
+<span class="sd">    @abstractmethod</span>
+<span class="sd">    def check_output(ta_output):</span>
+<span class="sd">        &quot;&quot;&quot;Parsing runtime output of the solver.&quot;&quot;&quot;</span>
+<span class="sd">        if ta_output != b&#39;&#39;:</span>
+<span class="sd">            interim = []</span>
+
+<span class="sd">            return interim</span>
+<span class="sd">        else:</span>
+<span class="sd">            return &#39;No output&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

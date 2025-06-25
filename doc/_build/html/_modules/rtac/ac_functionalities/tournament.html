@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.tournament &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.tournament</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.tournament</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains classes implementing problem instance solving</span>
+<span class="sd">tournaments by differently configured target algorithms according to the RTAC</span>
+<span class="sd">method utilized.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.utils.process_affinity</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_affinity_recursive</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.config_gens</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultConfigGen</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TournamentStats</span><span class="p">,</span>
+    <span class="n">TARun</span><span class="p">,</span>
+    <span class="n">TARunStatus</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTARunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">ACMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+
+
+<div class="viewcode-block" id="AbstractTournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTournament</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span>
+                 <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes tournament class for ReACTR tournaments.</span>
+<span class="sd">        If self.scenario.baselineperf the configuration used is the default</span>
+<span class="sd">        configuration according to the configuration space definitin json.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        :param ta_runner: Target algorithm runner object.</span>
+<span class="sd">        :type: BaseTARunner</span>
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner_class</span> <span class="o">=</span> <span class="n">ta_runner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">baselineperf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dcg</span> <span class="o">=</span> <span class="n">DefaultConfigGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gb_model</span> <span class="o">=</span> <span class="kc">None</span>
+    
+<div class="viewcode-block" id="AbstractTournament.start_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.start_tournament">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
+                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up tournament data and information and starts the tournament</span>
+<span class="sd">        with scenario.number_cores configured target algorithms running in</span>
+<span class="sd">        paralel with settings according to the RTAC method used.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param contender_dict: Dictonary containing configurations to run in</span>
+<span class="sd">            the tournament with configuration id as key and Configuration</span>
+<span class="sd">            object as value.</span>
+<span class="sd">        :type instance: dict[str: Configuration]</span>
+<span class="sd">        :param tourn_nr: Number of the tournament during this RTAC run.</span>
+<span class="sd">        :type tourn_nr: int</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTournament.watch_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.watch_tournament">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached according to the RTAC method used.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractTournament.close_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.close_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function that initiates termination of all target algorithm runs.</span>
+
+<span class="sd">        :param process: Target algorithm run process.</span>
+<span class="sd">        :type process: subprocess.Popen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ev</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Closing tournament Nr. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s1">&#39;(Tournament ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s1">&#39;due to timeout (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s) at &#39;</span><span class="p">,</span>
+              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">currenttime</span><span class="si">}</span><span class="s1">s.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># extra time for TAs to shut down and print results</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminate_run</span><span class="p">(</span><span class="n">core</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="AbstractTournament.terminate_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.terminate_run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">terminate_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">process</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function that enforces termination of a target algorithm run.</span>
+
+<span class="sd">        :param core: Index of the process in the list of processes.</span>
+<span class="sd">        :type core: int</span>
+<span class="sd">        :param process: Target algorithm run process.</span>
+<span class="sd">        :type process: subprocess.Popen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">core</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>             
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Terminating configuration&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf_id_list</span><span class="p">[</span><span class="n">core</span><span class="p">],</span>
+                      <span class="s1">&#39;running on core&#39;</span><span class="p">,</span> <span class="n">core</span><span class="p">,</span> <span class="s1">&#39;in tournament&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span><span class="p">,</span>
+                      <span class="s1">&#39;( tournament Nr.&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">,</span> <span class="s1">&#39;).&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid_alive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">pids</span><span class="p">[</span><span class="n">core</span><span class="p">]):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">pids</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> \
+                        <span class="sa">f</span><span class="s1">&#39;Tried killing pid </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">pids</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="si">}</span><span class="s1"> - &#39;</span> \
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> \
+                        <span class="o">+</span> <span class="s1">&#39; - It was run with configuration&#39;</span> <span class="o">+</span> \
+                        <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">conf_id_list</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">core</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractTournament.pid_alive"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.pid_alive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pid_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="Tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournament</span><span class="p">(</span><span class="n">AbstractTournament</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament class with functions needed for ReACTR method tournaments.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Tournament.start_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.start_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
+                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up tournament data and information and starts the tournament</span>
+<span class="sd">        with scenario.number_cores configured target algorithms running in</span>
+<span class="sd">        paralel according to the ReACTR method.</span>
+
+<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :param contender_dict: Dictonary containing configurations to run in</span>
+<span class="sd">            the tournament with configuration id as key and Configuration</span>
+<span class="sd">            object as value.</span>
+<span class="sd">        :type instance: dict[str: Configuration]</span>
+<span class="sd">        :param tourn_nr: Number of the tournament during this RTAC run.</span>
+<span class="sd">        :type tourn_nr: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="n">tourn_nr</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">baselineperf</span><span class="p">:</span>
+            <span class="n">def_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcg</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+            <span class="n">contender_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">def_conf</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">def_conf</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_list</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="n">i</span><span class="p">]</span>
+             <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cores_start</span> <span class="k">else</span> <span class="kc">None</span>
+             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf_id_list</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">i</span><span class="p">]</span>
+             <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cores_start</span> <span class="k">else</span> <span class="kc">None</span>
+             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">tournID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span>
+        <span class="n">log_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Starting tournament </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span><span class="si">}</span><span class="s1">&#39;</span> \
+                      <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; (nr. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">) on instance </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="n">log_message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tournamentstats</span> <span class="o">=</span> \
+            <span class="n">TournamentStats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_id</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf_id_list</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">{})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_event</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">,</span> <span class="n">core</span><span class="p">)</span>
+            <span class="n">contender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_list</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tournamentstats</span><span class="o">.</span><span class="n">TARuns</span><span class="p">[</span><span class="n">contender</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">TARun</span><span class="p">(</span><span class="n">contender</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">contender</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TARunStatus</span><span class="o">.</span><span class="n">running</span><span class="p">)</span>
+
+            <span class="n">translated_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span><span class="o">.</span><span class="n">translate_config</span><span class="p">(</span><span class="n">contender</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="n">translated_config</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_event</span><span class="p">])</span>
+
+        <span class="c1"># Starting processes</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>  <span class="c1"># range(self.scenario.number_cores):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
+            <span class="n">set_affinity_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="n">core</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tournament.fill_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.fill_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">,</span> <span class="n">core</span><span class="p">)</span>
+            <span class="n">contender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_list</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tournamentstats</span><span class="o">.</span><span class="n">TARuns</span><span class="p">[</span><span class="n">contender</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">TARun</span><span class="p">(</span><span class="n">contender</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">contender</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TARunStatus</span><span class="o">.</span><span class="n">running</span><span class="p">)</span>
+
+            <span class="n">translated_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span><span class="o">.</span><span class="n">translate_config</span><span class="p">(</span><span class="n">contender</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+                           <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="n">translated_config</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_event</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Starting processes</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
+            <span class="n">set_affinity_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="n">core</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tournament.watch_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.watch_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached.&quot;&quot;&quot;</span>
+
+        <span class="k">while</span> <span class="nb">any</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Timeout is int, so checking every second is enough</span>
+            <span class="n">currenttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">start</span>
+
+            <span class="k">if</span> <span class="n">currenttime</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">currenttime</span> <span class="o">=</span> <span class="n">currenttime</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close_tournament</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Tournament_GB"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournament_GB</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that contains gray-box tournament functions to be inserted into </span>
+<span class="sd">    tournament classes if scenario.gray_box is True.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Tournament_GB.watch_tournament_gray_box"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB.watch_tournament_gray_box">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament_gray_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">early_tournament</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached.&quot;&quot;&quot;</span>
+
+        <span class="n">gb_check_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pw_cores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtp</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_instances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">term_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+                  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gb_read_time</span><span class="p">)</span>
+            <span class="n">currenttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">start</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">early_tournament</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span><span class="p">:</span>
+
+                <span class="n">X_pw</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mtp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pw_cores</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">gray_box</span><span class="o">.</span><span class="n">prepare_predict_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">rec_data</span><span class="p">,</span> 
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">s_instances</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">mtp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pw_cores</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_pw</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> \
+                        <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> \
+                        <span class="o">-</span> <span class="n">gb_check_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gb_read_time</span><span class="p">:</span>
+
+                    <span class="n">pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gray_box</span><span class="o">.</span><span class="n">classify_configs</span><span class="p">(</span>
+                        <span class="n">X_pw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_model</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">pred</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">term_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournamentstats</span><span class="o">.</span><span class="n">kills</span> <span class="o">=</span> \
+                            <span class="bp">self</span><span class="o">.</span><span class="n">gray_box</span><span class="o">.</span><span class="n">term_list</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_list</span><span class="p">:</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tm</span><span class="o">.</span><span class="n">early_start</span><span class="p">(</span><span class="n">currenttime</span><span class="p">)</span>
+                    
+                <span class="n">gb_check_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">currenttime</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">currenttime</span> <span class="o">=</span> <span class="n">currenttime</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close_tournament</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Tournamentpp"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournamentpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournamentpp</span><span class="p">(</span><span class="n">Tournament</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament class with functions needed for ReACTR method tournaments.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="tournament_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.tournament_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tournament_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span>
+                       <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tournament</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized TournamentManager class</span>
+<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+
+<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">    :type scenario: argparse.Namespace</span>
+<span class="sd">    :param ta_runner: Target algorithm runner object.</span>
+<span class="sd">    :type: BaseTARunner</span>
+<span class="sd">    :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">    :type rtac_data: RTACData</span>
+<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">    :type: RTACLogs</span>
+<span class="sd">    :returns: Inititialized Tournament object matching the RTAC method</span>
+<span class="sd">        of the scenario.</span>
+<span class="sd">    :rtype: Tournament</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">):</span>
+        <span class="n">tournament</span> <span class="o">=</span> <span class="n">Tournament</span>
+    <span class="k">elif</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">:</span>
+        <span class="n">tournament</span> <span class="o">=</span> <span class="n">Tournamentpp</span>
+
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+        <span class="n">tournament</span><span class="o">.</span><span class="n">watch_tournament</span> <span class="o">=</span> <span class="n">Tournament_GB</span><span class="o">.</span><span class="n">watch_tournament_gray_box</span>
+
+    <span class="k">return</span> <span class="n">tournament</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

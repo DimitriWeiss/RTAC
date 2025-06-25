@@ -1,0 +1,17 @@
+--verbosity 2
+--number_cores 8
+--timeout 5
+--contenders 30
+--keeptop 2
+--pws
+--experimental
+--chance 25
+--mutate 10
+--kill 5
+--ac 1
+--paramlimit 100000
+--log_folder /media/dweiss/Transcend7/RTAC/RTAC/rtac/logs
+--wrapper rtac.wrapper.tsp
+--wrapper_name TSP_RT
+--feature_gen /media/dweiss/Transcend7/RTAC/RTAC/rtac/feature_gen/tsp_feats.py
+--param_file /media/dweiss/Transcend7/RTAC/RTAC/rtac/data/params_tsp.json

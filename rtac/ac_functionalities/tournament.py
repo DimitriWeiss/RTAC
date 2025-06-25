@@ -9,16 +9,16 @@ import os
 import uuid
 import time
 import signal
-from utils.process_affinity import set_affinity_recursive
-from ac_functionalities.config_gens import DefaultConfigGen
-from ac_functionalities.rtac_data import (
+from rtac.utils.process_affinity import set_affinity_recursive
+from rtac.ac_functionalities.config_gens import DefaultConfigGen
+from rtac.ac_functionalities.rtac_data import (
     TournamentStats,
     TARun,
     TARunStatus
 )
-from ac_functionalities.ta_runner import BaseTARunner
-from ac_functionalities.rtac_data import Configuration, RTACData, ACMethod
-from ac_functionalities.logs import RTACLogs
+from rtac.ac_functionalities.ta_runner import BaseTARunner
+from rtac.ac_functionalities.rtac_data import Configuration, RTACData, ACMethod
+from rtac.ac_functionalities.logs import RTACLogs
 import argparse
 
 
@@ -257,8 +257,6 @@ class Tournament_GB:
 
             if not early_tournament and not self.terminated_configs:
 
-                '''
-
                 X_pw, cores, self.s_instances, self.gb_pw_inst_archive, \
                     self.mtp, self.pw_cores = \
                     self.gray_box.prepare_predict_data(self.rtac_data.rec_data, 
@@ -280,9 +278,6 @@ class Tournament_GB:
                         if self.term_list:
 
                             self.tm.early_start(currenttime)
-                '''
-                self.term_list = [1, 3]
-                self.tm.early_start(currenttime)
                     
                 gb_check_time = time.time()
 

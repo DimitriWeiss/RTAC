@@ -1,8 +1,8 @@
 import unittest
 import sys
 sys.path.append('rtac')
-from utils.read_io import read_args
-from ac_functionalities.rtac_data import ACMethod
+from rtac.utils.read_io import read_args
+from rtac.ac_functionalities.rtac_data import ACMethod
 
 
 class TestArgsRead(unittest.TestCase):

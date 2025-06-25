@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.wrapper.tsp &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.wrapper.tsp</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.wrapper.tsp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module implements the target algorithm wrapper for CaDiCaL 1.2.1.&quot;&quot;&quot;</span> 
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.wrapper.abstract_wrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">InterimMeaning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">non_block_read</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="TSP_RT"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_RT</span><span class="p">(</span><span class="n">AbstractWrapper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
+<span class="sd">    &#39;a&#39; is fixed to have a fair comparison of runtime performance.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TSP_RT.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.translate_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to a list of</span>
+<span class="sd">        parameter name and value alternating.</span>
+
+<span class="sd">        :param config: Configuration object - parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :returns: list of strings representation of the configuration</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>  <span class="c1"># runtime scenario: fixed annealing factor</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">config_list</span></div>
+
+<div class="viewcode-block" id="TSP_RT.start"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start CaDiCaL via subprocess.Popen with stdout to</span>
+<span class="sd">        subprocess.PIPE, configuration &lt;config&gt; on instance &lt;instance&gt; with</span>
+<span class="sd">            timelimit &lt;timeout&gt;.</span>
+
+<span class="sd">        :param config: Parameters in a format as needed for target algorithm.</span>
+<span class="sd">        :type config: Any</span>
+<span class="sd">        :param timeout: Maximum runtime allowed for target algorithm run in</span>
+<span class="sd">            seconds.</span>
+<span class="sd">        :type timeout: int</span>
+<span class="sd">        :param instance: Path to problem instance.</span>
+<span class="sd">        :type instance: str</span>
+<span class="sd">        :returns: Target algorithm via subprocess.Popen process and starting</span>
+<span class="sd">        time of the process</span>
+<span class="sd">        :rtype: tuple[subprocess.Popen, int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Absolute path to the current file</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+        <span class="c1"># Directory containing the file</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;wrapper&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python3&#39;</span><span class="p">,</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_dir</span><span class="si">}</span><span class="s1">data/solvers/python-tsp.py&#39;</span><span class="p">,</span>
+                      <span class="o">*</span><span class="n">config</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeout</span><span class="p">),</span> <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_dir</span><span class="si">}{</span><span class="n">instance</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                     <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+        <span class="n">proc_cpu_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">proc</span><span class="p">,</span> <span class="n">proc_cpu_time</span></div>
+
+<div class="viewcode-block" id="TSP_RT.check_if_solved"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.check_if_solved">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_solved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nnr</span><span class="p">:</span> <span class="n">non_block_read</span><span class="p">,</span>
+                        <span class="n">proc</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+                            <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bytes output of the subprocess.Popen process running CaDiCaL is</span>
+<span class="sd">        checked to determine if the problem instance is solved (res).</span>
+
+<span class="sd">        :param ta_output: Output of the target algorithm.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        :param nnr: Non blocking read function for accessing the</span>
+<span class="sd">            subprocess.PIPE output of the target algorithm</span>
+<span class="sd">        :type nnr: non_nlock_read</span>
+<span class="sd">        :param proc: Target algorithm run via subprocess.Popen process</span>
+<span class="sd">        :type proc: subprocess.Popen</span>
+<span class="sd">        :returns: Target algorithm result (1 if solved, 0 else), runtime</span>
+<span class="sd">            needed and event (0 or 1, if solved), or None</span>
+<span class="sd">        :rtype: tuple[int | float, float, int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">if</span> <span class="s1">&#39;Warning&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>  <span class="c1"># Appears in b, if TA reaches time limit</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+                <span class="n">event</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
+
+            <span class="k">if</span> <span class="s1">&#39;Time:&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">res_not_given</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">while</span> <span class="n">res_not_given</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">nnr</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s1">&#39;Distance:&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">res_not_given</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">event</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="TSP_Q"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Q">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_Q</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
+<span class="sd">    is not fixed. If TA is much faster than the time limit but still yields a</span>
+<span class="sd">    better solution it is not a problem.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TSP_Q.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Q.translate_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overriding TSP_RT function: Convert dictionary representation of</span>
+<span class="sd">        the configuration to a list of parameter name and value alternating.</span>
+
+<span class="sd">        :param config: Configuration object - parameter values to run problem</span>
+<span class="sd">            instance with.</span>
+<span class="sd">        :type config: Configuration</span>
+<span class="sd">        :returns: list of strings representation of the configuration</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">config_list</span></div></div>
+
+
+<div class="viewcode-block" id="TSP_RTpp"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_RTpp</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
+<span class="sd">    &#39;a&#39; is fixed to have a fair comparison of runtime performance. Additional</span>
+<span class="sd">    functions for ReACTR++ implementation.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TSP_RTpp.interim_info"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp.interim_info">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gives information about whether a higher or a lower level of the</span>
+<span class="sd">        entry is a sign of higher quality of the configuration regarding the</span>
+<span class="sd">        target algorithm run.</span>
+
+<span class="sd">        :return: List of InterimMeaning - is a higher or lower value better.</span>
+<span class="sd">        :rtype: list[InterimMeaning] or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span></div>
+
+<div class="viewcode-block" id="TSP_RTpp.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parsing runtime output of the target algorithm.</span>
+
+<span class="sd">        :param ta_output: Output of the target algorithm.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        :return: List of intermediate output values if provided by TA.</span>
+<span class="sd">        :rtype: list[float] or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="c1"># Check for progress</span>
+            <span class="k">if</span> <span class="s1">&#39;Temperature&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                <span class="c1"># Assumption: the lower the temperature, the closer the TA is</span>
+                <span class="c1"># to finding the solution. Solution Quality is not regarded in</span>
+                <span class="c1"># this example, we optimize for runtime.</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">interim</span> <span class="o">=</span> <span class="p">[</span><span class="n">temp</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="n">interim</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="TSP_Qpp"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_Qpp</span><span class="p">(</span><span class="n">TSP_Q</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
+<span class="sd">    is not fixed. If TA is much faster than the time limit but still yields a</span>
+<span class="sd">    better solution it is not a problem. Additional functions for ReACTR++</span>
+<span class="sd">    implementation.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TSP_Qpp.interim_info"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp.interim_info">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gives information about whether a higher or a lower level of the</span>
+<span class="sd">        entry is a sign of higher quality of the configuration regarding the</span>
+<span class="sd">        target algorithm run.</span>
+
+<span class="sd">        :return: List of InterimMeaning - is a higher or lower value better.</span>
+<span class="sd">        :rtype: list[InterimMeaning] or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span></div>
+
+<div class="viewcode-block" id="TSP_Qpp.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parsing runtime output of the target algorithm.</span>
+
+<span class="sd">        :param ta_output: Output of the target algorithm.</span>
+<span class="sd">        :type ta_output: bytes</span>
+<span class="sd">        :return: List of intermediate output values if provided by TA.</span>
+<span class="sd">        :rtype: list[float] or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="c1"># Check for progress</span>
+            <span class="k">if</span> <span class="s1">&#39;Temperature&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                
+                <span class="n">temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">k_acc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">k_noimp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">10</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">interim</span> <span class="o">=</span> <span class="p">[</span><span class="n">temp</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k_acc</span><span class="p">,</span> <span class="n">k_noimp</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="n">interim</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

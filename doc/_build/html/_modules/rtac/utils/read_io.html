@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.utils.read_io &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.utils.read_io</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.utils.read_io</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Loading RTAC scenario from file or sys.args into an argparse.Namespace.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.utils.background_thread_control</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_background_thread_nr</span>
+
+<span class="n">set_background_thread_nr</span><span class="p">()</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ConfigSpace.read_and_write</span><span class="w"> </span><span class="kn">import</span> <span class="n">pcs_new</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.utils.json_validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">validateparams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ACMethod</span><span class="p">,</span>
+    <span class="n">ParamType</span><span class="p">,</span>
+    <span class="n">Parameter</span><span class="p">,</span>
+    <span class="n">ValType</span><span class="p">,</span>
+    <span class="n">Distribution</span><span class="p">,</span>
+    <span class="n">DiscreteParameter</span><span class="p">,</span>
+    <span class="n">ContinuousParameter</span><span class="p">,</span>
+    <span class="n">CategoricalParameter</span><span class="p">,</span>
+    <span class="n">BinaryParameter</span>
+<span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="translate_params"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.translate_params">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">translate_params</span><span class="p">(</span><span class="n">config_space</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> \
+        <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DiscreteParameter</span> <span class="o">|</span> <span class="n">ContinuousParameter</span>
+                <span class="o">|</span> <span class="n">CategoricalParameter</span> <span class="o">|</span> <span class="n">BinaryParameter</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Translate configuration space nested dict to dict of dataclasses.</span>
+
+<span class="sd">    :param config_space: Configuration space definition.</span>
+<span class="sd">    :type config_space: dict of dicts</span>
+
+<span class="sd">    :returns: config_space.</span>
+<span class="sd">    :rtype: dict of dataclasses</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">config_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">definition</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="n">definition</span><span class="p">)</span>
+        <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">Parameter</span><span class="p">[</span><span class="n">definition</span><span class="o">.</span><span class="n">paramtype</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">definition</span><span class="p">))</span>
+        <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">paramtype</span> <span class="o">=</span> <span class="n">ParamType</span><span class="p">[</span><span class="n">definition</span><span class="o">.</span><span class="n">paramtype</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">paramtype</span> \
+                <span class="ow">in</span> <span class="p">(</span><span class="n">ParamType</span><span class="o">.</span><span class="n">categorical</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">binary</span><span class="p">):</span>
+            <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">valtype</span> <span class="o">=</span> <span class="n">ValType</span><span class="p">[</span><span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">valtype</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">distribution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Distribution</span><span class="o">.</span><span class="n">uniform</span><span class="p">:</span>
+                <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> \
+                    <span class="n">Distribution</span><span class="p">[</span><span class="n">definition</span><span class="o">.</span><span class="n">distribution</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">config_space</span></div>
+
+
+<div class="viewcode-block" id="read_args"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.read_args">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_args</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">sysargs</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read in scenario arguments.</span>
+
+<span class="sd">    :param scenario: Path to scenario text file.</span>
+<span class="sd">    :type scenario: str</span>
+<span class="sd">    :param sysargs: sys.argv passed from main.</span>
+<span class="sd">    :type sysargs: list</span>
+
+<span class="sd">    :returns: Scenario arguments set.</span>
+<span class="sd">    :rtype: argparse.Namespace</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sysargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sysargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sysargs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbosity&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> 
+                        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Verbosity level. [0,1,2]&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--number_cores&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> 
+                        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of cores to be used in parallel.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="s1">&#39;--wrapper&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;No wrapper chosen!&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Module of Python wrapper for the algorithm.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-wn&#39;</span><span class="p">,</span> <span class="s1">&#39;--wrapper_name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;No wrapper class name.&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Name of the wrapper class in the wrapper</span>
+<span class="s1">                        module.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-fgn&#39;</span><span class="p">,</span> <span class="s1">&#39;--feature_gen_name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;No feature generator class name.&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Name of the feature generator class in the</span>
+<span class="s1">                        feature generator mddule.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-fdp&#39;</span><span class="p">,</span> <span class="s1">&#39;--feature_path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;No feature directory path.&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Path to the directory with feature files,</span>
+<span class="s1">                        if existing.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-to&#39;</span><span class="p">,</span> <span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Stop solving single instance after </span>
+<span class="s1">                        (int) seconds. [300]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rp&#39;</span><span class="p">,</span> <span class="s1">&#39;--runtimePAR&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Multiply -to by -rp,</span>
+<span class="s1">                        if instance not solved. [1]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--contenders&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The number of contenders in the pool. [30]&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-kt&#39;</span><span class="p">,</span> <span class="s1">&#39;--keeptop&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Number of top contenders to gbe part of</span>
+<span class="s1">                        the tournament automatically for ReACTR/ReACTR++</span>
+<span class="s1">                        (Rest is chosen randomly). [2]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># parser.add_argument(&#39;-ud&#39;, &#39;--usedata&#39;, type=str, default=None, </span>
+    <span class="c1">#                    help=&#39;&#39;&#39;Type y if data of prior run should </span>
+    <span class="c1">#                    be used. []&#39;&#39;&#39;)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ch&#39;</span><span class="p">,</span> <span class="s1">&#39;--chance&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Chance to replace gene randomly </span>
+<span class="s1">                        in percent (int: 0 - 100) for ReACTR/ReACTR++.</span>
+<span class="s1">                        [25]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="s1">&#39;--mutate&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Chance for mutation in crossover process </span>
+<span class="s1">                        in percent (int: 0 - 100) for ReACTR/ReACTR++. [10]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="s1">&#39;--kill&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Contenders with a variance higher than </span>
+<span class="s1">                        this are killed and replaced (float) in</span>
+<span class="s1">                        ReACTR/ReACTR++. [5]&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-fg&#39;</span><span class="p">,</span> <span class="s1">&#39;--feature_gen&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Python wrapper to compute instance features</span>
+<span class="s1">                        for given instance for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ipt&#39;</span><span class="p">,</span> <span class="s1">&#39;--instance_pre_train&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;If the bandit ought to be pre-trained with </span>
+<span class="s1">                        a set of instance features, provide the path to a</span>
+<span class="s1">                        test file with lists of features in each line, after</span>
+<span class="s1">                        this argument.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-npf&#39;</span><span class="p">,</span> <span class="s1">&#39;--nc_pca_f&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Number of the dimensions for the PCA of the </span>
+<span class="s1">                        instance features for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-npp&#39;</span><span class="p">,</span> <span class="s1">&#39;--nc_pca_p&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Number of the dimensions for the PCA of the </span>
+<span class="s1">                        parameter (features) for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-jfm&#39;</span><span class="p">,</span> <span class="s1">&#39;--jfm&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;polynomial&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Mode of the joined feature map</span>
+<span class="s1">                        for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--omega&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Omega parameter for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gamma&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Gamma parameter for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--alpha&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Alpha parameter for CPPL/GBRAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s1">&#39;--epsilon&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Epsilopn for epsilon-greedy selection. Set to</span>
+<span class="s1">                         0.0 for greedy selection. Setting epsilon avoids </span>
+<span class="s1">                         convergence of confidence through oversampling </span>
+<span class="s1">                         of a set of arms by forcing the sampling of rarely </span>
+<span class="s1">                         seen arms.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ka&#39;</span><span class="p">,</span> <span class="s1">&#39;--kappa&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Weight on confidence in pairwise comparison</span>
+<span class="s1">                        for discarding configurations from pool in CPPL.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-gen_mult&#39;</span><span class="p">,</span> <span class="s1">&#39;--gen_mult&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Factor by which to multiply the number of </span>
+<span class="s1">                        configurations being generated before assessed by CPPL </span>
+<span class="s1">                        to be inserted into pool.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ac&#39;</span><span class="p">,</span> <span class="s1">&#39;--ac&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Choice of Algorithm Configuration method.</span>
+<span class="s1">                        Choose from: ReACTR, ReACTRpp, CPPL, Gray-Box by</span>
+<span class="s1">                        [1, 2, 3, 4], respectively. &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-pl&#39;</span><span class="p">,</span> <span class="s1">&#39;--paramlimit&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Limit for the possible absolute value of </span>
+<span class="s1">                        a parameter for it to be normed to log space </span>
+<span class="s1">                        before CPPL comptation.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-wb&#39;</span><span class="p">,</span> <span class="s1">&#39;--win_bonus&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Factor by which recent CPPL winner skill</span>
+<span class="s1">                        is boosted.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-wd&#39;</span><span class="p">,</span> <span class="s1">&#39;--win_decay&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Factor by which CPPL skill estimates are</span>
+<span class="s1">                        decaying over the course of the tournaments.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-rwb&#39;</span><span class="p">,</span> <span class="s1">&#39;--recent_winner_boost&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Absolute number by which the skill estimate</span>
+<span class="s1">                        of a recent CPPL winner is boosted.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ff&#39;</span><span class="p">,</span> <span class="s1">&#39;--forgetting_factor&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mf">0.98</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Factor by which old observations are forgotten</span>
+<span class="s1">                        (theta_bar in CPPL). Necessary, since pool changes.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-on&#39;</span><span class="p">,</span> <span class="s1">&#39;--obs_noise&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Assumed obervation noise variance for theta_bar</span>
+<span class="s1">                         in CPPL.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-cr&#39;</span><span class="p">,</span> <span class="s1">&#39;--cppl_reward&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Reward of a winning arm in CPPL bandit model.</span>
+<span class="s1">                        &#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-cpplt&#39;</span><span class="p">,</span> <span class="s1">&#39;--cpplt&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Value to which t in the CPPL bandit is reset to</span>
+<span class="s1">                         if the pool is changed.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-lf&#39;</span><span class="p">,</span> <span class="s1">&#39;--log_folder&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> 
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;logs&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Name of the directry to log in.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-pf&#39;</span><span class="p">,</span> <span class="s1">&#39;--param_file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> 
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;No parameter file given!&#39;</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Path to the parameter file in PCS format or</span>
+<span class="s1">                        RTAC json format.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="s1">&#39;--resume&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Set </span><span class="se">\&#39;</span><span class="s1">-r</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">--resume</span><span class="se">\&#39;</span><span class="s1"> flag to resume RTAC</span>
+<span class="s1">                        from logged configuration state.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-bp&#39;</span><span class="p">,</span> <span class="s1">&#39;--baselineperf&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Set flag if only default </span>
+<span class="s1">                        parameterizations should run.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--pws&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Inserting Default Configuration if set to</span>
+<span class="s1">                        flag is set.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-om&#39;</span><span class="p">,</span> <span class="s1">&#39;--objective_min&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Set flag </span><span class="se">\&#39;</span><span class="s1">-om</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">--objective_min</span><span class="se">\&#39;</span><span class="s1"> if</span>
+<span class="s1">                        optimizing for objective value minimization.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-exp&#39;</span><span class="p">,</span> <span class="s1">&#39;--experimental&#39;</span><span class="p">,</span> 
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Set flag data of tournament 0 from logs are to</span>
+<span class="s1">                        be used for experiment.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-oit&#39;</span><span class="p">,</span> <span class="s1">&#39;--online_instance_train&#39;</span><span class="p">,</span> 
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Enable condinued PCA fitting on incoming</span>
+<span class="s1">                        problem instances.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-epsg&#39;</span><span class="p">,</span> <span class="s1">&#39;--epsilon_greedy&#39;</span><span class="p">,</span> 
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Enable epsilon greedy selection.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ib&#39;</span><span class="p">,</span> <span class="s1">&#39;--isolate_bandit&#39;</span><span class="p">,</span> 
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Runs bandit class in child processes to free </span>
+<span class="s1">                        resources after use. Useful if if bandit resource use </span>
+<span class="s1">                        collides with algorithm resource use but incurs higher </span>
+<span class="s1">                        overhead due to pickling and loading of the bandit </span>
+<span class="s1">                        class.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-gb&#39;</span><span class="p">,</span> <span class="s1">&#39;--gray_box&#39;</span><span class="p">,</span> 
+                        <span class="n">action</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">BooleanOptionalAction</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Enable gray-box RAC.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-gbrt&#39;</span><span class="p">,</span> <span class="s1">&#39;--gb_read_time&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Freuqency in which to check for gray-box </span>
+<span class="s1">                        output in seconds.&#39;&#39;&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-ngbf&#39;</span><span class="p">,</span> <span class="s1">&#39;--nr_gb_feats&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;Number of gray-box features used.&#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Read arguments from scenario file if provided and override them</span>
+    <span class="k">if</span> <span class="n">scenario</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">scenario_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">scenario_file</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+
+    <span class="c1"># Read arguments from sys.args if provided and override them</span>
+    <span class="k">if</span> <span class="n">sysargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sysargs</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sysargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Avoid typos in command line</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">sysargs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sysargs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">scenario</span><span class="p">,</span> <span class="n">unknown</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="s1">&#39;.json&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+        
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">config_space</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">validateparams</span><span class="p">(</span><span class="n">config_space</span><span class="p">):</span>
+                <span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span> <span class="o">=</span> <span class="n">translate_params</span><span class="p">(</span><span class="n">config_space</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Parameter definition is not valid!</span><span class="se">\n</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">                    Add a valid json to scenario before starting </span><span class="se">\</span>
+<span class="s1">                    configuration.&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;.pcs&#39;</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span> <span class="o">=</span> <span class="n">pcs_new</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">File </span><span class="si">{</span><span class="n">scenario</span><span class="o">.</span><span class="n">param_file</span><span class="si">}</span><span class="s1"> does not exist!</span><span class="se">\n</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">                Add a valid json or pcs to scenario before starting </span><span class="se">\</span>
+<span class="s1">                configuration.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">us</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">unknown</span><span class="p">))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The following arguments are unknown and ignored: </span><span class="si">{</span><span class="n">us</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="o">=</span> <span class="n">ACMethod</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">ac</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scenario</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

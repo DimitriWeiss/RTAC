@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.tournament_manager &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rtac.examples" href="rtac.examples.html" />
+    <link rel="prev" title="rtac.ac_functionalities.tournament" href="rtac.ac_functionalities.tournament.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rtac.html">rtac</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="rtac.ac_functionalities.html">rtac.ac_functionalities</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.config_gens.html">rtac.ac_functionalities.config_gens</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.logs.html">rtac.ac_functionalities.logs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.ranking.html">rtac.ac_functionalities.ranking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.result_processing.html">rtac.ac_functionalities.result_processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html">rtac.ac_functionalities.rtac_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html">rtac.ac_functionalities.ta_runner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.tournament.html">rtac.ac_functionalities.tournament</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rtac.ac_functionalities.tournament_manager</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.examples.html">rtac.examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.feature_gen.html">rtac.feature_gen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.rtac.html">rtac.rtac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.utils.html">rtac.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.wrapper.html">rtac.wrapper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="rtac.html">rtac</a></li>
+          <li class="breadcrumb-item"><a href="rtac.ac_functionalities.html">rtac.ac_functionalities</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.tournament_manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/rtac.ac_functionalities.tournament_manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rtac.ac_functionalities.tournament_manager">
+<span id="rtac-ac-functionalities-tournament-manager"></span><h1>rtac.ac_functionalities.tournament_manager<a class="headerlink" href="#module-rtac.ac_functionalities.tournament_manager" title="Permalink to this heading"></a></h1>
+<p>This module contans classes for touenament management according to the RTAC
+method used.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.tourn_manager_factory" title="rtac.ac_functionalities.tournament_manager.tourn_manager_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tourn_manager_factory</span></code></a>(scenario, ta_runner, ...)</p></td>
+<td><p>Class factory to return the initialized TournamentManager class appropriate to the RTAC method scenario.ac.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager" title="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractTournamentManager</span></code></a>(scenario, ...)</p></td>
+<td><p>Abstract tournament manager class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.GrayBox" title="rtac.ac_functionalities.tournament_manager.GrayBox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrayBox</span></code></a>()</p></td>
+<td><p>This class contains functions needed for the gray-box functionality of the tournament manager classes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.TournamentManager" title="rtac.ac_functionalities.tournament_manager.TournamentManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TournamentManager</span></code></a>(scenario, ta_runner, logs, ...)</p></td>
+<td><p>Tournament manager class for the ReACTR implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL" title="rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TournamentManagerCPPL</span></code></a>(scenario, ta_runner, ...)</p></td>
+<td><p>Tournament manager class for the CPPL implementation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.tournament_manager.</span></span><span class="sig-name descname"><span class="pre">AbstractTournamentManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ta_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><span class="pre">BaseTARunner</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract tournament manager class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.adjust_time_results">
+<span class="sig-name descname"><span class="pre">adjust_time_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.adjust_time_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.adjust_time_results" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.general_logging">
+<span class="sig-name descname"><span class="pre">general_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tournamentstats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tournament</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_tourn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.general_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.general_logging" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.get_tourn_nr">
+<span class="sig-name descname"><span class="pre">get_tourn_nr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.get_tourn_nr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.get_tourn_nr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.manage_tournament">
+<span class="sig-name descname"><span class="pre">manage_tournament</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.manage_tournament"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.manage_tournament" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.set_tourn_status">
+<span class="sig-name descname"><span class="pre">set_tourn_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tournamentstats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tournament</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.set_tourn_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.set_tourn_status" title="Permalink to this definition"></a></dt>
+<dd><p>Setting the results of the tournament and status of the target
+algorithm runs to rtac_data.TournamentStats.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.solve_instance">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#AbstractTournamentManager.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.solve_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Solving the problem instance according to the RTAC method used.
+:param instance: path to the problem instance to solve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated object containing data and objects necessary
+throughout the rtac modules</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData">RTACData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.tournament_manager.</span></span><span class="sig-name descname"><span class="pre">GrayBox</span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains functions needed for the gray-box
+functionality of the tournament manager classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.early_start">
+<span class="sig-name descname"><span class="pre">early_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">currenttime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.early_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.early_start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.es_output">
+<span class="sig-name descname"><span class="pre">es_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.es_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.es_output" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.fill_early_tournament">
+<span class="sig-name descname"><span class="pre">fill_early_tournament</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.fill_early_tournament"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.fill_early_tournament" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.manage_tournament">
+<span class="sig-name descname"><span class="pre">manage_tournament</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.manage_tournament"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.manage_tournament" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.train_gray_box_model">
+<span class="sig-name descname"><span class="pre">train_gray_box_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.train_gray_box_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.train_gray_box_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.GrayBox.wait_for_event">
+<span class="sig-name descname"><span class="pre">wait_for_event</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#GrayBox.wait_for_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.GrayBox.wait_for_event" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.TournamentManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.tournament_manager.</span></span><span class="sig-name descname"><span class="pre">TournamentManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ta_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><span class="pre">BaseTARunner</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#TournamentManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.TournamentManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager" title="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTournamentManager</span></code></a></p>
+<p>Tournament manager class for the ReACTR implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.TournamentManager.solve_instance">
+<span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#TournamentManager.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.TournamentManager.solve_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Solving the problem instance according to the ReACTR implementation.
+:param instance: path to the problem instance to solve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated object containing data and objects necessary
+throughout the rtac modules</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData">RTACData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.tournament_manager.</span></span><span class="sig-name descname"><span class="pre">TournamentManagerCPPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ta_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><span class="pre">BaseTARunner</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#TournamentManagerCPPL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager" title="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTournamentManager</span></code></a></p>
+<p>Tournament manager class for the CPPL implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL.solve_instance">
+<span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#TournamentManagerCPPL.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL.solve_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Solving the problem instance according to the CPPL implementation.
+:param instance: path to the problem instance to solve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated object containing data and objects necessary
+throughout the rtac modules</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData">RTACData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.tournament_manager.tourn_manager_factory">
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.tournament_manager.</span></span><span class="sig-name descname"><span class="pre">tourn_manager_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ta_runner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><span class="pre">BaseTARunner</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager" title="rtac.ac_functionalities.tournament_manager.AbstractTournamentManager"><span class="pre">AbstractTournamentManager</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/tournament_manager.html#tourn_manager_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.tournament_manager.tourn_manager_factory" title="Permalink to this definition"></a></dt>
+<dd><p>Class factory to return the initialized TournamentManager class
+appropriate to the RTAC method scenario.ac.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>ta_runner</strong> – Target algorithm runner object.</p></li>
+<li><p><strong>logs</strong> – Object containing loggers and logging functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner">BaseTARunner</a></p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs">RTACLogs</a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Inititialized TournamentManager object matching the RTAC method
+of the scenario.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner">BaseTARunner</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rtac.ac_functionalities.tournament.html" class="btn btn-neutral float-left" title="rtac.ac_functionalities.tournament" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rtac.examples.html" class="btn btn-neutral float-right" title="rtac.examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

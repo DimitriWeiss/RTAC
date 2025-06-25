@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.ta_runner &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rtac.ac_functionalities.tournament" href="rtac.ac_functionalities.tournament.html" />
+    <link rel="prev" title="rtac.ac_functionalities.rtac_data" href="rtac.ac_functionalities.rtac_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rtac.html">rtac</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="rtac.ac_functionalities.html">rtac.ac_functionalities</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.config_gens.html">rtac.ac_functionalities.config_gens</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.logs.html">rtac.ac_functionalities.logs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.ranking.html">rtac.ac_functionalities.ranking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.result_processing.html">rtac.ac_functionalities.result_processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html">rtac.ac_functionalities.rtac_data</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rtac.ac_functionalities.ta_runner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.tournament.html">rtac.ac_functionalities.tournament</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.tournament_manager.html">rtac.ac_functionalities.tournament_manager</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.examples.html">rtac.examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.feature_gen.html">rtac.feature_gen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.rtac.html">rtac.rtac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.utils.html">rtac.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rtac.wrapper.html">rtac.wrapper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="rtac.html">rtac</a></li>
+          <li class="breadcrumb-item"><a href="rtac.ac_functionalities.html">rtac.ac_functionalities</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.ta_runner</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/rtac.ac_functionalities.ta_runner.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rtac.ac_functionalities.ta_runner">
+<span id="rtac-ac-functionalities-ta-runner"></span><h1>rtac.ac_functionalities.ta_runner<a class="headerlink" href="#module-rtac.ac_functionalities.ta_runner" title="Permalink to this heading"></a></h1>
+<p>In this module classes to run the target algorithm and observe its output
+through the wrapper are implemented.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.gb_record" title="rtac.ac_functionalities.ta_runner.gb_record"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gb_record</span></code></a>(self, ta_output)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.non_block_read" title="rtac.ac_functionalities.ta_runner.non_block_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">non_block_read</span></code></a>(ta_output[, logs])</p></td>
+<td><p>Function for reading subprocess.PIPE output without blocking the application until there is output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.ta_runner_factory" title="rtac.ac_functionalities.ta_runner.ta_runner_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ta_runner_factory</span></code></a>(scenario, logs, core)</p></td>
+<td><p>Class factory to return the initialized target algorithm runner class appropriate to the RTAC method scenario.ac.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner" title="rtac.ac_functionalities.ta_runner.AbstractTARunner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractTARunner</span></code></a>(scenario, logs, core)</p></td>
+<td><p>Abstract TARunner.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTARunner</span></code></a>(scenario, logs, core)</p></td>
+<td><p>Target algorithm runner for ReACTR implementation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.TARunnerpp" title="rtac.ac_functionalities.ta_runner.TARunnerpp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TARunnerpp</span></code></a>(scenario, logs, core)</p></td>
+<td><p>Target algorithm runner for ReACTR++ implementation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">AbstractTARunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract TARunner.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.check_output">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.check_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.check_output" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the output, if there was any, and declares instance as solved
+by the contender, if the marker for it was present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ta_output</strong> (<em>bytes</em>) – subprocess.PIPE output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.check_result">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.check_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.check_result" title="Permalink to this definition"></a></dt>
+<dd><p>If this contender solved the problem instance the rtac data is
+populated by the resulting information according to the RTAC method
+scenario.ac.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.kill_run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kill_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.kill_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.kill_run" title="Permalink to this definition"></a></dt>
+<dd><p>Terminates this process/ target algorithm run, as well as the other
+contenders. Several layers of termination are included to ensure
+termination on different platforms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.run" title="Permalink to this definition"></a></dt>
+<dd><p>Manages the target algorithm runner functions depending on state of
+the run according to the RTAC method scenario.ac.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – path to the problem instance to solve.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration of parameter values to run problem
+instance with.</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.start_run">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.start_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.start_run" title="Permalink to this definition"></a></dt>
+<dd><p>Starts target algorithm run and populates data necessary for
+corination of tournament members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – path to the problem instance to solve.</p></li>
+<li><p><strong>config</strong> – Representation of the configuration</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.AbstractTARunner.translate_config">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#AbstractTARunner.translate_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner.translate_config" title="Permalink to this definition"></a></dt>
+<dd><p>Convert dictionary representation of the configuration to the format
+needed by the wrapper to pass to the target algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration of parameter values to run problem
+instance with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new representation of the configuration</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">BaseTARunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner" title="rtac.ac_functionalities.ta_runner.AbstractTARunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractTARunner</span></code></a></p>
+<p>Target algorithm runner for ReACTR implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.check_output">
+<span class="sig-name descname"><span class="pre">check_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.check_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.check_output" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the output, if there was any, and declares instance as solved
+by the contender, if the marker for it was present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ta_output</strong> (<em>bytes</em>) – subprocess.PIPE output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.check_result">
+<span class="sig-name descname"><span class="pre">check_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.check_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.check_result" title="Permalink to this definition"></a></dt>
+<dd><p>If this contender solved the problem instance the rtac data is
+populated by the resulting information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.kill_run">
+<span class="sig-name descname"><span class="pre">kill_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.kill_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.kill_run" title="Permalink to this definition"></a></dt>
+<dd><p>Terminates this process/ target algorithm run, as well as the other
+contenders. Several layers of termination are included to ensure
+termination on different platforms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.run" title="Permalink to this definition"></a></dt>
+<dd><p>Manages the target algorithm runner functions depending on state of
+the run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – path to the problem instance to solve.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration of parameter values to run problem
+instance with.</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.start_run">
+<span class="sig-name descname"><span class="pre">start_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.start_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.start_run" title="Permalink to this definition"></a></dt>
+<dd><p>Starts target algorithm run and populates data necessary for
+corination of tournament members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – path to the problem instance to solve.</p></li>
+<li><p><strong>config</strong> – Representation of the configuration</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.BaseTARunner.translate_config">
+<span class="sig-name descname"><span class="pre">translate_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#BaseTARunner.translate_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.BaseTARunner.translate_config" title="Permalink to this definition"></a></dt>
+<dd><p>Convert dictionary representation of the configuration to the format
+needed by the wrapper to pass to the target algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration of parameter values to run problem
+instance with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new representation of the configuration</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.TARunnerpp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">TARunnerpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#TARunnerpp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.TARunnerpp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTARunner</span></code></a></p>
+<p>Target algorithm runner for ReACTR++ implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.TARunnerpp.check_output">
+<span class="sig-name descname"><span class="pre">check_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#TARunnerpp.check_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.TARunnerpp.check_output" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the output, if there was any, and declares instance as solved
+by the contender, if the marker for it was present or outputs
+intermediate target algorithm output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ta_output</strong> (<em>bytes</em>) – subprocess.PIPE output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.gb_record">
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">gb_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#gb_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.gb_record" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.non_block_read">
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">non_block_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#non_block_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.non_block_read" title="Permalink to this definition"></a></dt>
+<dd><p>Function for reading subprocess.PIPE output without blocking the
+application until there is output. It looks up if there is output and
+disconnects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ta_output</strong> (<em>bytes</em>) – subprocess.PIPE output.</p></li>
+<li><p><strong>logs</strong> – Object containing loggers and logging functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs">RTACLogs</a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Either output as string or an empty string if nothing was there.</p>
+</dd>
+<dt class="field-even">Rytpe<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.ta_runner.ta_runner_factory">
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ta_runner.</span></span><span class="sig-name descname"><span class="pre">ta_runner_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner" title="rtac.ac_functionalities.ta_runner.AbstractTARunner"><span class="pre">AbstractTARunner</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ta_runner.html#ta_runner_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ta_runner.ta_runner_factory" title="Permalink to this definition"></a></dt>
+<dd><p>Class factory to return the initialized target algorithm runner class
+appropriate to the RTAC method scenario.ac.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>logs</strong> – Object containing loggers and logging functions.</p></li>
+<li><p><strong>core</strong> – Number of the parallel run started on a core.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs">RTACLogs</a></p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Inititialized AbstractTARunner object matching the RTAC method of
+the scenario.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#rtac.ac_functionalities.ta_runner.AbstractTARunner" title="rtac.ac_functionalities.ta_runner.AbstractTARunner">AbstractTARunner</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rtac.ac_functionalities.rtac_data.html" class="btn btn-neutral float-left" title="rtac.ac_functionalities.rtac_data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rtac.ac_functionalities.tournament.html" class="btn btn-neutral float-right" title="rtac.ac_functionalities.tournament" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

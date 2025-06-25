@@ -11,8 +11,8 @@ import time
 import signal
 import importlib
 import argparse
-from ac_functionalities.rtac_data import ACMethod, Configuration, RTACData
-from ac_functionalities.logs import RTACLogs
+from rtac.ac_functionalities.rtac_data import ACMethod, Configuration, RTACData
+from rtac.ac_functionalities.logs import RTACLogs
 
 
 def non_block_read(ta_output: bytes, logs: RTACLogs = None) -> str:

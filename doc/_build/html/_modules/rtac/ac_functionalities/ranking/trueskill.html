@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.ranking.trueskill &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.ranking.trueskill</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.ranking.trueskill</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="c1"># Copyright 2010 Doug Zongker</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#      http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1">#  Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implements the player skill estimation algorithm from Herbrich et al.,</span>
+<span class="sd">&quot;TrueSkill(TM): A Bayesian Skill Rating System&quot;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Doug Zongker &lt;dougz@isotropic.org&gt;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">hexversion</span> <span class="o">&lt;</span> <span class="mh">0x02060000</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;requires Python 2.6 or higher&quot;</span><span class="p">)</span>
+  <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span> <span class="k">as</span> <span class="n">scipy_norm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqrt</span>
+
+<span class="n">norm</span> <span class="o">=</span> <span class="n">scipy_norm</span><span class="p">()</span>
+<span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span>
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">cdf</span>
+<span class="n">icdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">ppf</span>    <span class="c1"># inverse CDF</span>
+
+<span class="c1"># Update rules for approximate marginals for the win and draw cases,</span>
+<span class="c1"># respectively.</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">Vwin</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">pdf</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="n">cdf</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">Wwin</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">Vwin</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Vwin</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">Vdraw</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="p">(</span><span class="n">pdf</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">pdf</span><span class="p">(</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">cdf</span><span class="p">(</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">cdf</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">Wdraw</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">Vdraw</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">((</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pdf</span><span class="p">(</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pdf</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">t</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">cdf</span><span class="p">(</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">cdf</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="o">-</span><span class="n">t</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Gaussian</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Object representing a gaussian distribution.  Create as:</span>
+
+<span class="sd">    Gaussian(mu=..., sigma=...)</span>
+<span class="sd">      or</span>
+<span class="sd">    Gaussian(pi=..., tau=...)</span>
+<span class="sd">      or</span>
+<span class="sd">    Gaussian()    # gives 0 mean, infinite sigma</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">=</span> <span class="n">pi</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+    <span class="k">elif</span> <span class="n">mu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">**</span> <span class="o">-</span><span class="mi">2</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">mu</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;N(pi=</span><span class="si">{0.pi}</span><span class="s2">,tau=</span><span class="si">{0.tau}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s2">&quot;N(mu=0,sigma=inf)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">sigma</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+      <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span>
+      <span class="k">return</span> <span class="s2">&quot;N(mu=</span><span class="si">{0:.3f}</span><span class="s2">,sigma=</span><span class="si">{1:.3f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">MuSigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the value of this object as a (mu, sigma) tuple. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+      <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="n">other</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="o">+</span><span class="n">other</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="n">other</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tau</span><span class="o">-</span><span class="n">other</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span>
+
+  <span class="fm">__truediv__</span> <span class="o">=</span> <span class="n">__div__</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; A variable node in the factor graph. &quot;&quot;&quot;</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">factors</span> <span class="o">=</span> <span class="p">{}</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">AttachFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="p">()</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="n">old_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">old_message</span> <span class="o">*</span> <span class="n">message</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span> <span class="o">=</span> <span class="n">message</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="n">old_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">old_message</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factors</span><span class="p">[</span><span class="n">factor</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Factor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Base class for a factor node in the factor graph. &quot;&quot;&quot;</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+      <span class="n">v</span><span class="o">.</span><span class="n">AttachFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="c1"># The following Factor classes implement the five update equations</span>
+<span class="c1"># from Table 1 of the Herbrich et al. paper.</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PriorFactor</span><span class="p">(</span><span class="n">Factor</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Connects to a single variable, pushing a fixed (Gaussian) value</span>
+<span class="sd">  to that variable. &quot;&quot;&quot;</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">PriorFactor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="n">variable</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">Start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">UpdateValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LikelihoodFactor</span><span class="p">(</span><span class="n">Factor</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Connects two variables, the value of one being the mean of the</span>
+<span class="sd">  message sent to the other. &quot;&quot;&quot;</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean_variable</span><span class="p">,</span> <span class="n">value_variable</span><span class="p">,</span> <span class="n">variance</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">LikelihoodFactor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="n">mean_variable</span><span class="p">,</span> <span class="n">value_variable</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean_variable</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_variable</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">=</span> <span class="n">variance</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Update the value after a change in the mean (going &quot;down&quot; in</span>
+<span class="sd">    the TrueSkill factor graph. &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fy</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">UpdateMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fy</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                                            <span class="n">tau</span><span class="o">=</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">tau</span> <span class="o">-</span> <span class="n">fy</span><span class="o">.</span><span class="n">tau</span><span class="p">)))</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateMean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Update the mean after a change in the value (going &quot;up&quot; in</span>
+<span class="sd">    the TrueSkill factor graph. &quot;&quot;&quot;</span>
+
+    <span class="c1"># Note this is the same as UpdateValue, with self.mean and</span>
+    <span class="c1"># self.value interchanged.</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">fx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fx</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">UpdateMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fx</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                                           <span class="n">tau</span><span class="o">=</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">tau</span> <span class="o">-</span> <span class="n">fx</span><span class="o">.</span><span class="n">tau</span><span class="p">)))</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SumFactor</span><span class="p">(</span><span class="n">Factor</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; A factor that connects a sum variable with 1 or more terms,</span>
+<span class="sd">  which are summed after being multiplied by fixed (real)</span>
+<span class="sd">  coefficients. &quot;&quot;&quot;</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_variable</span><span class="p">,</span> <span class="n">terms_variables</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">terms_variables</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="n">sum_variable</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">terms</span> <span class="o">=</span> <span class="n">terms_variables</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">coeffs</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">SumFactor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="n">sum_variable</span><span class="p">]</span> <span class="o">+</span> <span class="n">terms_variables</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">_InternalUpdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">new_pi</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fy</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))))</span>
+    <span class="n">new_tau</span> <span class="o">=</span> <span class="n">new_pi</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span>
+                           <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">tau</span> <span class="o">-</span> <span class="n">fy</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">tau</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fy</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                           <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+    <span class="n">var</span><span class="o">.</span><span class="n">UpdateMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="n">new_pi</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="n">new_tau</span><span class="p">))</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateSum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Update the sum value (&quot;down&quot; in the factor graph). &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">]</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeffs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_InternalUpdate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">UpdateTerm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Update one of the term values (&quot;up&quot; in the factor graph). &quot;&quot;&quot;</span>
+
+    <span class="c1"># Swap the coefficients around to make the term we want to update</span>
+    <span class="c1"># be the &#39;sum&#39; of the other terms and the factor&#39;s sum, eg.,</span>
+    <span class="c1"># change:</span>
+    <span class="c1">#</span>
+    <span class="c1">#    x = y_1 + y_2 + y_3</span>
+    <span class="c1">#</span>
+    <span class="c1"># to</span>
+    <span class="c1">#</span>
+    <span class="c1">#    y_2 = x - y_1 - y_3</span>
+    <span class="c1">#</span>
+    <span class="c1"># then use the same update equation as for UpdateSum.</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeffs</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">b</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">index</span><span class="p">]</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">b</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">[:]</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_InternalUpdate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">terms</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TruncateFactor</span><span class="p">(</span><span class="n">Factor</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; A factor for (approximately) truncating the team difference</span>
+<span class="sd">  distribution based on a win or a draw (the choice of which is</span>
+<span class="sd">  determined by the functions you pass as V and W). &quot;&quot;&quot;</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">TruncateFactor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="n">variable</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">variable</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">V</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">Update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">fx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">GetMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">fx</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">tau</span> <span class="o">-</span> <span class="n">fx</span><span class="o">.</span><span class="n">tau</span>
+    <span class="n">sqrt_c</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">sqrt_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">sqrt_c</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">new_val</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">pi</span><span class="o">=</span><span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">W</span><span class="p">),</span> <span class="n">tau</span><span class="o">=</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="n">sqrt_c</span> <span class="o">*</span> <span class="n">V</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">W</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">UpdateValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_val</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">DrawProbability</span><span class="p">(</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">total_players</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Compute the draw probability given the draw margin (epsilon). &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cdf</span><span class="p">(</span><span class="n">epsilon</span> <span class="o">/</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">total_players</span><span class="p">)</span> <span class="o">*</span> <span class="n">beta</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">DrawMargin</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">total_players</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Compute the draw margin (epsilon) given the draw probability. &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="n">icdf</span><span class="p">((</span><span class="n">p</span><span class="o">+</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">total_players</span><span class="p">)</span> <span class="o">*</span> <span class="n">beta</span>
+
+
+<span class="n">INITIAL_MU</span> <span class="o">=</span> <span class="mf">25.0</span>
+<span class="n">INITIAL_SIGMA</span> <span class="o">=</span> <span class="n">INITIAL_MU</span> <span class="o">/</span> <span class="mf">3.0</span>
+
+<div class="viewcode-block" id="SetParameters"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.trueskill.html#rtac.ac_functionalities.ranking.trueskill.SetParameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">SetParameters</span><span class="p">(</span><span class="n">beta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">draw_probability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">gamma</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Sets three global parameters used in the TrueSkill algorithm.</span>
+
+<span class="sd">  beta is a measure of how random the game is.  You can think of it as</span>
+<span class="sd">  the difference in skill (mean) needed for the better player to have</span>
+<span class="sd">  an ~80% chance of winning.  A high value means the game is more</span>
+<span class="sd">  random (I need to be *much* better than you to consistently overcome</span>
+<span class="sd">  the randomness of the game and beat you 80% of the time); a low</span>
+<span class="sd">  value is less random (a slight edge in skill is enough to win</span>
+<span class="sd">  consistently).  The default value of beta is half of INITIAL_SIGMA</span>
+<span class="sd">  (the value suggested by the Herbrich et al. paper).</span>
+
+<span class="sd">  epsilon is a measure of how common draws are.  Instead of specifying</span>
+<span class="sd">  epsilon directly you can pass draw_probability instead (a number</span>
+<span class="sd">  from 0 to 1, saying what fraction of games end in draws), and</span>
+<span class="sd">  epsilon will be determined from that.  The default epsilon</span>
+<span class="sd">  corresponds to a draw probability of 0.1 (10%).  (You should pass a</span>
+<span class="sd">  value for either epsilon or draw_probability, not both.)</span>
+
+<span class="sd">  gamma is a small amount by which a player&#39;s uncertainty (sigma) is</span>
+<span class="sd">  increased prior to the start of each game.  This allows us to</span>
+<span class="sd">  account for skills that vary over time; the effect of old games</span>
+<span class="sd">  on the estimate will slowly disappear unless reinforced by evidence</span>
+<span class="sd">  from new games.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">global</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">GAMMA</span>
+
+  <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">BETA</span> <span class="o">=</span> <span class="n">INITIAL_SIGMA</span> <span class="o">/</span> <span class="mf">2.0</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">BETA</span> <span class="o">=</span> <span class="n">beta</span>
+
+  <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">draw_probability</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="n">draw_probability</span> <span class="o">=</span> <span class="mf">0.10</span>
+    <span class="n">EPSILON</span> <span class="o">=</span> <span class="n">DrawMargin</span><span class="p">(</span><span class="n">draw_probability</span><span class="p">,</span> <span class="n">BETA</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">EPSILON</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+  <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">GAMMA</span> <span class="o">=</span> <span class="n">INITIAL_SIGMA</span> <span class="o">/</span> <span class="mf">100.0</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">GAMMA</span> <span class="o">=</span> <span class="n">gamma</span></div>
+
+<span class="n">SetParameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AdjustPlayers"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.trueskill.html#rtac.ac_functionalities.ranking.trueskill.AdjustPlayers">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">AdjustPlayers</span><span class="p">(</span><span class="n">players</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Adjust the skills of a list of players.</span>
+
+<span class="sd">  &#39;players&#39; is a list of player objects, for all the players who</span>
+<span class="sd">  participated in a single game.  A &#39;player object&#39; is any object with</span>
+<span class="sd">  a &quot;skill&quot; attribute (a (mu, sigma) tuple) and a &quot;rank&quot; attribute.</span>
+<span class="sd">  Lower ranks are better; the lowest rank is the overall winner of the</span>
+<span class="sd">  game.  Equal ranks mean that the two players drew.</span>
+
+<span class="sd">  This function updates all the &quot;skill&quot; attributes of the player</span>
+<span class="sd">  objects to reflect the outcome of the game.  The input list is not</span>
+<span class="sd">  altered.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="n">players</span> <span class="o">=</span> <span class="n">players</span><span class="p">[:]</span>
+  <span class="c1"># Sort players by rank, the factor graph will connect adjacent team</span>
+  <span class="c1"># performance variables.</span>
+  <span class="n">players</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+
+  <span class="c1"># Create all the variable nodes in the graph.  &quot;Teams&quot; are each a</span>
+  <span class="c1"># single player; there&#39;s a one-to-one correspondence between players</span>
+  <span class="c1"># and teams.  (It would be straightforward to make multiplayer</span>
+  <span class="c1"># teams, but it&#39;s not needed for my current purposes.)</span>
+  <span class="n">ss</span> <span class="o">=</span> <span class="p">[</span><span class="n">Variable</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">players</span><span class="p">]</span>
+  <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Variable</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">players</span><span class="p">]</span>
+  <span class="n">ts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Variable</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">players</span><span class="p">]</span>
+  <span class="n">ds</span> <span class="o">=</span> <span class="p">[</span><span class="n">Variable</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">players</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+  <span class="c1"># Create each layer of factor nodes.  At the top we have priors</span>
+  <span class="c1"># initialized to the player&#39;s current skill estimate.</span>
+  <span class="n">skill</span> <span class="o">=</span> <span class="p">[</span><span class="n">PriorFactor</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">skill</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                   <span class="n">sigma</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">skill</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">GAMMA</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+           <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pl</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">players</span><span class="p">)]</span>
+  <span class="n">skill_to_perf</span> <span class="o">=</span> <span class="p">[</span><span class="n">LikelihoodFactor</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">BETA</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">ps</span><span class="p">)]</span>
+  <span class="n">perf_to_team</span> <span class="o">=</span> <span class="p">[</span><span class="n">SumFactor</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                  <span class="k">for</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span> <span class="n">ts</span><span class="p">)]</span>
+  <span class="n">team_diff</span> <span class="o">=</span> <span class="p">[</span><span class="n">SumFactor</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">[</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">],</span> <span class="p">[</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+               <span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">ts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+  <span class="c1"># At the bottom we connect adjacent teams with a &#39;win&#39; or &#39;draw&#39;</span>
+  <span class="c1"># factor, as determined by the rank values.</span>
+  <span class="n">trunc</span> <span class="o">=</span> <span class="p">[</span><span class="n">TruncateFactor</span><span class="p">(</span><span class="n">d</span><span class="p">,</span>
+                          <span class="n">Vdraw</span> <span class="k">if</span> <span class="n">pl1</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">pl2</span><span class="o">.</span><span class="n">rank</span> <span class="k">else</span> <span class="n">Vwin</span><span class="p">,</span>
+                          <span class="n">Wdraw</span> <span class="k">if</span> <span class="n">pl1</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">pl2</span><span class="o">.</span><span class="n">rank</span> <span class="k">else</span> <span class="n">Wwin</span><span class="p">,</span>
+                          <span class="n">EPSILON</span><span class="p">)</span>
+           <span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">pl1</span><span class="p">,</span> <span class="n">pl2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">players</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">players</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+
+  <span class="c1"># Start evaluating the graph by pushing messages &#39;down&#39; from the</span>
+  <span class="c1"># priors.</span>
+
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">skill</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">skill_to_perf</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">UpdateValue</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">perf_to_team</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">UpdateSum</span><span class="p">()</span>
+
+  <span class="c1"># Because the truncation factors are approximate, we iterate,</span>
+  <span class="c1"># adjusting the team performance (t) and team difference (d)</span>
+  <span class="c1"># variables until they converge.  In practice this seems to happen</span>
+  <span class="c1"># very quickly, so I just do a fixed number of iterations.</span>
+  <span class="c1">#</span>
+  <span class="c1"># This order of evaluation is given by the numbered arrows in Figure</span>
+  <span class="c1"># 1 of the Herbrich paper.</span>
+
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">team_diff</span><span class="p">:</span>
+      <span class="n">f</span><span class="o">.</span><span class="n">UpdateSum</span><span class="p">()</span>             <span class="c1"># arrows (1) and (4)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">trunc</span><span class="p">:</span>
+      <span class="n">f</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>                <span class="c1"># arrows (2) and (5)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">team_diff</span><span class="p">:</span>
+      <span class="n">f</span><span class="o">.</span><span class="n">UpdateTerm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># arrows (3) and (6)</span>
+      <span class="n">f</span><span class="o">.</span><span class="n">UpdateTerm</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="c1"># Now we push messages back up the graph, from the teams back to the</span>
+  <span class="c1"># player skills.</span>
+
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">perf_to_team</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">UpdateTerm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">skill_to_perf</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">UpdateMean</span><span class="p">()</span>
+
+  <span class="c1"># Finally, the players&#39; new skills are the new values of the s</span>
+  <span class="c1"># variables.</span>
+
+  <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">players</span><span class="p">):</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">skill</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">MuSigma</span><span class="p">()</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AdjustPlayers&quot;</span><span class="p">,</span> <span class="s2">&quot;SetParameters&quot;</span><span class="p">,</span> <span class="s2">&quot;INITIAL_MU&quot;</span><span class="p">,</span> <span class="s2">&quot;INITIAL_SIGMA&quot;</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

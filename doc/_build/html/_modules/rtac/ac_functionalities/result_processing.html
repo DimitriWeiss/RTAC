@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtac.ac_functionalities.result_processing &mdash; rtac 0.0.1.dev documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=e346a3c0"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            rtac
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../description.html">Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">rtac</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rtac.ac_functionalities.result_processing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rtac.ac_functionalities.result_processing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;In this module results of the tournaments are processed and computations for</span>
+<span class="sd">the next tournament ar performed.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.config_gens</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DefaultConfigGen</span><span class="p">,</span>
+    <span class="n">RandomConfigGen</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking</span><span class="w"> </span><span class="kn">import</span> <span class="n">trueskill</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">ACMethod</span><span class="p">,</span>
+    <span class="n">InterimMeaning</span><span class="p">,</span>
+    <span class="n">Generator</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rankdata</span>
+
+
+<div class="viewcode-block" id="contender"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.contender">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">contender</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper object for setting trueskill ranks.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AbstractResultProcessing"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractResultProcessing</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class with functions to process tournament results.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament result processing class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scenario</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+<span class="sd">        logs</span>
+<span class="sd">            Object containing loggers and logging functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_config_gen</span> <span class="o">=</span> <span class="n">DefaultConfigGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span> <span class="o">=</span> <span class="n">RandomConfigGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">huge_float</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="mf">1e-100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_data</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AbstractResultProcessing.init_data"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.init_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing data according to ReACTR</span>
+<span class="sd">        implementation.</span>
+
+<span class="sd">        :returns: Randomly selected contenders.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+            <span class="c1"># Data is loaded instead of intialized.</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">pws</span><span class="p">:</span>
+            <span class="c1"># Initialize pool of contender configurations incl. default</span>
+            <span class="n">default_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_config_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">default_config</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_config</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">random_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">random_config</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_config</span>
+
+            <span class="c1"># Randomly initialize contender dict of first tournament</span>
+            <span class="c1"># incl. default</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">[</span><span class="n">default_config</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_config</span>
+            <span class="n">random_pick</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">1</span><span class="p">:],</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Initialize pool of contender configurations</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">):</span>
+                <span class="n">random_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">random_config</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_config</span>
+
+            <span class="c1"># Randomly initialize contender dict of first tournament</span>
+            <span class="n">random_pick</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">rp</span> <span class="ow">in</span> <span class="n">random_pick</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">[</span><span class="n">rp</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rp</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_results">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+                        <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in pool and select contenders for next tournament/problem instance.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.manage_pool">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool if necessary.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.select_contenders">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select contenders for next tournament/problem instance.&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage result processing.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        :returns: ID of the configuration to have won the previous tournament</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">baselineperf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_results</span><span class="p">(</span><span class="n">rtac_data</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">winner</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.get_contender_dict"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.get_contender_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_contender_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns contender_dict.</span>
+
+<span class="sd">        :returns: Configuration selected to run in next</span>
+<span class="sd">        tournament/on next problem instance. Dictionary with configuration id</span>
+<span class="sd">        as key and Configuration object as value.</span>
+<span class="sd">        :rtype: dict[str: Configuration]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span></div>
+
+<div class="viewcode-block" id="AbstractResultProcessing.result_summary_terminal"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">result_summary_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tourn_nr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="n">tourn_nr</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;seconds&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;objective value&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">len_str</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="s1">&#39;Instance nr. &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1"> total for solved instances&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="n">len_str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Instance nr.&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span>
+                      <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1"> total for solved instances&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39; *** TIMEOUT on instance&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Instance nr.&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span>
+                      <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1"> total for solved instances&#39;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="n">len_str</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ResultProcessing"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ResultProcessing</span><span class="p">(</span><span class="n">AbstractResultProcessing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processes results of previous tournament.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing class as necessary for</span>
+<span class="sd">        ReACTR implementation.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_scores</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ResultProcessing.init_scores"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.init_scores">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize scores dict for trueskill.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> 
+                                        <span class="p">(</span><span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_MU</span><span class="p">,</span>
+                                         <span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_SIGMA</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ResultProcessing.find_best"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.find_best">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the configurations scored as best by trueskill.</span>
+
+<span class="sd">        :param current_dict: Dictionary with confguration ids as key and</span>
+<span class="sd">            trueskill scores (mu, sigma) as value.</span>
+<span class="sd">        :type current_dict: dict</span>
+<span class="sd">        :param current_dict: Number of best configurations to draw.</span>
+<span class="sd">        :type current_dict: int</span>
+<span class="sd">        :returns: List of best configurations.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">best_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">current_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">best_list</span><span class="p">[:</span><span class="n">number</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ResultProcessing.get_winner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.get_winner">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_winner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> \
+            <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get index of the winning configuration and ranks.</span>
+
+<span class="sd">        :param times: List of time results of previous tournament.</span>
+<span class="sd">        :type times: list[float]</span>
+<span class="sd">        :param res: List of objective results of previous tournament.</span>
+<span class="sd">        :type res: list[float]</span>
+<span class="sd">        :returns: Index of winner and ranks.</span>
+<span class="sd">        :rtype: tuple[int, list[int]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+
+        <span class="n">ranks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">core</span> <span class="o">==</span> <span class="n">winner</span><span class="p">:</span>
+                <span class="n">ranks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ranks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">winner</span><span class="p">,</span> <span class="n">ranks</span></div>
+
+<div class="viewcode-block" id="ResultProcessing.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in pool and select contenders for next tournament/problem instance</span>
+<span class="sd">        according to ReACTR implementation.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="c1"># Setting timeout as time result if ta was terminated</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">huge_float</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_summary_terminal</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+        <span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">best_res</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+        <span class="n">winner</span><span class="p">,</span> <span class="n">ranks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_winner</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+            <span class="n">tourn_results</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="p">[[</span><span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">times</span><span class="p">)]]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Results of this tournament:</span><span class="se">\n</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Contender&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">19</span><span class="p">,</span>
+                  <span class="s1">&#39;   [Objective, Time]&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">tourn_results</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">tr_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">tourn_results</span><span class="p">:</span>
+                <span class="n">tr_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Results of this tournament: </span><span class="si">{</span><span class="n">tr_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Set the results of the tournament</span>
+        <span class="n">individuals</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span>
+        <span class="n">contender_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="n">skill</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">contender</span><span class="p">()</span>
+            <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">skill</span> <span class="o">=</span> <span class="n">skill</span>
+            <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Contender&#39;</span><span class="p">,</span> <span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="s1">&#39;has the rank&#39;</span><span class="p">,</span>
+                      <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Process the results of the tournament</span>
+        <span class="n">trueskill</span><span class="o">.</span><span class="n">AdjustPlayers</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Skills of the contenders from tournament:</span><span class="se">\n</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Contender&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">31</span><span class="p">,</span> <span class="s1">&#39;   (Mu&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;, Sigma&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Update Scores</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]]</span> <span class="o">=</span> <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">skill</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="s1">&#39;skills are:&#39;</span><span class="p">,</span>
+                      <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">skill</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResultProcessing.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool according to Mu and Sigma (TrueSKill).&quot;&quot;&quot;</span>
+        <span class="c1"># Replace contenders in self.pool, if performance below average</span>
+        <span class="n">contender_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">):</span>
+            <span class="c1"># Contenders with a performance variance (sigma) &lt;=</span>
+            <span class="c1"># self.scenario.kill are eligible to be replaced</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">kill</span><span class="p">:</span> 
+                <span class="n">tournament_list</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">):</span>
+                    <span class="n">tournament_list</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">]][</span><span class="mi">0</span><span class="p">]]</span>
+
+                <span class="c1"># Sort according to mean performance (Mu)</span>
+                <span class="n">best_list</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_best</span><span class="p">(</span><span class="n">tournament_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">)</span>
+
+                <span class="c1"># Get 5 best performing contenders for breeding</span>
+                <span class="n">best_five</span> <span class="o">=</span> <span class="n">best_list</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">best_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">:]</span>
+
+                <span class="c1"># Contenders which also have mean performance lower</span>
+                <span class="c1"># than median performane are replaced by new contenders</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> \
+                        <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">best_list</span><span class="p">[</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]:</span>       
+
+                    <span class="c1"># Replace by randomly generated contender if chance</span>
+                    <span class="c1"># is lower than self.scenario.chance</span>
+                    <span class="n">chance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">mutated_individual</span> <span class="o">=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">chance</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">chance</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]]</span>
+                        <span class="n">new_contender_id</span> <span class="o">=</span> <span class="n">mutated_individual</span><span class="o">.</span><span class="n">id</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">]</span>\
+                            <span class="o">=</span> <span class="n">mutated_individual</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Replaced contender&#39;</span><span class="p">,</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="si">}</span><span class="s1"> by randomly&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;generated contender.&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># Else generate new contender by genetic crossover</span>
+                    <span class="k">elif</span> <span class="n">chance</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">chance</span><span class="p">:</span>
+                        <span class="n">mutated</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">parent_one</span><span class="p">,</span> <span class="n">parent_two</span> <span class="o">=</span> \
+                            <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]]</span>
+                        <span class="n">new_contender_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span><span class="p">:</span>
+                            <span class="n">which</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                            <span class="k">if</span> <span class="mf">0.5</span> <span class="o">&lt;</span> <span class="n">which</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> \
+                                    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span>
+                                    <span class="n">best_five</span><span class="p">[</span><span class="n">parent_one</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+
+                            <span class="k">elif</span> <span class="mf">0.5</span> <span class="o">&gt;=</span> <span class="n">which</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> \
+                                    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span>
+                                    <span class="n">best_five</span><span class="p">[</span><span class="n">parent_two</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+
+                            <span class="n">mutation</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">mutation</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">mutate</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">][</span><span class="n">param</span><span class="p">]</span>\
+                                    <span class="o">=</span> <span class="n">mutated_individual</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+                                <span class="n">mutated</span> <span class="o">=</span> <span class="n">mutated</span> <span class="o">+</span> <span class="mi">1</span>
+
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">Configuration</span><span class="p">(</span>
+                                <span class="n">new_contender_id</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">],</span> <span class="p">[],</span>
+                                <span class="n">Generator</span><span class="o">.</span><span class="n">crossover</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Replaced contender&#39;</span><span class="p">,</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="si">}</span><span class="s1"> by contender&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;generated via crossover.&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Mutation of </span><span class="si">{</span><span class="n">mutated</span><span class="si">}</span><span class="s1"> genes happened for&#39;</span><span class="p">,</span>
+                                  <span class="sa">f</span><span class="s1">&#39;the new contender </span><span class="si">{</span><span class="n">new_contender_id</span><span class="si">}</span><span class="s1">!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># Delete scores of replaced contender and insert initial</span>
+                    <span class="c1"># scores for new contender</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">new_contender_id</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="p">(</span><span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_MU</span><span class="p">,</span> <span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_SIGMA</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResultProcessing.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select scenario.contenders == #contenders for next</span>
+<span class="sd">        tournament/problem instance: top number of </span>
+<span class="sd">        &#39;self.scenario.keeptop&#39; and the rest randomly.&quot;&quot;&quot;</span>
+        <span class="n">tournament_list</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Choose the two best contenders</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">):</span>
+            <span class="n">tournament_list</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">]][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">best_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_best</span><span class="p">(</span><span class="n">tournament_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">keep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">keeptop</span><span class="p">):</span>
+            <span class="n">contender_id</span> <span class="o">=</span> <span class="n">best_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">keep</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">[</span><span class="n">contender_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">[</span><span class="n">contender_id</span><span class="p">]</span>
+
+        <span class="c1"># Fill in the rest with randomly chosen contenders from pool</span>
+        <span class="n">temp_pool</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">contender</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">temp_pool</span><span class="p">[</span><span class="n">contender</span><span class="p">]</span>
+        <span class="n">random_pick</span> <span class="o">=</span> \
+            <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">temp_pool</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">keeptop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">rp</span> <span class="ow">in</span> <span class="n">random_pick</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">[</span><span class="n">rp</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_pool</span><span class="p">[</span><span class="n">rp</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">New contender list is:&#39;</span><span class="p">,</span>
+                  <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ResultProcessingpp"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ResultProcessingpp</span><span class="p">(</span><span class="n">ResultProcessing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process results of prvious tournament.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ResultProcessingpp.duplicates"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp.duplicates">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ranks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List the indices of the result in the results list.</span>
+
+<span class="sd">        :param ranks: List of objective results of previous tournament.</span>
+<span class="sd">        :type ranks: list[int]</span>
+<span class="sd">        :param rank: a single result.</span>
+<span class="sd">        :type rank: float</span>
+<span class="sd">        :returns: list of indices of this result in the results list.</span>
+<span class="sd">        :rtype: list[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ranks</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">rank</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ResultProcessingpp.get_winner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp.get_winner">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_winner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> \
+            <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get index of the winning configuration including last known</span>
+<span class="sd">        intermidiate outputs to break ties. Additionally output complete</span>
+<span class="sd">        ranking to compute more detailed assessment with trueskill.</span>
+
+<span class="sd">        :param times: List of time results of previous tournament.</span>
+<span class="sd">        :type times: list[float]</span>
+<span class="sd">        :param res: List of objective results of previous tournament.</span>
+<span class="sd">        :type res: list[float]</span>
+<span class="sd">        :returns: Index of winner and ranks.</span>
+<span class="sd">        :rtype: tuple[int, list[int]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim</span>
+                   <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">):</span>
+
+            <span class="n">ranks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
+
+            <span class="n">interim_sorted</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                              <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
+                              <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+            <span class="n">interim_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">interim_sorted</span><span class="p">)</span>
+            <span class="n">interim_sorted</span> <span class="o">=</span> <span class="n">interim_sorted</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">isort</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">interim_sorted</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim_meaning</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> \
+                        <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">:</span>
+                    <span class="n">interim_sorted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">isort</span><span class="p">,</span>
+                                                 <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span>
+                                                 <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;propagate&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">interim_meaning</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> \
+                        <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">:</span>
+                    <span class="n">interim_sorted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">i</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                                  <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">isort</span><span class="p">],</span>
+                                                 <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span>
+                                                 <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;propagate&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">isort</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">interim_sorted</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ranks</span><span class="p">):</span>
+                    <span class="n">ranks</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">+=</span> <span class="n">isort</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+                <span class="n">res_ranks</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s2">&quot;propagate&quot;</span><span class="p">)</span>
+
+                <span class="n">duplicates</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">res_ranks</span><span class="p">)):</span>
+                    <span class="n">duplicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duplicates</span><span class="p">(</span><span class="n">res_ranks</span><span class="p">,</span> <span class="n">rank</span><span class="p">))</span>
+                
+                <span class="k">for</span> <span class="n">duplicate</span> <span class="ow">in</span> <span class="n">duplicates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">interim_ranks</span> <span class="o">=</span> <span class="p">[</span><span class="n">ranks</span><span class="p">[</span><span class="n">dup</span><span class="p">]</span> <span class="k">for</span> <span class="n">dup</span> <span class="ow">in</span> <span class="n">duplicate</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ir</span><span class="p">)</span> <span class="k">for</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">interim_ranks</span><span class="p">):</span>
+                            <span class="n">tie_winner</span> <span class="o">=</span> \
+                                <span class="n">duplicate</span><span class="p">[</span><span class="n">interim_ranks</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">interim_ranks</span><span class="p">))]</span>
+                            <span class="n">interim_ranks</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">interim_ranks</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
+                            <span class="n">interim_ranks</span> <span class="o">-=</span> <span class="nb">min</span><span class="p">(</span><span class="n">interim_ranks</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">duplicate</span><span class="p">,</span> <span class="n">interim_ranks</span><span class="p">):</span>
+                                <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res_ranks</span><span class="p">):</span>
+                                    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">winner</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">tie_winner</span><span class="p">:</span>
+                                        <span class="n">res_ranks</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">+=</span> <span class="n">interim_ranks</span><span class="p">[</span><span class="n">ir</span><span class="p">]</span>
+                                    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">interim_ranks</span><span class="p">)):</span>
+                                        <span class="n">res_ranks</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">res_ranks</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">interim_ranks</span><span class="p">)</span>
+
+                <span class="n">ranks</span> <span class="o">=</span> <span class="n">res_ranks</span>
+
+            <span class="n">ranks</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">ranks</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ranks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
+
+        <span class="n">ranks</span><span class="p">[</span><span class="n">winner</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">winner</span><span class="p">,</span> <span class="n">ranks</span></div></div>
+
+
+<div class="viewcode-block" id="ResultProcessingCPPL"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ResultProcessingCPPL</span><span class="p">(</span><span class="n">AbstractResultProcessing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process results of previous tournament.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing class as necessary for</span>
+<span class="sd">        CPPL implementation.</span>
+
+<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
+<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init_cppl</span><span class="p">,</span>
+                                        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span>
+                                              <span class="n">queue</span><span class="p">))</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking</span><span class="w"> </span><span class="kn">import</span> <span class="n">cppl</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">CPPL</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">random_config_gen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_config_gen</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit_models</span>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.init_cppl"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_cppl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">random_config_gen</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span>
+                  <span class="n">queue</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking</span><span class="w"> </span><span class="kn">import</span> <span class="n">cppl</span>
+
+        <span class="n">cppl</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">CPPL</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">)</span>
+        <span class="n">cppl</span><span class="o">.</span><span class="n">random_config_gen</span> <span class="o">=</span> <span class="n">random_config_gen</span>
+        <span class="n">bandit</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">bandit</span>
+        <span class="n">bandit_models</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">bandit_models</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cppl</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">bandit</span><span class="p">,</span> <span class="n">bandit_models</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage result processing.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        :returns: ID of the configuration to have won the previous tournament</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">baselineperf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_results</span><span class="p">(</span><span class="n">rtac_data</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">winner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">winner</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">,</span>
+                             <span class="n">instance</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">cppl</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="n">contender_dict</span>
+        <span class="n">cppl</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">pool</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="n">core</span><span class="p">])</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="n">core</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ob</span><span class="p">:</span>
+            <span class="n">cppl</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">times</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cppl</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">results</span>
+        <span class="n">cppl</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="n">cppl</span><span class="o">.</span><span class="n">process_results</span><span class="p">()</span>
+        <span class="n">bandit</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">bandit</span>
+        <span class="n">bandit_models</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">bandit_models</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cppl</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">bandit</span><span class="p">,</span> <span class="n">bandit_models</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">times</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in pool and select contenders for next tournament/problem instance.</span>
+
+<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
+            <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="n">core</span><span class="p">])</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[</span><span class="n">core</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_summary_terminal</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_summary_terminal</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cppl_process_results</span><span class="p">,</span>
+                                        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="p">,</span>
+                                              <span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> 
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">,</span>
+                                              <span class="n">queue</span><span class="p">))</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">times</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">results</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">process_results</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit_models</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_res</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">winner</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+        
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">best_res</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:])</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+            <span class="n">tourn_results</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="p">[[</span><span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">times</span><span class="p">)]]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Results of this tournament:</span><span class="se">\n</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Contender&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">19</span><span class="p">,</span>
+                  <span class="s1">&#39;   [Objective, Time]&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">tourn_results</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">tr_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">tourn_results</span><span class="p">:</span>
+                <span class="n">tr_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Results of this tournament: </span><span class="si">{</span><span class="n">tr_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">cppl</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="n">contender_dict</span>
+
+        <span class="n">cppl</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span>
+
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">cppl</span><span class="o">.</span><span class="n">pool</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cppl</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool if necessary.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cppl_manage_pool</span><span class="p">,</span>
+                                        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="n">queue</span><span class="p">))</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">cppl</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">()</span>
+
+        <span class="n">contender_dict</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">contender_dict</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cppl</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">contender_dict</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ResultProcessingCPPL.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select contenders for next tournament/problem instance.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cppl_select_contenders</span><span class="p">,</span>
+                                        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="p">))</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">contender_dict</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">New contender list is:&#39;</span><span class="p">,</span>
+                  <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="processing_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.processing_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">processing_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractResultProcessing</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized class with data structures</span>
+<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+
+<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
+<span class="sd">    :type scenario: argparse.Namespace</span>
+<span class="sd">    :returns: Inititialized BaseTARunner object matching the RTAC method of</span>
+<span class="sd">        the scenario.</span>
+<span class="sd">    :rtype: BaseTARunner</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ResultProcessing</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ResultProcessingpp</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ResultProcessingCPPL</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Dimitri Weiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

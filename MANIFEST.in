@@ -1,0 +1,15 @@
+include requirements.txt
+
+include rtac/data/solvers/python-tsp.py
+include rtac/data/params_tsp.json
+include rtac/data/tsp_scenario_rt_test.txt
+include rtac/data/travellingsalesman_instances.txt
+recursive-include rtac/data/instances/travellingsalesman *
+
+include rtac/feature_gen/tsp_feats.py
+recursive-include rtac/feature_gen/tsp_features *
+
+include rtac/utils/RTACParamSchema.json
+
+exclude rtac/wrapper/cadical.py
+exclude rtac/main.py

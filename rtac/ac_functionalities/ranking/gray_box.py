@@ -2,6 +2,7 @@ import six
 import sys
 import joblib
 import numpy as np
+np.float = float
 from sklearn import __version__ as sklearn_version
 from packaging import version
 from collections import Counter

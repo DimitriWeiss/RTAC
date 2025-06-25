@@ -7,8 +7,8 @@ import subprocess
 import time
 import sys
 import os
-from ac_functionalities.ta_runner import non_block_read
-from ac_functionalities.rtac_data import Configuration
+from rtac.ac_functionalities.ta_runner import non_block_read
+from rtac.ac_functionalities.rtac_data import Configuration
 
 
 class AbstractWrapper(ABC):

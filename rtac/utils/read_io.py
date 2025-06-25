@@ -1,6 +1,6 @@
 """Loading RTAC scenario from file or sys.args into an argparse.Namespace."""
 
-from utils.background_thread_control import set_background_thread_nr
+from rtac.utils.background_thread_control import set_background_thread_nr
 
 set_background_thread_nr()
 
@@ -10,8 +10,8 @@ import os
 import warnings
 import json
 from ConfigSpace.read_and_write import pcs_new
-from utils.json_validation import validateparams
-from ac_functionalities.rtac_data import (
+from rtac.utils.json_validation import validateparams
+from rtac.ac_functionalities.rtac_data import (
     ACMethod,
     ParamType,
     Parameter,
@@ -102,9 +102,9 @@ def read_args(scenario: str = None,
                         help='''Number of top contenders to gbe part of
                         the tournament automatically for ReACTR/ReACTR++
                         (Rest is chosen randomly). [2]''')
-    parser.add_argument('-ud', '--usedata', type=str, default=None, 
-                        help='''Type y if data of prior run should 
-                        be used. []''')
+    # parser.add_argument('-ud', '--usedata', type=str, default=None, 
+    #                    help='''Type y if data of prior run should 
+    #                    be used. []''')
     parser.add_argument('-ch', '--chance', type=int, default=25, 
                         help='''Chance to replace gene randomly 
                         in percent (int: 0 - 100) for ReACTR/ReACTR++.

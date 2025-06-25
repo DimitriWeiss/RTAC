@@ -1,8 +1,5 @@
 -r requirements.txt
-irace @ git+https://github.com/DimitriWeiss/up-iracepy@main
-dask
-distributed
-click
-mock
+
 sphinx-rtd-theme==1.3.0
 sphinx==7.1.2
+sphinxcontrib-bibtex
