@@ -13,12 +13,6 @@ rtac.feature\_gen.cadical\_feats
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      CadFeats
-   
    
 
    

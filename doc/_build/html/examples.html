@@ -47,7 +47,30 @@
 <li class="toctree-l1"><a class="reference internal" href="description.html">Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-target-algorithm-wrapper">Example Target Algorithm Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scenario-file-examples">Scenario File Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reactr">ReACTR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">ReACTR++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cppl">CPPL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gray-box">Gray-Box</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-files">Parameter Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pcs">PCS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#json">JSON</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#required-field">Required Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fields-by-type">Fields by Type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-common-fields">Optional Common Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#log-distribution-options-if-used">Log Distribution Options (if used)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-rtac-call">Example RTAC call</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -77,7 +100,173 @@
              
   <section id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h1>
-<p>To run ReACTR, you can use the following scenario file:</p>
+<section id="example-target-algorithm-wrapper">
+<h2>Example Target Algorithm Wrapper<a class="headerlink" href="#example-target-algorithm-wrapper" title="Permalink to this heading"></a></h2>
+<p>With this example, the target algorithm to be configured needs to be callable via command line and accept parameters via command line. It also has to provide runtime output to the terminal in order to be used for the gray-box extension.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.wrapper.abstract_wrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">InterimMeaning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">non_block_read</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TSP_RT</span><span class="p">(</span><span class="n">AbstractWrapper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TSP wrapper for runtime scenario.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+        <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>  <span class="c1"># runtime scenario: fixed annealing factor</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">config_list</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+
+        <span class="c1"># Absolute path to the current file</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+        <span class="c1"># Directory containing the file</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;wrapper&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python3&#39;</span><span class="p">,</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_dir</span><span class="si">}</span><span class="s1">data/solvers/python-tsp.py&#39;</span><span class="p">,</span>
+                      <span class="o">*</span><span class="n">config</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeout</span><span class="p">),</span> <span class="s1">&#39;-i&#39;</span><span class="p">,</span>
+                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_dir</span><span class="si">}{</span><span class="n">instance</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                     <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+        <span class="n">proc_cpu_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">process_time_ns</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">proc</span><span class="p">,</span> <span class="n">proc_cpu_time</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_solved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nnr</span><span class="p">:</span> <span class="n">non_block_read</span><span class="p">,</span>
+                        <span class="n">proc</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+                            <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">if</span> <span class="s1">&#39;Warning&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>  <span class="c1"># Appears in b, if TA reaches time limit</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+                <span class="n">event</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
+
+            <span class="k">if</span> <span class="s1">&#39;Time:&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">res_not_given</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">while</span> <span class="n">res_not_given</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">nnr</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s1">&#39;Distance:&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">res_not_given</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">event</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TSP_Q</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TSP wrapper for solution quality scenario.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+
+        <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">config_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">config_list</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TSP_RTpp</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TSP wrapper for runtime scenario with runtime output.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="c1"># Check for progress</span>
+            <span class="k">if</span> <span class="s1">&#39;Temperature&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                <span class="c1"># Assumption: the lower the temperature, the closer the TA is</span>
+                <span class="c1"># to finding the solution. Solution Quality is not regarded in</span>
+                <span class="c1"># this example, we optimize for runtime.</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">interim</span> <span class="o">=</span> <span class="p">[</span><span class="n">temp</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="n">interim</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TSP_Qpp</span><span class="p">(</span><span class="n">TSP_Q</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TSP wrapper for solution quality scenario with runtime output.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">,</span>
+                                <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="c1"># Check for progress</span>
+            <span class="k">if</span> <span class="s1">&#39;Temperature&#39;</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+                <span class="n">temp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">k_acc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">k_noimp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">10</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">interim</span> <span class="o">=</span> <span class="p">[</span><span class="n">temp</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k_acc</span><span class="p">,</span> <span class="n">k_noimp</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="n">interim</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="scenario-file-examples">
+<h2>Scenario File Examples<a class="headerlink" href="#scenario-file-examples" title="Permalink to this heading"></a></h2>
+<section id="reactr">
+<h3>ReACTR<a class="headerlink" href="#reactr" title="Permalink to this heading"></a></h3>
+<p>To run ReACTR, you can use a scenario file like this:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--verbosity 2
 --number_cores 8
 --timeout 120
@@ -91,12 +280,329 @@
 --ac 1
 --paramlimit 100000
 --log_folder logs
---wrapper wrapper.cadical
---wrapper_name Cadicalpp
---feature_gen absoulte_path_to/feature_gen/cadical_feats.py
---param_file absoulte_path_to/data/params_cadical.json
+--wrapper wrapper.tsp
+--wrapper_name TSP
+--feature_gen absoulte_path_to/feature_gen/tsp_feats.py
+--param_file absoulte_path_to/data/tsp_params.json
 </pre></div>
 </div>
+</section>
+<section id="id2">
+<h3>ReACTR++<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>To run ReACTR++, you can use a scenario file like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--verbosity 2
+--number_cores 8
+--timeout 120
+--contenders 30
+--keeptop 2
+--pws
+--experimental
+--chance 25
+--mutate 10
+--kill 5
+--ac 2
+--paramlimit 100000
+--log_folder logs
+--wrapper wrapper.tsp
+--wrapper_name TSPpp
+--feature_gen absoulte_path_to/feature_gen/tsp_feats.py
+--param_file absoulte_path_to/data/tsp_params.json
+</pre></div>
+</div>
+</section>
+<section id="cppl">
+<h3>CPPL<a class="headerlink" href="#cppl" title="Permalink to this heading"></a></h3>
+<p>To run CPPL, you can use a scenario file like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--verbosity 2
+--number_cores 8
+--timeout 120
+--runtimePAR 1
+--contenders 30
+--keeptop 4
+--pws
+--experimental
+--chance 25
+--mutate 10
+--online_instance_train
+--nc_pca_f 3
+--nc_pca_p 5
+--jfm polynomial
+--omega 1.0
+--gamma 1
+--alpha 0.2
+--epsilon 0.9
+--kappa 1.0
+--ac 3
+--paramlimit 100000
+--epsilon_greedy
+--gen_mult 2
+--log_folder logs
+--wrapper wrapper.tsp
+--wrapper_name TSPpp
+--feature_gen feature_gen.tsp_feats
+--feature_gen_name TSPFeats
+--feature_path absoulte_path_to/feature_gen/cad_features/Features_tsp.csv
+--param_file absoulte_path_to/data/tsp_params.json
+--instance_pre_train absoulte_path_to/feature_gen/tsp_features/pre_train_features.txt
+</pre></div>
+</div>
+<p>You do not need to provide –feature_path if you are computing problem instance features online. Pre-train features need to be in a text file as Python lists in an individual line per instance.</p>
+</section>
+<section id="gray-box">
+<h3>Gray-Box<a class="headerlink" href="#gray-box" title="Permalink to this heading"></a></h3>
+<p>To run CPPL in gray-box mode, you can use a scenario file like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--verbosity 2
+--number_cores 8
+--timeout 120
+--runtimePAR 1
+--contenders 30
+--keeptop 4
+--pws
+--experimental
+--chance 25
+--mutate 10
+--online_instance_train
+--nc_pca_f 3
+--nc_pca_p 5
+--jfm polynomial
+--omega 1.0
+--gamma 1
+--alpha 0.2
+--epsilon 0.9
+--kappa 1.0
+--ac 3
+--paramlimit 100000
+--epsilon_greedy
+--gen_mult 2
+--log_folder logs
+--gray_box
+--gb_read_time 0.1
+--nr_gb_feats 2
+--wrapper wrapper.tsp
+--wrapper_name TSPpp
+--feature_gen feature_gen.tsp_feats
+--feature_gen_name TSPFeats
+--feature_path absoulte_path_to/feature_gen/cad_features/Features_tsp.csv
+--param_file absoulte_path_to/data/tsp_params.json
+--instance_pre_train absoulte_path_to/feature_gen/tsp_features/pre_train_features.txt
+</pre></div>
+</div>
+<p>You do not need to provide –feature_path if you are computing problem instance features online. You can run ReACTR and ReACTR++ in gray-box mode by adding –gray_box and –nr_gb_feats and using a wrapper with runtime output mechanism. Pre-train features need to be in a text file as Python lists in an individual line per instance.</p>
+</section>
+</section>
+<section id="parameter-files">
+<h2>Parameter Files<a class="headerlink" href="#parameter-files" title="Permalink to this heading"></a></h2>
+<section id="pcs">
+<h3>PCS<a class="headerlink" href="#pcs" title="Permalink to this heading"></a></h3>
+<p>You can find documentation for PCS at <a class="reference external" href="https://automl.github.io/ConfigSpace/latest/">PCS Documentation</a>. Here is an example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ps categorical {ps1, ps2, ps3, ps4, ps5, ps6, two_opt} [two_opt]
+a real [0.0001, 0.9999] [0.9]
+mni integer [1, 100] [3]
+miim integer [1, 100] [10]
+</pre></div>
+</div>
+</section>
+<section id="json">
+<h3>JSON<a class="headerlink" href="#json" title="Permalink to this heading"></a></h3>
+<p>RTAC has an own json schema for parameter space definition.</p>
+<p>Each parameter is defined as a dictionary key in a JSON object.</p>
+<section id="required-field">
+<h4>Required Field<a class="headerlink" href="#required-field" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>``paramtype``</strong>: must be one of <code class="docutils literal notranslate"><span class="pre">&quot;categorical&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;discrete&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;continuous&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;binary&quot;</span></code>.</p></li>
+</ul>
+</section>
+<section id="fields-by-type">
+<h4>Fields by Type<a class="headerlink" href="#fields-by-type" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>Continuous</strong></p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">minval</span></code>, <code class="docutils literal notranslate"><span class="pre">maxval</span></code> (both numbers), <code class="docutils literal notranslate"><span class="pre">default</span></code> (number)</p></li>
+</ul>
+</li>
+<li><p><strong>Discrete</strong></p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">minval</span></code>, <code class="docutils literal notranslate"><span class="pre">maxval</span></code> (both integers), <code class="docutils literal notranslate"><span class="pre">default</span></code> (integer)</p></li>
+</ul>
+</li>
+<li><p><strong>Binary</strong></p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">default</span></code> (integer or string)</p></li>
+</ul>
+</li>
+<li><p><strong>Categorical</strong></p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">valtype</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;int&quot;</span></code>:</p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">minval</span></code>, <code class="docutils literal notranslate"><span class="pre">maxval</span></code> (integers), <code class="docutils literal notranslate"><span class="pre">valtype</span></code></p></li>
+</ul>
+</li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">valtype</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;str&quot;</span></code>:</p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">values</span></code> (array of strings), <code class="docutils literal notranslate"><span class="pre">valtype</span></code></p></li>
+<li><p>Optional: <code class="docutils literal notranslate"><span class="pre">default</span></code> (string)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="optional-common-fields">
+<h4>Optional Common Fields<a class="headerlink" href="#optional-common-fields" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code>: default value (number, integer, or string depending on type)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flag</span></code>: if <code class="docutils literal notranslate"><span class="pre">true</span></code>, this is a binary flag, not a parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distribution</span></code>: either <code class="docutils literal notranslate"><span class="pre">&quot;uniform&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code> (defaults to uniform)</p></li>
+</ul>
+</section>
+<section id="log-distribution-options-if-used">
+<h4>Log Distribution Options (if used)<a class="headerlink" href="#log-distribution-options-if-used" title="Permalink to this heading"></a></h4>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">distribution</span> <span class="pre">=</span> <span class="pre">&quot;log&quot;</span></code>, and optionally allows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">splitbydefault</span></code>: split log range at default value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logonpos</span></code> / <code class="docutils literal notranslate"><span class="pre">logonneg</span></code>: enable log sampling on positive/negative side (if <code class="docutils literal notranslate"><span class="pre">minval</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabpos</span></code>, <code class="docutils literal notranslate"><span class="pre">probabneg</span></code>: probability of sampling positive/negative side (between 0 and 1, exclusive)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">includezero</span></code>: include zero in log sampling</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">probabilityzero</span></code>: probability of choosing zero (between 0 and 1, exclusive)</p></li>
+</ul>
+</section>
+<section id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h4>
+<dl>
+<dt>{‘param_6mdb’: {‘paramtype’: ‘discrete’,</dt><dd><blockquote>
+<div><p>‘minval’: 0,
+‘maxval’: 10,
+‘default’: 0},</p>
+</div></blockquote>
+<dl class="simple">
+<dt>‘param_98dt’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_g3al’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_4nie’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_f3ed’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘int’,
+‘minval’: 1,
+‘maxval’: 3,
+‘default’: 3},</p>
+</dd>
+<dt>‘param_bcnn’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_3zry’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘false’},</p>
+</dd>
+<dt>‘param_7oqx’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 0,
+‘maxval’: 2000000000,
+‘default’: 100000,
+‘distribution’: ‘log’,
+‘includezero’: True,
+‘probabilityzero’: 0.05,
+‘logonpos’: True,
+‘probabpos’: 0.9},</p>
+</dd>
+<dt>‘param_gids’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 2,
+‘maxval’: 2000000000,
+‘default’: 4,
+‘distribution’: ‘log’,
+‘logonpos’: True,
+‘probabpos’: 0.9},</p>
+</dd>
+<dt>‘param_1dly’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 0,
+‘maxval’: 2000000000,
+‘default’: 100,
+‘distribution’: ‘log’,
+‘includezero’: True,
+‘probabilityzero’: 0.05,
+‘logonpos’: True,
+‘probabpos’: 0.9},</p>
+</dd>
+<dt>‘param_t43b’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_jnjw’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_mb9s’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 1,
+‘maxval’: 3,
+‘default’: 1},</p>
+</dd>
+<dt>‘param_6o9q’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘false’},</p>
+</dd>
+<dt>‘param_ovbg’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_luvg’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_p9dc’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘false’},</p>
+</dd>
+<dt>‘param_g0aj’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_hlcw’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_imgg’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 0,
+‘maxval’: 2,
+‘default’: 1},</p>
+</dd>
+<dt>‘param_hpvo’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘false’},</p>
+</dd>
+<dt>‘param_bc51’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 0,
+‘maxval’: 2000000000,
+‘default’: 100,
+‘distribution’: ‘log’,
+‘splitbydefault’: True,
+‘includezero’: True,
+‘probabilityzero’: 0.05,
+‘logonpos’: True,
+‘probabpos’: 0.9},</p>
+</dd>
+<dt>‘param_6040’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_m6pf’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
+‘values’: [‘true’, ‘false’],
+‘default’: ‘true’},</p>
+</dd>
+<dt>‘param_wu3s’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 1,
+‘maxval’: 2000000000,
+‘default’: 2000,
+‘distribution’: ‘log’,
+‘splitbydefault’: True,
+‘logonpos’: True,
+‘probabpos’: 0.8}}</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="example-rtac-call">
+<h2>Example RTAC call<a class="headerlink" href="#example-rtac-call" title="Permalink to this heading"></a></h2>
 <p>You can then use a python script in the following manner to solve incoming problem instances:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">rtac.utils.read_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_args</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.rtac</span><span class="w"> </span><span class="kn">import</span> <span class="n">rtac_factory</span>
@@ -113,8 +619,18 @@
 
     <span class="n">rtac</span> <span class="o">=</span> <span class="n">rtac_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
-        <span class="n">rtac</span><span class="o">.</span><span class="n">solve_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
+            <span class="n">rtac</span><span class="o">.</span><span class="n">solve_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">next_instance</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># If next problem instance arrives after rtac is started, it can be</span>
+            <span class="c1"># passed while the configurator runs on current problem instance</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
+                <span class="n">rtac</span><span class="o">.</span><span class="n">provide_early_instance</span><span class="p">(</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># GB RAC needs to be wrapped up after running an iteration</span>
+            <span class="n">rtac</span><span class="o">.</span><span class="n">wrap_up_gb</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
+            <span class="n">rtac</span><span class="o">.</span><span class="n">solve_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -125,6 +641,7 @@
 </pre></div>
 </div>
 <p>Of course, you can adjust the script to wait and receive problem instances to be passed to rtac.solve_instance.</p>
+</section>
 </section>
 
 

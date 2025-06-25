@@ -13,27 +13,32 @@ Installation
 
 You can use RTAC from the files the github repository. In the local directory run 
 
-```
-pip install -e .
-```
+.. code-block:: bash
+
+    pip install -e .
+
 
 in the root directory. You can then use the code with
 
-```
-python3 -m rtac.main
-```
+.. code-block:: bash
+
+    python3 -m rtac.main
+
 
 from root directory where main is a python file as described in the Examples Section. You can also install it as a Python package via 
-```
-pip install rtac
-```
+
+.. code-block:: bash
+
+    pip install rtac
+
 
 After installing, you can test functionality of the library by running
 
-```
-from rtac.examples.main import run_example
-run_example()
-```
+.. code-block:: python
 
-in Python. It will make sure that python_tsp 0.4.1 is installed and than configure a python_tsp solver with ReACTR on 98 TSP instances that come with the package. You can call the configurators as described in the Examples Section.
+    from rtac.examples.main import run_example
+    run_example()
+
+
+in Python. It will make sure that python_tsp 0.4.1 is installed and than configure a python_tsp solver with ReACTR on 98 TSP instances that come with the package. You can call the RAC methods as described in the Examples Section.
 

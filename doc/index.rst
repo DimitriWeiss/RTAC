@@ -6,9 +6,9 @@ Welcome to rtac's documentation! Please check out how to install it using the :r
 For information about how to use it and what general functions there are look at the :ref:`usage` section.
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
+   :glob:
    :caption: Contents
-   :titlesonly:
 
    description
    installation

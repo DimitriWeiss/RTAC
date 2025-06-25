@@ -119,7 +119,7 @@ def read_args(scenario: str = None,
     parser.add_argument('-fg', '--feature_gen', type=str,
                         default='', 
                         help='''Python wrapper to compute instance features
-                        for given instance for CPPL/GBRAC.''')
+                        for given instance for CPPL.''')
     parser.add_argument('-ipt', '--instance_pre_train', type=str,
                         default=False, 
                         help='''If the bandit ought to be pre-trained with 
@@ -128,19 +128,19 @@ def read_args(scenario: str = None,
                         this argument.''')
     parser.add_argument('-npf', '--nc_pca_f', type=int, default=3, 
                         help='''Number of the dimensions for the PCA of the 
-                        instance features for CPPL/GBRAC.''')
+                        instance features for CPPL.''')
     parser.add_argument('-npp', '--nc_pca_p', type=int, default=5, 
                         help='''Number of the dimensions for the PCA of the 
-                        parameter (features) for CPPL/GBRAC.''')
+                        parameter (features) for CPPL.''')
     parser.add_argument('-jfm', '--jfm', type=str, default='polynomial', 
                         help='''Mode of the joined feature map
-                        for CPPL/GBRAC.''')
+                        for CPPL.''')
     parser.add_argument('-o', '--omega', type=float, default=1.0, 
-                        help='''Omega parameter for CPPL/GBRAC.''')
+                        help='''Omega parameter for CPPL.''')
     parser.add_argument('-g', '--gamma', type=float, default=1, 
-                        help='''Gamma parameter for CPPL/GBRAC.''')
+                        help='''Gamma parameter for CPPL.''')
     parser.add_argument('-a', '--alpha', type=float, default=0.2, 
-                        help='''Alpha parameter for CPPL/GBRAC.''')
+                        help='''Alpha parameter for CPPL.''')
     parser.add_argument('-e', '--epsilon', type=float, default=0.9, 
                         help='''Epsilopn for epsilon-greedy selection. Set to
                          0.0 for greedy selection. Setting epsilon avoids 

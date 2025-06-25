@@ -2,7 +2,8 @@ API Reference
 =============
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
+   :glob:
    :hidden:
 
 
@@ -11,3 +12,8 @@ API Reference
    :recursive:
 
    rtac
+   _autosummary/rtac.ac_functionalities
+   _autosummary/rtac.ac_functionalities.ranking
+   _autosummary/rtac.ac_functionalities.ranking.cppl
+   _autosummary/rtac.ac_functionalities.ranking.gray_box
+   _autosummary/rtac.ac_functionalities.ranking.trueskill

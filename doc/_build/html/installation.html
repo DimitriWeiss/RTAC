@@ -45,7 +45,11 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="description.html">Description</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -84,23 +88,23 @@
 <section id="id1">
 <h2>Installation<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>You can use RTAC from the files the github repository. In the local directory run</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
 <p>in the root directory. You can then use the code with</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">rtac.main</span>
-<span class="pre">`</span></code></p>
-<p>from root directory where main is a python file as described in the Examples Section. You can also install it as a Python package via
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">rtac</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>rtac.main
+</pre></div>
+</div>
+<p>from root directory where main is a python file as described in the Examples Section. You can also install it as a Python package via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>rtac
+</pre></div>
+</div>
 <p>After installing, you can test functionality of the library by running</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">from</span> <span class="pre">rtac.examples.main</span> <span class="pre">import</span> <span class="pre">run_example</span>
-<span class="pre">run_example()</span>
-<span class="pre">`</span></code></p>
-<p>in Python. It will make sure that python_tsp 0.4.1 is installed and than configure a python_tsp solver with ReACTR on 98 TSP instances that come with the package. You can call the configurators as described in the Examples Section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">rtac.examples.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_example</span>
+<span class="n">run_example</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>in Python. It will make sure that python_tsp 0.4.1 is installed and than configure a python_tsp solver with ReACTR on 98 TSP instances that come with the package. You can call the RAC methods as described in the Examples Section.</p>
 </section>
 </section>
 

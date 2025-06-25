@@ -81,44 +81,212 @@ For information about how to use it and what general functions there are look at
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="description.html">Description</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="description.html">Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="description.html#rtac-a-realtime-algorithm-configuration-methods-suite">RTAC: A Realtime Algorithm Configuration Methods Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#rac">RAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#reactr">ReACTR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#id7">ReACTR++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#cppl">CPPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#gray-box-rac">Gray-Box RAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="description.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id1">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#necessary-provisions">Necessary Provisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#hyperparameters">Hyperparameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-target-algorithm-wrapper">Example Target Algorithm Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#scenario-file-examples">Scenario File Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#reactr">ReACTR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#id2">ReACTR++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#cppl">CPPL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#gray-box">Gray-Box</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#parameter-files">Parameter Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#pcs">PCS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#json">JSON</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="examples.html#required-field">Required Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="examples.html#fields-by-type">Fields by Type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="examples.html#optional-common-fields">Optional Common Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="examples.html#log-distribution-options-if-used">Log Distribution Options (if used)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="examples.html#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-rtac-call">Example RTAC call</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/rtac.html">rtac</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.html">rtac.ac_functionalities</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.config_gens.html">rtac.ac_functionalities.config_gens</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.logs.html">rtac.ac_functionalities.logs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ranking.html">rtac.ac_functionalities.ranking</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html">rtac.ac_functionalities.result_processing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html">rtac.ac_functionalities.rtac_data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html">rtac.ac_functionalities.ta_runner</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html">rtac.ac_functionalities.tournament</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html">rtac.ac_functionalities.tournament_manager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.config_gens.html">rtac.ac_functionalities.config_gens</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.AbstractConfigGen"><code class="docutils literal notranslate"><span class="pre">AbstractConfigGen</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.DefaultConfigGen"><code class="docutils literal notranslate"><span class="pre">DefaultConfigGen</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.RandomConfigGen"><code class="docutils literal notranslate"><span class="pre">RandomConfigGen</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.logs.html">rtac.ac_functionalities.logs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs"><code class="docutils literal notranslate"><span class="pre">AbstractLogs</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.NewRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">NewRotatingFileHandler</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs"><code class="docutils literal notranslate"><span class="pre">RTACLogs</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ranking.html">rtac.ac_functionalities.ranking</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ranking.cppl.html">rtac.ac_functionalities.ranking.cppl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ranking.gray_box.html">rtac.ac_functionalities.ranking.gray_box</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ranking.trueskill.html">rtac.ac_functionalities.ranking.trueskill</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html">rtac.ac_functionalities.result_processing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing"><code class="docutils literal notranslate"><span class="pre">AbstractResultProcessing</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing"><code class="docutils literal notranslate"><span class="pre">ResultProcessing</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL"><code class="docutils literal notranslate"><span class="pre">ResultProcessingCPPL</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp"><code class="docutils literal notranslate"><span class="pre">ResultProcessingpp</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.contender"><code class="docutils literal notranslate"><span class="pre">contender</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.processing_factory"><code class="docutils literal notranslate"><span class="pre">processing_factory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html">rtac.ac_functionalities.rtac_data</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.ACMethod"><code class="docutils literal notranslate"><span class="pre">ACMethod</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.AbstractRTACData"><code class="docutils literal notranslate"><span class="pre">AbstractRTACData</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.BinaryParameter"><code class="docutils literal notranslate"><span class="pre">BinaryParameter</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.CategoricalParameter"><code class="docutils literal notranslate"><span class="pre">CategoricalParameter</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration"><code class="docutils literal notranslate"><span class="pre">Configuration</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.ContinuousParameter"><code class="docutils literal notranslate"><span class="pre">ContinuousParameter</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.DiscreteParameter"><code class="docutils literal notranslate"><span class="pre">DiscreteParameter</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Distribution"><code class="docutils literal notranslate"><span class="pre">Distribution</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.GBData"><code class="docutils literal notranslate"><span class="pre">GBData</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.InterimMeaning"><code class="docutils literal notranslate"><span class="pre">InterimMeaning</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.ParamType"><code class="docutils literal notranslate"><span class="pre">ParamType</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Parameter"><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData"><code class="docutils literal notranslate"><span class="pre">RTACData</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp"><code class="docutils literal notranslate"><span class="pre">RTACDatapp</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TARun"><code class="docutils literal notranslate"><span class="pre">TARun</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TARunStatus"><code class="docutils literal notranslate"><span class="pre">TARunStatus</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TournamentStats"><code class="docutils literal notranslate"><span class="pre">TournamentStats</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.ValType"><code class="docutils literal notranslate"><span class="pre">ValType</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.rtacdata_factory"><code class="docutils literal notranslate"><span class="pre">rtacdata_factory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html">rtac.ac_functionalities.ta_runner</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.AbstractTARunner"><code class="docutils literal notranslate"><span class="pre">AbstractTARunner</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner"><code class="docutils literal notranslate"><span class="pre">BaseTARunner</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.TARunnerpp"><code class="docutils literal notranslate"><span class="pre">TARunnerpp</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.gb_record"><code class="docutils literal notranslate"><span class="pre">gb_record()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.non_block_read"><code class="docutils literal notranslate"><span class="pre">non_block_read()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.ta_runner_factory"><code class="docutils literal notranslate"><span class="pre">ta_runner_factory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html">rtac.ac_functionalities.tournament</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament"><code class="docutils literal notranslate"><span class="pre">AbstractTournament</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament"><code class="docutils literal notranslate"><span class="pre">Tournament</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB"><code class="docutils literal notranslate"><span class="pre">Tournament_GB</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournamentpp"><code class="docutils literal notranslate"><span class="pre">Tournamentpp</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.tournament_factory"><code class="docutils literal notranslate"><span class="pre">tournament_factory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html">rtac.ac_functionalities.tournament_manager</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager"><code class="docutils literal notranslate"><span class="pre">AbstractTournamentManager</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox"><code class="docutils literal notranslate"><span class="pre">GrayBox</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManager"><code class="docutils literal notranslate"><span class="pre">TournamentManager</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL"><code class="docutils literal notranslate"><span class="pre">TournamentManagerCPPL</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.tourn_manager_factory"><code class="docutils literal notranslate"><span class="pre">tourn_manager_factory()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.examples.html">rtac.examples</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.examples.main.html">rtac.examples.main</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.examples.main.html">rtac.examples.main</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.examples.main.html#rtac.examples.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.examples.main.html#rtac.examples.main.run_example"><code class="docutils literal notranslate"><span class="pre">run_example()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.feature_gen.html">rtac.feature_gen</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.feature_gen.tsp_feats.html">rtac.feature_gen.tsp_feats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.feature_gen.tsp_feats.html">rtac.feature_gen.tsp_feats</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.feature_gen.tsp_feats.html#rtac.feature_gen.tsp_feats.TSPFeats"><code class="docutils literal notranslate"><span class="pre">TSPFeats</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.rtac.html">rtac.rtac</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.rtac.html">rtac.rtac</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.init_rtac_data"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.init_rtac_data()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.init_tournament_manager"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.init_tournament_manager()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.plot_performances"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.plot_performances()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.solve_instance"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.solve_instance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC"><code class="docutils literal notranslate"><span class="pre">RTAC</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.black_box"><code class="docutils literal notranslate"><span class="pre">RTAC.black_box()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.gray_box"><code class="docutils literal notranslate"><span class="pre">RTAC.gray_box()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.plot_performances"><code class="docutils literal notranslate"><span class="pre">RTAC.plot_performances()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.provide_early_instance"><code class="docutils literal notranslate"><span class="pre">RTAC.provide_early_instance()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.result_output"><code class="docutils literal notranslate"><span class="pre">RTAC.result_output()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.solve_instance"><code class="docutils literal notranslate"><span class="pre">RTAC.solve_instance()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTAC.wrap_up_gb"><code class="docutils literal notranslate"><span class="pre">RTAC.wrap_up_gb()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTACpp"><code class="docutils literal notranslate"><span class="pre">RTACpp</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTACpp.init_rtac_data"><code class="docutils literal notranslate"><span class="pre">RTACpp.init_rtac_data()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.RTACpp.init_tournament_manager"><code class="docutils literal notranslate"><span class="pre">RTACpp.init_tournament_manager()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.rtac.html#rtac.rtac.rtac_factory"><code class="docutils literal notranslate"><span class="pre">rtac_factory()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.utils.html">rtac.utils</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.background_thread_control.html">rtac.utils.background_thread_control</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.clean_logs.html">rtac.utils.clean_logs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.ensure_package.html">rtac.utils.ensure_package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.json_validation.html">rtac.utils.json_validation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.process_affinity.html">rtac.utils.process_affinity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.read_io.html">rtac.utils.read_io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.background_thread_control.html">rtac.utils.background_thread_control</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.background_thread_control.html#rtac.utils.background_thread_control.set_background_thread_nr"><code class="docutils literal notranslate"><span class="pre">set_background_thread_nr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.clean_logs.html">rtac.utils.clean_logs</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.is_file_open"><code class="docutils literal notranslate"><span class="pre">is_file_open()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.remove_fuse_hidden_files"><code class="docutils literal notranslate"><span class="pre">remove_fuse_hidden_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.ensure_package.html">rtac.utils.ensure_package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.ensure_package.html#rtac.utils.ensure_package.ensure_package"><code class="docutils literal notranslate"><span class="pre">ensure_package()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.json_validation.html">rtac.utils.json_validation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.json_validation.html#rtac.utils.json_validation.validateparams"><code class="docutils literal notranslate"><span class="pre">validateparams()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.process_affinity.html">rtac.utils.process_affinity</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.process_affinity.html#rtac.utils.process_affinity.set_affinity_recursive"><code class="docutils literal notranslate"><span class="pre">set_affinity_recursive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.utils.read_io.html">rtac.utils.read_io</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.read_args"><code class="docutils literal notranslate"><span class="pre">read_args()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.translate_params"><code class="docutils literal notranslate"><span class="pre">translate_params()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/rtac.wrapper.html">rtac.wrapper</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.wrapper.abstract_wrapper.html">rtac.wrapper.abstract_wrapper</a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html">rtac.wrapper.tsp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.wrapper.abstract_wrapper.html">rtac.wrapper.abstract_wrapper</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper"><code class="docutils literal notranslate"><span class="pre">AbstractWrapper</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html">rtac.wrapper.tsp</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Q"><code class="docutils literal notranslate"><span class="pre">TSP_Q</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp"><code class="docutils literal notranslate"><span class="pre">TSP_Qpp</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT"><code class="docutils literal notranslate"><span class="pre">TSP_RT</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp"><code class="docutils literal notranslate"><span class="pre">TSP_RTpp</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -44,7 +44,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Description</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rtac-a-realtime-algorithm-configuration-methods-suite">RTAC: A Realtime Algorithm Configuration Methods Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rac">RAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reactr">ReACTR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">ReACTR++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cppl">CPPL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gray-box-rac">Gray-Box RAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -77,28 +86,74 @@
              
   <section id="description">
 <span id="id1"></span><h1>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h1>
-<p>RTAC: A Realtime Algorithm Configuration Methods Suite</p>
-<p>This Software is a reimplementation of the realtime algorithm configurators (RAC) described in “ReACTR: Realtime Algorithm Configuration through Tournament Rankings” <span id="id2">[<a class="reference internal" href="#id7" title="Tadhg Fitzgerald, Yuri Malitsky, and Barry O'Sullivan. Reactr: realtime algorithm configuration through tournament rankings. In International Joint Conferences on Artificial Intelligence Organization (IJCAI), 304-310. 2015.">2</a>]</span> (ReACTR), a light extension of ReACTR incorporating additional output at tournament end (ReACTR++), “Pool-Based Realtime Algorithm Configuration” <span id="id3">[<a class="reference internal" href="#id6" title="Adil El Mesaoudi-Paul, Dimitri Weiß, Viktor Bengs, Eyke Hüllermeier, and Kevin Tierney. Pool-based realtime algorithm configuration: a preselection bandit approach. In Ilias S. Kotsireas and Panos M. Pardalos, editors, Learning and Intelligent Optimization, 216–232. 2020.">1</a>]</span> (CPPL) and “Realtime gray-box algorithm configuration using cost-sensitive classification” <span id="id4">[<a class="reference internal" href="#id9" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration. In Dimitris E. Simos, Varvara A. Rasskazova, Francesco Archetti, Ilias S. Kotsireas, and Panos M. Pardalos, editors, Learning and Intelligent Optimization, 162–177. 2022.">3</a>, <a class="reference internal" href="#id8" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration using cost-sensitive classification. Annals of Mathematics and Artificial Intelligence, pages 1-22, 08 2023. doi:10.1007/s10472-023-09890-x.">4</a>]</span> (gray-box RAC) into a collective RAC suite. It also includes extended options regarding logging, input, e.g. parameter space via PCS files, and target algorithm calls. It is possible to use the gray-box functioality with ReACTR, ReACTR++ and CPPL.</p>
-<p>Additionally, the library is intended to encourage further research by being written in a way that facilitates the introduction of further RAC approaches. Pull requests at <a class="reference external" href="https://github.com/DimitriWeiss/RTAC">Github</a> and reporting of bugs are welcome.</p>
+<section id="rtac-a-realtime-algorithm-configuration-methods-suite">
+<h2>RTAC: A Realtime Algorithm Configuration Methods Suite<a class="headerlink" href="#rtac-a-realtime-algorithm-configuration-methods-suite" title="Permalink to this heading"></a></h2>
+<p>This Software is a reimplementation of the Realtime Algorithm Configuration (RAC) methods described in “ReACTR: Realtime Algorithm Configuration through Tournament Rankings” <span id="id2">[<a class="reference internal" href="#id12" title="Tadhg Fitzgerald, Yuri Malitsky, and Barry O'Sullivan. Reactr: realtime algorithm configuration through tournament rankings. In International Joint Conferences on Artificial Intelligence Organization (IJCAI), 304-310. 2015.">3</a>]</span> (ReACTR), “Pool-Based Realtime Algorithm Configuration” <span id="id3">[<a class="reference internal" href="#id11" title="Adil El Mesaoudi-Paul, Dimitri Weiß, Viktor Bengs, Eyke Hüllermeier, and Kevin Tierney. Pool-based realtime algorithm configuration: a preselection bandit approach. In Ilias S. Kotsireas and Panos M. Pardalos, editors, Learning and Intelligent Optimization, 216–232. 2020.">2</a>]</span> (CPPL), “Realtime gray-box algorithm configuration using cost-sensitive classification” <span id="id4">[<a class="reference internal" href="#id14" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration. In Dimitris E. Simos, Varvara A. Rasskazova, Francesco Archetti, Ilias S. Kotsireas, and Panos M. Pardalos, editors, Learning and Intelligent Optimization, 162–177. 2022.">5</a>, <a class="reference internal" href="#id13" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration using cost-sensitive classification. Annals of Mathematics and Artificial Intelligence, pages 1-22, 08 2023.">6</a>]</span> (gray-box RAC) and a light extension of ReACTR incorporating additional output at tournament end (ReACTR++) into a collective RAC suite. It also includes options regarding logging, input, e.g. parameter space via PCS files or json, and target algorithm calls. It is possible to use the gray-box functionality with all of the RAC methods implemented in the suite.</p>
+<p>Without any warranty or guarantuee, the suite allows for adopting and applying in practical scenarios. Additionally, the library is intended to encourage further research by providing an RAC infrastructure and possibility for easy introduction of further RAC methods. Pull requests at <a class="reference external" href="https://github.com/DimitriWeiss/RTAC">Github</a> and reporting of bugs are welcome.</p>
+</section>
+<section id="rac">
+<h2>RAC<a class="headerlink" href="#rac" title="Permalink to this heading"></a></h2>
+<figure class="align-center" id="id17">
+<a class="reference internal image-reference" href="_images/Racing_principle.png"><img alt="Realtime Algorithm Configuration through tournaments." src="_images/Racing_principle.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Realtime Algorithm Configuration through tournaments illustrated in runtime minimization scenario.
+Figure adopted from <span id="id5">[<a class="reference internal" href="#id14" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration. In Dimitris E. Simos, Varvara A. Rasskazova, Francesco Archetti, Ilias S. Kotsireas, and Panos M. Pardalos, editors, Learning and Intelligent Optimization, 162–177. 2022.">5</a>]</span>.</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>In RAC, it is assumed that problem instances arrive in a sequence and are solved without training phase. The current problem instance is to be solved using only information gained from problem instances solved prior to it, optimizing the performance metric (which is taget algorithm runtime in the figure, but can also be solutio quality or RAM consumption of the target algorithm, etc). The problem instance is solved within a tournament of differently configured target algorithms. The performance of the tournament contenders is used to update the assessment method of the configurator which is also used to select contenders for the next tournament, i.e. to solve the next problem instance.</p>
+</section>
+<section id="reactr">
+<h2>ReACTR<a class="headerlink" href="#reactr" title="Permalink to this heading"></a></h2>
+<p>ReACTR is an RAC method based on the principle described above. The assessment mechanism is TrueSkill <span id="id6">[<a class="reference internal" href="#id15" title="Shengbo Guo, Scott Sanner, Thore Graepel, and Wray L. Buntine. Score-Based Bayesian Skill Learning. In ECML/PKDD. 2012.">4</a>]</span>, a score-based bayesian skill learning method. It is used to rank configurations within a pool of configurations that is carried along the tournaments. The ranking is used to select contenders for the next tournament and to decide which configurations in the pool are to be replaced by newly generated configurations. New configurations are either generated via genetic crossover or randomly.</p>
+</section>
+<section id="id7">
+<h2>ReACTR++<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<p>In the ReACTR method, only the difference between the best performning configuration within a tournament and the rest of the configurations as equals, i.e. loosing configurations, is evaluated. This means that the information about configuration quality is censored and the full potential of TrueSkill is not used. ReACTR++ enables a more detailed ranking by providing Trueskill with further information about the configurations state at the end of a tournament. This information could, for example for SAT solvers, be the current number of conflicting clauses or number of original variables left in the formula.</p>
+</section>
+<section id="cppl">
+<h2>CPPL<a class="headerlink" href="#cppl" title="Permalink to this heading"></a></h2>
+<p>CPPL replaces TrueSKill by a Contextual Preselection Bandit under the Plackett-Luce. The context is provided by problem instance features. The bandit model is used for selection of contenders, deciding which configurations to replace and for the generation of new configurations in the pool. For this, configurations are first generated through genetic crossover or randomly and then assessed by the bandit model. The configurations deemed to be the best by the bandit model are then inserted into the pool.</p>
+</section>
+<section id="gray-box-rac">
+<h2>Gray-Box RAC<a class="headerlink" href="#gray-box-rac" title="Permalink to this heading"></a></h2>
+<figure class="align-center" id="id18">
+<a class="reference internal image-reference" href="_images/gray_box.png"><img alt="Gray-box Realtime Algorithm Configuration approach." src="_images/gray_box.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Gray-box Realtime Algorithm Configuration approach illustrated in runtime minimization scenario.
+Figure adopted from <span id="id8">[<a class="reference internal" href="#id13" title="Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration using cost-sensitive classification. Annals of Mathematics and Artificial Intelligence, pages 1-22, 08 2023.">6</a>]</span>.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The gray-box RAC extension utilizes output gathered from configured target algorithms during problem instance solving runtime. This output gives information about the target algorithms state. It is used to make pairwise comparisons between configurations that that are labeled by which configuration outperformed the other. A cost-sensitive random forest model, implemented using CostCla <span id="id9">[<a class="reference internal" href="#id16" title="Alejandro Correa Bahnsen. Costsensitiveclassification library in python. 01 2015. doi:10.5281/zenodo.17789.">1</a>]</span>, is trained and used during tournaments to find underperforming configurations. These runs of the configured target algorithm are terminated and the freed CPU cores are used to prematurely start the next tournament, provided the next problem instance already arrived. In the runtime optimization scenario, the headstart gives an advantage that minimizes the overall runtime over the problem instance sequence (as illustrated in the figure). In the solution quality optimization scenario, the headstart allows for a higher time limit of the early starting configurations which improves the chances of finding a better solution.</p>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
-<div class="docutils container" id="id5">
+<div class="docutils container" id="id10">
 <div role="list" class="citation-list">
-<div class="citation" id="id6" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">1</a><span class="fn-bracket">]</span></span>
+<p>Alejandro Correa Bahnsen. Costsensitiveclassification library in python. 01 2015. <a class="reference external" href="https://doi.org/10.5281/zenodo.17789">doi:10.5281/zenodo.17789</a>.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
 <p>Adil El Mesaoudi-Paul, Dimitri Weiß, Viktor Bengs, Eyke Hüllermeier, and Kevin Tierney. Pool-based realtime algorithm configuration: a preselection bandit approach. In Ilias S. Kotsireas and Panos M. Pardalos, editors, <em>Learning and Intelligent Optimization</em>, 216–232. 2020.</p>
 </div>
-<div class="citation" id="id7" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id12" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
 <p>Tadhg Fitzgerald, Yuri Malitsky, and Barry O'Sullivan. Reactr: realtime algorithm configuration through tournament rankings. In <em>International Joint Conferences on Artificial Intelligence Organization (IJCAI)</em>, 304–310. 2015.</p>
 </div>
-<div class="citation" id="id9" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">4</a><span class="fn-bracket">]</span></span>
+<p>Shengbo Guo, Scott Sanner, Thore Graepel, and Wray L. Buntine. Score-Based Bayesian Skill Learning. In <em>ECML/PKDD</em>. 2012.</p>
+</div>
+<div class="citation" id="id14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
 <p>Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration. In Dimitris E. Simos, Varvara A. Rasskazova, Francesco Archetti, Ilias S. Kotsireas, and Panos M. Pardalos, editors, <em>Learning and Intelligent Optimization</em>, 162–177. 2022.</p>
 </div>
-<div class="citation" id="id8" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
-<p>Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration using cost-sensitive classification. <em>Annals of Mathematics and Artificial Intelligence</em>, pages 1–22, 08 2023. <a class="reference external" href="https://doi.org/10.1007/s10472-023-09890-x">doi:10.1007/s10472-023-09890-x</a>.</p>
+<div class="citation" id="id13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id8">2</a>)</span>
+<p>Dimitri Weiss and Kevin Tierney. Realtime gray-box algorithm configuration using cost-sensitive classification. <em>Annals of Mathematics and Artificial Intelligence</em>, pages 1–22, 08 2023.</p>
 </div>
 </div>
 </div>

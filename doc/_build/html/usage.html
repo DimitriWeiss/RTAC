@@ -46,7 +46,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="description.html">Description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#necessary-provisions">Necessary Provisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hyperparameters">Hyperparameters</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
@@ -77,9 +81,10 @@
              
   <section id="usage">
 <span id="id1"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
+<section id="necessary-provisions">
+<h2>Necessary Provisions<a class="headerlink" href="#necessary-provisions" title="Permalink to this heading"></a></h2>
 <p>After you installed rtac, you need to provide data for the AC scenario to be complete.</p>
 <ul class="simple">
-<li><p>Problem instances.</p></li>
 <li><p>Target algorithm.</p></li>
 <li><dl class="simple">
 <dt>A text file containing a defitionion of the scenario.</dt><dd><ul>
@@ -95,9 +100,263 @@
 </dd>
 </dl>
 </li>
+<li><p>Problem instances.</p></li>
 <li><p>Absolute paths to the problem instances to be solved.</p></li>
 </ul>
-<p>You can read in the scenario with rtac.utils.read_io.read_args, initialize the RAC with rtac = rtac.rtac.rtac_factory and solve instances with rtac.solve_instance(instance).</p>
+<p>You can read in the scenario with scenario = rtac.utils.read_io.read_args(‘path_to_scenario_file’), initialize the RAC with rtac = rtac.rtac.rtac_factory(scenario) and solve instances with rtac.solve_instance(instance).</p>
+</section>
+<section id="hyperparameters">
+<h2>Hyperparameters<a class="headerlink" href="#hyperparameters" title="Permalink to this heading"></a></h2>
+<p>Below, you will find a table with hyperparameters accepted by the RAC methods in RTAC. You can set them within the scenario file or in the command line.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text"><strong>Hyperparameters for RTAC</strong></span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 13.3%" />
+<col style="width: 13.3%" />
+<col style="width: 53.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>–verbosity</cite></p></td>
+<td><p>int</p></td>
+<td><p>0</p></td>
+<td><p>Verbosity level. [0,1,2]</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–number_cores</cite></p></td>
+<td><p>int</p></td>
+<td><p>1</p></td>
+<td><p>Number of cores to be used in parallel.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–wrapper</cite></p></td>
+<td><p>str</p></td>
+<td><p>No wrapper chosen!</p></td>
+<td><p>Module of Python wrapper for the algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–wrapper_name</cite></p></td>
+<td><p>str</p></td>
+<td><p>No wrapper class name.</p></td>
+<td><p>Name of the wrapper class in the wrapper module.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–feature_gen_name</cite></p></td>
+<td><p>str</p></td>
+<td><p>No feature generator class name.</p></td>
+<td><p>Name of the feature generator class in the feature generator module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–feature_path</cite></p></td>
+<td><p>str</p></td>
+<td><p>No feature directory path.</p></td>
+<td><p>Path to the directory with feature files, if existing.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–timeout</cite></p></td>
+<td><p>int</p></td>
+<td><p>300</p></td>
+<td><p>Stop solving single instance after (int) seconds. [300]</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–runtimePAR</cite></p></td>
+<td><p>int</p></td>
+<td><p>1</p></td>
+<td><p>Multiply <cite>–timeout</cite> by <cite>–runtimePAR</cite> if instance not solved. [1]</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–contenders</cite></p></td>
+<td><p>int</p></td>
+<td><p>30</p></td>
+<td><p>The number of contenders in the pool. [30]</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–keeptop</cite></p></td>
+<td><p>int</p></td>
+<td><p>4</p></td>
+<td><p>Number of top contenders automatically in tournament (ReACTR/ReACTR++).</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–chance</cite></p></td>
+<td><p>int</p></td>
+<td><p>25</p></td>
+<td><p>Chance to replace gene randomly in ReACTR/ReACTR++. [0–100]</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–mutate</cite></p></td>
+<td><p>int</p></td>
+<td><p>10</p></td>
+<td><p>Mutation chance in crossover in ReACTR/ReACTR++. [0–100]</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–kill</cite></p></td>
+<td><p>float</p></td>
+<td><p>5</p></td>
+<td><p>Kill contenders with higher variance in ReACTR/ReACTR++.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–feature_gen</cite></p></td>
+<td><p>str</p></td>
+<td><p>“”</p></td>
+<td><p>Python wrapper for computing instance features.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–instance_pre_train</cite></p></td>
+<td><p>str</p></td>
+<td><p>False</p></td>
+<td><p>Path to pre-training feature file for the bandit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–nc_pca_f</cite></p></td>
+<td><p>int</p></td>
+<td><p>3</p></td>
+<td><p>Number of PCA dimensions for instance features.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–nc_pca_p</cite></p></td>
+<td><p>int</p></td>
+<td><p>5</p></td>
+<td><p>Number of PCA dimensions for parameter features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–jfm</cite></p></td>
+<td><p>str</p></td>
+<td><p>polynomial</p></td>
+<td><p>Joined feature map mode for CPPL.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–omega</cite></p></td>
+<td><p>float</p></td>
+<td><p>1.0</p></td>
+<td><p>Omega parameter for CPPL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–gamma</cite></p></td>
+<td><p>float</p></td>
+<td><p>1</p></td>
+<td><p>Gamma parameter for CPPL.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–alpha</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.2</p></td>
+<td><p>Alpha parameter for CPPL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–epsilon</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.9</p></td>
+<td><p>Epsilon for epsilon-greedy selection (0.0 = greedy).</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–kappa</cite></p></td>
+<td><p>float</p></td>
+<td><p>1.0</p></td>
+<td><p>Weight on confidence in pairwise comparison (CPPL).</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–gen_mult</cite></p></td>
+<td><p>int</p></td>
+<td><p>2</p></td>
+<td><p>Generation multiplier before CPPL insertion.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–ac</cite></p></td>
+<td><p>int</p></td>
+<td><p>1</p></td>
+<td><p>Algorithm Configuration method [1=ReACTR, 2=ReACTR++, etc.].</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–paramlimit</cite></p></td>
+<td><p>float</p></td>
+<td><p>100000</p></td>
+<td><p>Parameter value limit for normalization in CPPL.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–win_bonus</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.2</p></td>
+<td><p>Boost for recent CPPL winner skill.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–win_decay</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.8</p></td>
+<td><p>Decay factor for CPPL skill estimates.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–recent_winner_boost</cite></p></td>
+<td><p>float</p></td>
+<td><p>3.0</p></td>
+<td><p>Absolute skill boost for recent CPPL winner.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–forgetting_factor</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.98</p></td>
+<td><p>Forgetting factor for old observations (theta_bar).</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–obs_noise</cite></p></td>
+<td><p>float</p></td>
+<td><p>1.0</p></td>
+<td><p>Assumed observation noise variance in CPPL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–cppl_reward</cite></p></td>
+<td><p>float</p></td>
+<td><p>1.0</p></td>
+<td><p>Reward for winning arm in CPPL bandit model.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–cpplt</cite></p></td>
+<td><p>float</p></td>
+<td><p>2</p></td>
+<td><p>Reset value for t in CPPL when pool changes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–log_folder</cite></p></td>
+<td><p>str</p></td>
+<td><p>logs</p></td>
+<td><p>Directory for logging.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–param_file</cite></p></td>
+<td><p>str</p></td>
+<td><p>No parameter file given!</p></td>
+<td><p>Path to PCS or RTAC JSON parameter file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–resume</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Resume RTAC from logged configuration state.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–baselineperf</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Run only default parameterizations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–pws</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Insert default configuration if flag set.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–objective_min</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Optimize for objective value minimization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–experimental</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Use tournament 0 logs for experiment.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–online_instance_train</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Enable continuous PCA fitting on incoming instances.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–epsilon_greedy</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Enable epsilon greedy selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–isolate_bandit</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Run bandit in child process to avoid resource conflict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–gray_box</cite></p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+<td><p>Enable gray-box RAC.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>–gb_read_time</cite></p></td>
+<td><p>float</p></td>
+<td><p>0.1</p></td>
+<td><p>Frequency to check gray-box output [seconds].</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>–nr_gb_feats</cite></p></td>
+<td><p>int</p></td>
+<td><p>2</p></td>
+<td><p>Number of gray-box features used.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 
 

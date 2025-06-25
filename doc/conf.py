@@ -46,17 +46,28 @@ exclude_patterns = [
 
 # -- HTML Output ------------------------------------------------------------
 bibtex_bibfiles = ['references.bib']
+latex_elements = {
+    'preamble': r'''
+\usepackage{graphicx}
+\usepackage[percent]{overpic}
+''',
+}
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    'navigation_depth': 5,  # default is 4
+}
 templates_path = ['_templates']
 html_build_dir = '$READTHEDOCS_OUTPUT/html/'
+html_static_path = ['_static']
 
 
 def skip_member(app, what, name, obj, skip, options):
     skip_classes = {
         ("class", "Cadical", "rtac.wrapper.cadical"),
         ("class", "Cadicalpp", "rtac.wrapper.cadicalpp"),
+        ("class", "CadFeats", "rtac.feature_gen.cadical_feats"),
     }
-    print(f"SKIP CHECK: what={what}, name={name}, obj={obj}, module={getattr(obj, '__module__', None)}")
+    # print(f"SKIP CHECK: what={what}, name={name}, obj={obj}, module={getattr(obj, '__module__', None)}")
     if (what, name, getattr(obj, '__module__', '')) in skip_classes:
         return True
     if {getattr(obj, '__module__', None)} == 'module=rtac.wrapper.cadical':
