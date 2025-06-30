@@ -88,6 +88,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Configuration</span><span class="p">,</span>
     <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">RTACDatapp</span><span class="p">,</span>
     <span class="n">TournamentStats</span><span class="p">,</span>
     <span class="n">ACMethod</span><span class="p">,</span>
     <span class="n">Generator</span>
@@ -106,15 +107,20 @@
 
 
 <div class="viewcode-block" id="AbstractLogs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractLogs</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with all functions and loggers concerning logging and loading</span>
-<span class="sd">    RTAC and tournament data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class with all functions and loggers concerning logging and loading</span>
+<span class="sd">    RTAC and tournament data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes logging class, check if log directory exists and create</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes logging class, check if log directory exists and create</span>
 <span class="sd">        it if needed.</span>
-
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ranking</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span>
@@ -144,8 +150,14 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Logging to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AbstractLogs.init_rtac_logs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.init_rtac_logs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_rtac_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes loggers for realtime algorithm configuration data</span>
-<span class="sd">        concerning all methods.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes loggers for realtime algorithm configuration data</span>
+<span class="sd">        that are shared by all methods.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
@@ -221,31 +233,49 @@
 <div class="viewcode-block" id="AbstractLogs.general_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.general_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">general_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log message.</span>
 
-<span class="sd">        :param message: Any message provided.</span>
-<span class="sd">        :type message: str</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        message : str</span>
+<span class="sd">            Any message provided as a string.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AbstractLogs.scenario_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.scenario_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">scenario_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save scenario.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save RTAC scenario.</span>
 
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scenario : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/scenario.log&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sf</span><span class="p">:</span>
             <span class="n">sf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">scenario</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="AbstractLogs.rtac_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.rtac_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rtac_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+<div class="viewcode-block" id="AbstractLogs.rtac_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.AbstractLogs.rtac_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rtac_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
                  <span class="n">tourn_stats</span><span class="p">:</span> <span class="n">TournamentStats</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Logs for realtime algorithm configuration data</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs for realtime algorithm configuration data</span>
 <span class="sd">        concerning all methods.</span>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :param tourn_stats: Object containing statistics about the previous</span>
-<span class="sd">            tournament.</span>
-<span class="sd">        :type tourn_stats: TournamentStats</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the rtac </span>
+<span class="sd">            modules.</span>
+<span class="sd">        tourn_stats : TournamentStats</span>
+<span class="sd">            Object containing statistics about the previous tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">winner_trajectory</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tourn_stats_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tourn_stats</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -263,11 +293,19 @@
 
 
 <div class="viewcode-block" id="RTACLogs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RTACLogs</span><span class="p">(</span><span class="n">AbstractLogs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with all functions and loggers concerning logging and loading</span>
-<span class="sd">    RTAC and tournament data for ReACTR implementation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class with all functions and loggers concerning logging and loading</span>
+<span class="sd">    RTAC and tournament data for ReACTR implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RTACLogs.init_ranking_logs"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.init_ranking_logs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_ranking_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes loggers for data concerning ReACTR.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes loggers for data concerning ReACTR.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Set up pool logging</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;pool_log&#39;</span><span class="p">)</span>
@@ -291,29 +329,39 @@
             <span class="n">b_fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">b_fh</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RTACLogs.ranking_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.ranking_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ranking_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
-                    <span class="n">assessment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                    <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
+<div class="viewcode-block" id="RTACLogs.ranking_log"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.ranking_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ranking_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span>
+                    <span class="n">assessment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Logs data concerning ReACTR.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs data concerning RAC method.</span>
 
-<span class="sd">        :param pool: Dictionary with configuration id as key and configuration</span>
-<span class="sd">            as value with scenario.contenders == #items .</span>
-<span class="sd">        :type pool: dict</span>
-<span class="sd">        :param assessment: Dictionary with configuration id as key and </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pool : dict[str, Configuration]</span>
+<span class="sd">            Dictionary with configuration id as key and configuration</span>
+<span class="sd">            as value with scenario.contenders == #items.</span>
+<span class="sd">        assessment : dict[str, Any]</span>
+<span class="sd">            Dictionary with configuration id as key and </span>
 <span class="sd">            assessment depending on the AC method used, e.g., trueskill scores,</span>
 <span class="sd">            or bandit model.</span>
-<span class="sd">        :type assessment: dict</span>
-<span class="sd">        :param contender_dict: Dictionary with configuration id as key and</span>
+<span class="sd">        tourn:nr : int</span>
+<span class="sd">            Number of tournament after which logs are done.</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            Dictionary with configuration id as key and</span>
 <span class="sd">            configuration as value: contenders of the previous tournament.</span>
-<span class="sd">        :type contender_dict: dict</span>
-<span class="sd">        **kwargs : dict, optional</span>
+<span class="sd">        **kwargs</span>
 <span class="sd">            Additional keyword arguments. Possible keys include:</span>
-<span class="sd">            </span>
-<span class="sd">            - `standard_scaler` sklearn</span>
-<span class="sd">            - `min_max_scaler` sklearn</span>
-<span class="sd">            - `pca_obj_params` sklearn</span>
+
+<span class="sd">            - `standard_scaler`  sklearn.preprocessing.StandardScaler  </span>
+<span class="sd">            - `min_max_scaler` sklearn.preprocessing.MinMaxScaler  </span>
+<span class="sd">            - `pca_obj_params` sklearn.decomposition.PCA</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict_log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">cl_fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/contender_dict_tourn_</span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">.log&#39;</span><span class="p">)</span>
@@ -376,7 +424,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">b_fh</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">assessment</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="RTACLogs.parse_array"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.parse_array">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="RTACLogs.parse_array"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.parse_array">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function for loading logs of nd.arrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        val : str</span>
+<span class="sd">            Loaded string to decode and transform.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int or float</span>
+<span class="sd">            Decoded and transformed form of val.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If val could not be parsed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">val</span>
 
@@ -394,17 +460,34 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot parse value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RTACLogs.load_data"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs.load_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> \
-        <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Any</span><span class="p">],</span>
-                 <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                 <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span>
                  <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads data necessary for resuming the algorithm configuration from</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads data necessary for resuming the algorithm configuration from</span>
 <span class="sd">        last logged state of ReACTR.</span>
 
-<span class="sd">        :returns: Configuration pool, scores and contender list of previously</span>
-<span class="sd">            logged tournament, number of previously logged tournament.</span>
-<span class="sd">        :rtype: tuple[dict[str: Configuration], dict[str: tuple[int, int]],</span>
-<span class="sd">            dict[str: Configuration], int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tourn_nr : int | None</span>
+<span class="sd">            Either int to load logs of tournament nr. tourn_nr or None if </span>
+<span class="sd">            loading tournament nr. 0 for experimental mode.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **pool** : dict[str, Configuration],</span>
+<span class="sd">              Configuration pool.</span>
+<span class="sd">            - **assessment** : dict[str, Any],</span>
+<span class="sd">              Scores/ Skills, confidences of logged tournament.</span>
+<span class="sd">            - **contender_dict** : dict[str, Configuration],</span>
+<span class="sd">              List of contending Configurations from logged tournament.</span>
+<span class="sd">            - **tourn_nr** : int,</span>
+<span class="sd">              Number of logged tournament.</span>
+<span class="sd">            - **bandit_models** : dict[str, Any],</span>
+<span class="sd">              All objects needed for CPPL model employment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">tourn_nr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="si">}</span><span class="s1">/tourn_nr.log&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">tourn_nr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>

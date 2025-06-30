@@ -57,7 +57,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#rtac.rtac.AbstractRTAC"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.rtac.AbstractRTAC.init_rtac_data"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.init_rtac_data()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.rtac.AbstractRTAC.init_tournament_manager"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.init_tournament_manager()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="#rtac.rtac.AbstractRTAC.plot_performances"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.plot_performances()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.rtac.AbstractRTAC.solve_instance"><code class="docutils literal notranslate"><span class="pre">AbstractRTAC.solve_instance()</span></code></a></li>
 </ul>
 </li>
@@ -121,7 +120,7 @@ method.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.rtac.rtac_factory" title="rtac.rtac.rtac_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rtac_factory</span></code></a>(scenario)</p></td>
-<td><p>Class factory to return the initialized RTAC class appropriate to the RTAC method scenario.ac.</p></td>
+<td><p>Class factory to return the initialized RTAC class appropriate to the RTAC method <cite>scenario.ac</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -144,21 +143,31 @@ method.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.rtac.</span></span><span class="sig-name descname"><span class="pre">AbstractRTAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/rtac.html#AbstractRTAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.AbstractRTAC" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Realtime Algorithm Configuration class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.AbstractRTAC.init_rtac_data">
 <span class="sig-name descname"><span class="pre">init_rtac_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#AbstractRTAC.init_rtac_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.AbstractRTAC.init_rtac_data" title="Permalink to this definition"></a></dt>
-<dd><p>Initializes new RTAC data.</p>
+<dd><p>Initialize new RTAC data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.AbstractRTAC.init_tournament_manager">
 <span class="sig-name descname"><span class="pre">init_tournament_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#AbstractRTAC.init_tournament_manager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.AbstractRTAC.init_tournament_manager" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="rtac.rtac.AbstractRTAC.plot_performances">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_performances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#AbstractRTAC.plot_performances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.AbstractRTAC.plot_performances" title="Permalink to this definition"></a></dt>
-<dd><p>Plots results of the logged RTAC run and saves figure.</p>
+<dd><p>Initialize tournament manager object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -166,6 +175,14 @@ method.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#AbstractRTAC.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.AbstractRTAC.solve_instance" title="Permalink to this definition"></a></dt>
 <dd><p>Solves problem instance and performs all associated
 functionalities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -175,24 +192,40 @@ functionalities.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.rtac.</span></span><span class="sig-name descname"><span class="pre">RTAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.rtac.AbstractRTAC" title="rtac.rtac.AbstractRTAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRTAC</span></code></a></p>
 <p>Implementation of ReACTR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.black_box">
 <span class="sig-name descname"><span class="pre">black_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.black_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.black_box" title="Permalink to this definition"></a></dt>
 <dd><p>Solves problem instance and performs all associated functionalities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to the problem instance file.</p>
+<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to problem instance. Defaults to None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.gray_box">
-<span class="sig-name descname"><span class="pre">gray_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_rtac_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.gray_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.gray_box" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">gray_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.gray_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.gray_box" title="Permalink to this definition"></a></dt>
 <dd><p>Solves problem instance and performs all associated functionalities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to the problem instance file.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p></li>
+<li><p><strong>next_instance</strong> (<em>str</em>) – Path to next problem instance. Defaults to None.</p></li>
+<li><p><strong>early_rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary throughout the RTAC
+modules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -200,38 +233,81 @@ functionalities.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.plot_performances">
 <span class="sig-name descname"><span class="pre">plot_performances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.plot_performances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.plot_performances" title="Permalink to this definition"></a></dt>
-<dd><p>Plot results of the logged RTAC run and save figure.</p>
+<dd><p>Plots results of the logged RTAC run and saves figure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>results</strong> (<em>bool</em>) – True if scenario was objective quality minimization.</p></li>
-<li><p><strong>times</strong> (<em>bool</em>) – True if scenario was runtime minimization.</p></li>
+<li><p><strong>results</strong> (<em>bool</em>) – True if objective value minimization scenario. Defaults to False.</p></li>
+<li><p><strong>times</strong> (<em>bool</em>) – True if runtime minimization scenario. Defaults to False.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – This method is not implemented yet.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.provide_early_instance">
-<span class="sig-name descname"><span class="pre">provide_early_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">early_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.provide_early_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.provide_early_instance" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">provide_early_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">early_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.provide_early_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.provide_early_instance" title="Permalink to this definition"></a></dt>
+<dd><p>If next instance is available early, use this function to pass it to
+the gray-box RAC method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>early_instance</strong> (<em>str</em>) – Path to next problem instance. Defaults to None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.result_output">
-<span class="sig-name descname"><span class="pre">result_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.result_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.result_output" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">result_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.result_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.result_output" title="Permalink to this definition"></a></dt>
+<dd><p>Print result to terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.solve_instance">
-<span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_rtac_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.solve_instance" title="Permalink to this definition"></a></dt>
-<dd><p>Solves problem instance and performs all associated
-functionalities.</p>
+<span class="sig-name descname"><span class="pre">solve_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.solve_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.solve_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Solve problem instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p></li>
+<li><p><strong>next_instance</strong> (<em>str</em>) – Path to next problem instance. Defaults to None.</p></li>
+<li><p><strong>early_rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary throughout the RTAC
+modules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTAC.wrap_up_gb">
-<span class="sig-name descname"><span class="pre">wrap_up_gb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.wrap_up_gb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.wrap_up_gb" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">wrap_up_gb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTAC.wrap_up_gb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTAC.wrap_up_gb" title="Permalink to this definition"></a></dt>
+<dd><p>Wrap up gray-box RAC method for this ionstance / instance-pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -243,13 +319,24 @@ functionalities.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTACpp.init_rtac_data">
 <span class="sig-name descname"><span class="pre">init_rtac_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTACpp.init_rtac_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTACpp.init_rtac_data" title="Permalink to this definition"></a></dt>
-<dd><p>Initializes new RTAC data. Override for ReACTR++ implementation.</p>
+<dd><p>Initialize new RTAC data for ReACTR++.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.rtac.RTACpp.init_tournament_manager">
 <span class="sig-name descname"><span class="pre">init_tournament_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#RTACpp.init_tournament_manager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.RTACpp.init_tournament_manager" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialize tournament manager object for ReACTR++.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -257,14 +344,14 @@ functionalities.</p>
 <dt class="sig sig-object py" id="rtac.rtac.rtac_factory">
 <span class="sig-prename descclassname"><span class="pre">rtac.rtac.</span></span><span class="sig-name descname"><span class="pre">rtac_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.rtac.AbstractRTAC" title="rtac.rtac.AbstractRTAC"><span class="pre">AbstractRTAC</span></a></span></span><a class="reference internal" href="../_modules/rtac/rtac.html#rtac_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.rtac.rtac_factory" title="Permalink to this definition"></a></dt>
 <dd><p>Class factory to return the initialized RTAC class
-appropriate to the RTAC method scenario.ac.</p>
+appropriate to the RTAC method <cite>scenario.ac</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Inititialized AbstractRTAC object matching the RTAC method
-of the scenario.</p>
+<dd class="field-even"><p>Initialized AbstractRTAC object matching the RTAC method of the
+scenario.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#rtac.rtac.AbstractRTAC" title="rtac.rtac.AbstractRTAC">AbstractRTAC</a></p>

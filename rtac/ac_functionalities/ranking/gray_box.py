@@ -1,3 +1,7 @@
+"""
+Implements gray-box model based on cost-sensitive random forest from CostCla.
+"""
+
 import six
 import sys
 import joblib
@@ -73,6 +77,7 @@ def _patched_init(self,
                   n_jobs=1,
                   random_state=None,
                   verbose=0):
+    """Patched __init__ version for the BaseBagging class."""
     # Handle estimator argument rename in sklearn >= 1.2
     if version.parse(sklearn_version) >= version.parse("1.2"):
         super(BaseBagging, self).__init__(
@@ -101,12 +106,60 @@ from threadpoolctl import threadpool_limits
 
 
 class Gray_Box():
+    """Class containing gray-box model and data processing functions."""
 
     def __init__(self):
         self.gb_cla = CostSensitiveRandomPatchesClassifier
  
-    def prepare_predict_data(self, rec_data, instances, gb_pw_inst_archive,
-                             mtp, pair_cores):
+    def prepare_predict_data(
+        self, rec_data: dict[int, list], instances: list,
+            gb_pw_inst_archive: list, mtp: dict[int, int], 
+            pair_cores: list[list[int]]
+    ) -> tuple[list, list, list, list, int, list]:
+        """
+        Transform single runtime output data instances into pairwise 
+        comparison data instances.
+
+        Note
+        ----
+
+        Implementation based on the paper: “Realtime gray-box algorithm 
+        configuration using cost-sensitive classification” 
+
+        Parameters
+        ----------
+        rec_data : dict[int, list]
+            All runtime output data recorded so far in the tournament sorted by 
+            core the target algorithm runs on
+        instances : list[list]
+            Unique instances of recorded runtime output.
+        gb_pw_inst_archive : list[list]
+            All unique pairwise comparison instances.
+        mtp : dict[int, int]
+            Key is core, value is the last time point of the data recorded.
+        pair_cores : list[list[int]]
+            Core pairs corresponding to the Configurations compared in 
+            gb_pw_inst_archive.
+
+        Returns
+        -------
+        tuple
+            - **pw_instances** : list[list],
+              Pairwise comparisons of Configurations based on the most current 
+              output.
+            - **cores** : list[list],
+              Core pairs corresponding to the Configurations compared in 
+              pw_istances.
+            - **instances** : bool,
+              Unique instances of recorded runtime output.
+            - **gb_pw_inst_archive** : list[list],
+              All unique pairwise comparison instances.
+            - **max_time_points** : dict[int, int],
+              Key is core, value is the last time point of the data recorded.
+            - **pair_cores** : list[list[int]],
+              Core pairs corresponding to the Configurations compared in 
+              gb_pw_inst_archive.
+        """
 
         # Get last timepoint of recording for configs, if there were any
         max_time_points = {}
@@ -160,8 +213,49 @@ class Gray_Box():
         else:
             return [], [], instances, gb_pw_inst_archive, mtp, pair_cores
 
-    def prepare_train_data(self, X_train, data, cores, winner, res, instances,
-                           y, cost_mat):
+    def prepare_train_data(
+        self, X_train: list[list], data: list[list], cores: list[list],
+            winner: int, res: dict[int, float], instances: list[list],
+            y: list[int], cost_mat: list[list]
+    ) -> tuple[list[list], list[list], list[list]]:
+        """
+        Adjust and add pairwise runtime output data gathered in tournament to 
+        the total runtime output data gathered so far to be used it for model 
+        training.
+
+        Parameters
+        ----------
+        X_train : list[list]
+            Total pairwise runtime output data gathered so far.
+        data : list[list]
+            Pairwise runtime output data gathered during last tournament.
+        cores : list[list],
+            Core pairs corresponding to the Configurations compared in data.
+        winner : int
+            Index of the winning Configuration of the last tournament.
+        res : dict[int, float]
+            Results of the last tournament.
+        instances : list[list]
+            Unique instances of recorded runtime output.
+        y : list[int]
+            0 signififying Configuration_0 is better, 1 signifying 
+            Configuration_1 is better within the pairwise comparison 
+            corresponding to instances in X_train.
+        cost_mat : list[list]
+            Cost matrix corresponding to instances in X_train.
+
+        Returns
+        -------
+        tuple
+            - **X_train** : list[list],
+              Updated total pairwise runtime output data gathered so far.
+            - **y** : list[list],
+              0 signififying Configuration_0 is better, 1 signifying 
+              Configuration_1 is better within the pairwise comparison 
+              corresponding to instances in updated X_train.
+            - **cost_mat** : list[list],
+              Cost matrix corresponding to instances in updated X_train.
+        """
 
         max_res = max(res)
         disregard = []
@@ -196,7 +290,32 @@ class Gray_Box():
 
         return X_train, y, cost_mat
 
-    def train_gb(self, X_train, y_train, cost_mat_train, cores):
+    def train_gb(
+        self, X_train: list[list], y_train: list[int],
+            cost_mat_train: list[list], cores: list[list]
+    ) -> CostSensitiveRandomPatchesClassifier | None:
+        """
+        Train gray-box model.
+
+        Parameters
+        ----------
+        X_train : list[list]
+            Total pairwise runtime output data gathered so far.
+        y_train : list[int]
+            0 signififying Configuration_0 is better, 1 signifying 
+            Configuration_1 is better within the pairwise comparison 
+            corresponding to instances in X_train.
+        cost_mat_train : list[list]
+            Cost matrix corresponding to instances in X_train.
+        cores : list[list],
+            Core pairs corresponding to the Configurations compared in X_train.
+
+        Returns
+        -------
+        CostSensitiveRandomPatchesClassifier or None
+            Trained gray-box model or None, if not sufficient data for 
+            training.
+        """
 
         if len(X_train) > 2:
             with threadpool_limits(limits=cores):
@@ -213,7 +332,27 @@ class Gray_Box():
         else:
             return None
 
-    def classify_configs(self, X_pred, cores, model):
+    def classify_configs(self, X_pred: list[list], cores: list[list],
+                         model: CostSensitiveRandomPatchesClassifier) -> list:
+        """
+        Classify configurations in the current tournament based o current 
+        pairwise comparison features.
+
+        Parameters
+        ----------
+        X_pred : list[list]
+            Pairwise comparison instances from most recent outputs.
+        cores : list[list]
+            Core number pairs corresponding to X_pred entries.
+        model : CostSensitiveRandomPatchesClassifier
+            Trained gray-box model.
+
+        Returns
+        -------
+        list
+            0 if C_0 is predicted to be better, 1 if otherwise, corresponding 
+            to cores.
+        """
         with threadpool_limits(limits=cores):
             predictions = None
             # self.model = model
@@ -224,7 +363,26 @@ class Gray_Box():
 
             return predictions
 
-    def term_list(self, pred, cores, verbosity):
+    def term_list(self, pred: list, cores: list[list], verbosity: int) -> list:
+        """
+        Process predictions and decide if and which Configuration runs should 
+        be terminated.
+
+        Parameters
+        ----------
+        pred : list
+            0 if C_0 is predicted to be better, 1 if otherwise, corresponding 
+            to cores.
+        cores : list[list]
+            Core number pairs.
+        verbosity : int
+            Hyperparameter turning on and off additional terminal outputs.
+
+        Returns
+        -------
+        list
+            Core indices of Configuration runs to be terminated.
+        """
 
         better_counts = Counter()
 

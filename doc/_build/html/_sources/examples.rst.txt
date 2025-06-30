@@ -170,6 +170,8 @@ With this example, the target algorithm to be configured needs to be callable vi
 Scenario File Examples
 ----------------------
 
+The following scenario file examples assume a runtime minimization scenario. To minimize objective value of the target algorithm, add --objective_min. Further, the following scenario files assume the availability of 8 cores (or 4 cores with 8 threads in total, which is not optimal but still works well). If your machine has more available cores and you can spare them you should increase --number_cores. Additionally, the experimental setting is assumed here. This means that at the start of the RAC process, logs of data for tournament 0 are loaded to allow for comparability between runs. If you are not aiming at this, omit the flag --experimental.
+
 ReACTR
 ~~~~~~
 
@@ -311,6 +313,8 @@ You do not need to provide --feature_path if you are computing problem instance 
 Parameter Files
 ---------------
 
+Currently, two ways of declaring parameter space definition are possible in RTAC, PCS and a custom json based on a json schema.
+
 PCS
 ~~~
 
@@ -392,14 +396,6 @@ Example
   'valtype': 'str',
   'values': ['true', 'false'],
   'default': 'true'},
- 'param_g3al': {'paramtype': 'categorical',
-  'valtype': 'str',
-  'values': ['true', 'false'],
-  'default': 'true'},
- 'param_4nie': {'paramtype': 'categorical',
-  'valtype': 'str',
-  'values': ['true', 'false'],
-  'default': 'true'},
  'param_f3ed': {'paramtype': 'categorical',
   'valtype': 'int',
   'minval': 1,
@@ -442,10 +438,6 @@ Example
   'valtype': 'str',
   'values': ['true', 'false'],
   'default': 'true'},
- 'param_jnjw': {'paramtype': 'categorical',
-  'valtype': 'str',
-  'values': ['true', 'false'],
-  'default': 'true'},
  'param_mb9s': {'paramtype': 'discrete',
   'minval': 1,
   'maxval': 3,
@@ -467,10 +459,6 @@ Example
   'values': ['true', 'false'],
   'default': 'false'},
  'param_g0aj': {'paramtype': 'categorical',
-  'valtype': 'str',
-  'values': ['true', 'false'],
-  'default': 'true'},
- 'param_hlcw': {'paramtype': 'categorical',
   'valtype': 'str',
   'values': ['true', 'false'],
   'default': 'true'},
@@ -553,4 +541,4 @@ You can then use a python script in the following manner to solve incoming probl
 
 
 
-Of course, you can adjust the script to wait and receive problem instances to be passed to rtac.solve_instance.
+Naturally, you can adjust the script to wait and receive problem instances to be passed to rtac.solve_instance and / or rtac.provide_early_instance.

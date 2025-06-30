@@ -1,7 +1,21 @@
 import subprocess
 import sys
 
-def ensure_package(pkg_name, version):
+
+def ensure_package(pkg_name: str, version: str) -> None:
+    """
+    Check if given package and its version are installed and install it of not.
+
+    Parameters
+    ----------
+    pkg_name : str
+        Name of the package.
+    version : str
+        Version of the package.
+    Returns
+    -------
+    None
+    """
     try:
         # Python 3.8+: Use importlib.metadata
         from importlib.metadata import version as get_version

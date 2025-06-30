@@ -88,31 +88,48 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing.sharedctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Synchronized</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.tournament</span><span class="w"> </span><span class="kn">import</span> <span class="n">tournament_factory</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.result_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">processing_factory</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">TARunStatus</span><span class="p">,</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">ACMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TARunStatus</span><span class="p">,</span>
+    <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">RTACDatapp</span><span class="p">,</span>
+    <span class="n">ACMethod</span><span class="p">,</span>
+    <span class="n">TournamentStats</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTARunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.tournament</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tournament</span><span class="p">,</span> <span class="n">Tournamentpp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking.gray_box</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gray_Box</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.rtac</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTAC</span>
+
 
 <div class="viewcode-block" id="AbstractTournamentManager"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTournamentManager</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract tournament manager class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract tournament manager class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    ta_runner : BaseTARunner</span>
+<span class="sd">        Target algorithm runner object.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">        Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">        modules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span>
-                 <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournamnt management class with data and objects</span>
-<span class="sd">        necessary for RTAC method used. If self.scenario.resume, data of last</span>
-<span class="sd">        logged tournament is loaded and algorithm configuration is performed</span>
-<span class="sd">        from that state.</span>
-
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
-<span class="sd">        :param ta_runner: Target algorithm runner object.</span>
-<span class="sd">        :type: BaseTARunner</span>
-<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">        :type: RTACLogs</span>
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
+                 <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament management class with data and objects</span>
+<span class="sd">        necessary for the RTAC method used. If `self.scenario.resume` is set,</span>
+<span class="sd">        data from the last logged tournament is loaded and algorithm </span>
+<span class="sd">        configuration resumes from that state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">huge_float</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="mf">1e-100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
@@ -167,9 +184,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">init_rtac_logs</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">init_ranking_logs</span><span class="p">()</span>
 
-<div class="viewcode-block" id="AbstractTournamentManager.set_tourn_status"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.set_tourn_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_tourn_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tournamentstats</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">,</span> <span class="n">tournament</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setting the results of the tournament and status of the target</span>
-<span class="sd">        algorithm runs to rtac_data.TournamentStats.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AbstractTournamentManager.set_tourn_status"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.set_tourn_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_tourn_status</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">tournamentstats</span><span class="p">:</span> <span class="n">TournamentStats</span><span class="p">,</span>
+            <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span> 
+            <span class="n">tournament</span><span class="p">:</span> <span class="n">Tournament</span> <span class="o">|</span> <span class="n">Tournamentpp</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TournamentStats</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setting the results of the tournament and status of the target</span>
+<span class="sd">        algorithm runs to rtac_data.TournamentStats.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tournamentstats : TournamentStats</span>
+<span class="sd">            Stats summarizing the tournament results.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+<span class="sd">        tournament : Tournament | Tournamentpp</span>
+<span class="sd">            Tournament object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        TournamentStats</span>
+<span class="sd">            Stats summarizing the tournament results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tournamentstats</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:]</span>
         <span class="n">tournamentstats</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:]</span>
         <span class="n">tournamentstats</span><span class="o">.</span><span class="n">rtac_times</span> <span class="o">=</span> <span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_rtac_time</span><span class="p">[:]</span>
@@ -186,21 +224,49 @@
         <span class="k">return</span> <span class="n">tournamentstats</span></div>
 
 <div class="viewcode-block" id="AbstractTournamentManager.solve_instance"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.solve_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
-                       <span class="n">next_instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rtac</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RTACData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solving the problem instance according to the RTAC method used.</span>
-<span class="sd">        :param instance: path to the problem instance to solve.</span>
-<span class="sd">        </span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :returns: Updated object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules</span>
-<span class="sd">        :rtype: RTACData</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
+                       <span class="n">next_instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                       <span class="n">rtac</span><span class="p">:</span> <span class="s1">&#39;RTAC&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RTACData</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the problem instance according to the RTAC method used.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+<span class="sd">        next_instance : str</span>
+<span class="sd">            Problem instance ID. Degaults to None.</span>
+<span class="sd">        rtac : RTAC</span>
+<span class="sd">            The self reference of rtac.rtac.RTAC to enable the tournament </span>
+<span class="sd">            manager to start a tournament run ftom RTAC.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RTACData</span>
+<span class="sd">            Updated object containing data and objects necessary throughout the </span>
+<span class="sd">            RTAC modules.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="AbstractTournamentManager.manage_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.manage_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractTournamentManager.manage_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.manage_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                          <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manages the procedure of the tournament.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;#  Start solving instance </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s1">...  #&#39;</span>
         <span class="n">len_msg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -240,10 +306,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">res_process</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span></div>
 
-<div class="viewcode-block" id="AbstractTournamentManager.general_logging"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.general_logging">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">general_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtac_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">tournamentstats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">tournament</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">early_tourn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="AbstractTournamentManager.general_logging"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.general_logging">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">general_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                        <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tournamentstats</span><span class="p">:</span> <span class="n">TournamentStats</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tournament</span><span class="p">:</span> <span class="n">Tournament</span> <span class="o">|</span> <span class="n">Tournamentpp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">early_tourn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Carries out logging of general information about the tournament.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scenario : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+<span class="sd">        tournamentstats : TournamentStats</span>
+<span class="sd">            Stats summarizing the tournament results.</span>
+<span class="sd">        tourn_nr : int</span>
+<span class="sd">            Number of the tournament.</span>
+<span class="sd">        tournament : Tournament | Tournamentpp</span>
+<span class="sd">            Tournament object.</span>
+<span class="sd">        early_tourn : bool</span>
+<span class="sd">            True if tournament starts early, Flase if not.</span>
+<span class="sd">        instance: str</span>
+<span class="sd">            ID of the problem instance to be solved.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">scenario</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span>
             <span class="n">rtac_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span>
@@ -299,7 +393,21 @@
             <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; (nr. </span><span class="si">{</span><span class="n">tourn_nr</span><span class="si">}</span><span class="s1">) is </span><span class="si">{</span><span class="n">tournamentstats</span><span class="o">.</span><span class="n">winner</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="n">log_message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AbstractTournamentManager.adjust_time_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.adjust_time_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">adjust_time_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractTournamentManager.adjust_time_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.adjust_time_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">adjust_time_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjusts the time results of the early tournament by the time that was </span>
+<span class="sd">        saved from the early starting.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">res</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">timeout</span>
                 <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -320,7 +428,20 @@
 
         <span class="k">return</span> <span class="n">rtac_data</span></div>
 
-<div class="viewcode-block" id="AbstractTournamentManager.get_tourn_nr"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.get_tourn_nr">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_tourn_nr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractTournamentManager.get_tourn_nr"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.AbstractTournamentManager.get_tourn_nr">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_tourn_nr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of the tournament to be logged.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">early_start_tournament</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
             <span class="n">tourn_nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span>
         <span class="k">else</span><span class="p">:</span>
@@ -330,22 +451,31 @@
 
 
 <div class="viewcode-block" id="TournamentManager"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManager">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TournamentManager</span><span class="p">(</span><span class="n">AbstractTournamentManager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament manager class for the ReACTR implementation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tournament manager class for the ReACTR implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TournamentManager.solve_instance"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManager.solve_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+<div class="viewcode-block" id="TournamentManager.solve_instance"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManager.solve_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RTACData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solving the problem instance according to the ReACTR implementation.</span>
-<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solving the problem instance according to the ReACTR implementation.</span>
 
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :returns: Updated object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules</span>
-<span class="sd">        :rtype: RTACData</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the rtac </span>
+<span class="sd">            modules.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments that vary by RTAC method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RTACData</span>
+<span class="sd">            Updated object containing data and objects necessary throughout the </span>
+<span class="sd">            rtac modules.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
         <span class="n">tourn_nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tourn_nr</span><span class="p">(</span><span class="n">rtac_data</span><span class="p">)</span>
 
@@ -359,22 +489,31 @@
 
 
 <div class="viewcode-block" id="TournamentManagerCPPL"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TournamentManagerCPPL</span><span class="p">(</span><span class="n">AbstractTournamentManager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament manager class for the CPPL implementation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tournament manager class for the CPPL implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TournamentManagerCPPL.solve_instance"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL.solve_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+<div class="viewcode-block" id="TournamentManagerCPPL.solve_instance"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.TournamentManagerCPPL.solve_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RTACData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solving the problem instance according to the CPPL implementation.</span>
-<span class="sd">        :param instance: path to the problem instance to solve.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solving the problem instance according to the CPPL implementation.</span>
 
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :returns: Updated object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules</span>
-<span class="sd">        :rtype: RTACData</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the rtac </span>
+<span class="sd">            modules.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments that vary by RTAC method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RTACData</span>
+<span class="sd">            Updated object containing data and objects necessary throughout the </span>
+<span class="sd">            rtac modules.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
         <span class="n">tourn_nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tourn_nr</span><span class="p">(</span><span class="n">rtac_data</span><span class="p">)</span>
 
@@ -389,11 +528,19 @@
 
 
 <div class="viewcode-block" id="GrayBox"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GrayBox</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class contains functions needed for the gray-box</span>
-<span class="sd">    functionality of the tournament manager classes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains functions needed for the gray-box</span>
+<span class="sd">    functionality of the tournament manager classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GrayBox.train_gray_box_model"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.train_gray_box_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">train_gray_box_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.train_gray_box_model"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.train_gray_box_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">train_gray_box_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train gray-box modelö with the total data gathered so far.</span>
 
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span><span class="p">:</span>
@@ -425,7 +572,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">gray_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gray_box</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">gb_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_model</span></div>
 
-<div class="viewcode-block" id="GrayBox.manage_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.manage_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.manage_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.manage_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
+                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manages the procedure of the tournament. Runs early tournament if </span>
+<span class="sd">        CPU cores were freed by the gray-box model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments that vary by RTAC method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_history</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">instance_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;es_rtac_data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -556,7 +722,20 @@
             <span class="c1"># starting tournment</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">skip</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GrayBox.early_start"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.early_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">early_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.early_start"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.early_start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">early_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">currenttime</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts early tournament with only as many contenders as were terminated </span>
+<span class="sd">        by the gray-box model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        currenttime : float</span>
+<span class="sd">            Time in the tournament at which contenders were terminated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">term_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tournament</span><span class="o">.</span><span class="n">term_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_instance</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -589,11 +768,26 @@
 
             <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_for_event</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GrayBox.wait_for_event"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.wait_for_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.wait_for_event"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.wait_for_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits for the tournament to finish and triggers the start of the </span>
+<span class="sd">        remaining cores in the early tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fill_early_tournament</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GrayBox.fill_early_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.fill_early_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_early_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.fill_early_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.fill_early_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_early_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manages and starts the remaining contenders in the early tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_finished</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">es_tournament</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">res_process</span><span class="o">.</span><span class="n">get_contender_dict</span><span class="p">()</span>
@@ -615,7 +809,19 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">early_rtac_data</span><span class="o">.</span><span class="n">cores_start</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrayBox.es_output"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.es_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">es_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<div class="viewcode-block" id="GrayBox.es_output"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.GrayBox.es_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">es_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints info from early tournament to terminal.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : int</span>
+<span class="sd">            ID of the instance to be solved in the early starting tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">es_scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
@@ -642,19 +848,29 @@
 
 <div class="viewcode-block" id="tourn_manager_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament_manager.html#rtac.ac_functionalities.tournament_manager.tourn_manager_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tourn_manager_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
                           <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">,</span>
-                          <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractTournamentManager</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized TournamentManager class</span>
+                          <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span>
+                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractTournamentManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class factory to return the initialized TournamentManager class</span>
 <span class="sd">    appropriate to the RTAC method scenario.ac.</span>
 
-<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">    :type scenario: argparse.Namespace</span>
-<span class="sd">    :param ta_runner: Target algorithm runner object.</span>
-<span class="sd">    :type: BaseTARunner</span>
-<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">    :type: RTACLogs</span>
-<span class="sd">    :returns: Inititialized TournamentManager object matching the RTAC method</span>
-<span class="sd">        of the scenario.</span>
-<span class="sd">    :rtype: BaseTARunner</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    ta_runner : BaseTARunner</span>
+<span class="sd">        Target algorithm runner object.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    AbstractTournamentManager</span>
+<span class="sd">        Initialized TournamentManager object matching the RTAC method of the </span>
+<span class="sd">        scenario.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTRpp</span><span class="p">):</span>
         <span class="n">tourn_manager</span> <span class="o">=</span> <span class="n">TournamentManager</span>

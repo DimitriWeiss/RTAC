@@ -132,14 +132,15 @@ better solution it is not a problem.</p>
 the configuration to a list of parameter name and value alternating.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object - parameter values to run problem
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object – parameter values to run the problem
 instance with.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of strings representation of the configuration</p>
+<dd class="field-even"><p>List representation of the configuration with parameter names and
+values alternating.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[str]</p>
+<dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -157,16 +158,17 @@ implementation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.wrapper.tsp.TSP_Qpp.check_output">
 <span class="sig-name descname"><span class="pre">check_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/wrapper/tsp.html#TSP_Qpp.check_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.wrapper.tsp.TSP_Qpp.check_output" title="Permalink to this definition"></a></dt>
-<dd><p>Parsing runtime output of the target algorithm.</p>
+<dd><p>Parse runtime output of the target algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ta_output</strong> (<em>bytes</em>) – Output of the target algorithm.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of intermediate output values if provided by TA.</p>
+<dd class="field-even"><p>List of intermediate output values if provided by the target
+algorithm.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[float] or None</p>
+<dd class="field-odd"><p>list of float or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -179,10 +181,10 @@ entry is a sign of higher quality of the configuration regarding the
 target algorithm run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of InterimMeaning - is a higher or lower value better.</p>
+<dd class="field-odd"><p>Indicates if a higher or lower value is better.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.InterimMeaning" title="rtac.ac_functionalities.rtac_data.InterimMeaning">InterimMeaning</a>] or None</p>
+<dd class="field-even"><p>list of <a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.InterimMeaning" title="rtac.ac_functionalities.rtac_data.InterimMeaning">InterimMeaning</a> or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -198,23 +200,23 @@ target algorithm run.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.wrapper.tsp.TSP_RT.check_if_solved">
 <span class="sig-name descname"><span class="pre">check_if_solved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nnr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">non_block_read</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Popen</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/wrapper/tsp.html#TSP_RT.check_if_solved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.wrapper.tsp.TSP_RT.check_if_solved" title="Permalink to this definition"></a></dt>
-<dd><p>Bytes output of the subprocess.Popen process running CaDiCaL is
-checked to determine if the problem instance is solved (res).</p>
+<dd><p>Check the bytes output of the subprocess.Popen process running CaDiCaL
+to determine if the problem instance is solved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ta_output</strong> (<em>bytes</em>) – Output of the target algorithm.</p></li>
-<li><p><strong>nnr</strong> (<em>non_nlock_read</em>) – Non blocking read function for accessing the
-subprocess.PIPE output of the target algorithm</p></li>
-<li><p><strong>proc</strong> (<em>subprocess.Popen</em>) – Target algorithm run via subprocess.Popen process</p></li>
+<li><p><strong>nnr</strong> (<em>non_nlock_read</em>) – Non-blocking read function for accessing the subprocess.PIPE
+output.</p></li>
+<li><p><strong>proc</strong> (<em>subprocess.Popen</em>) – Target algorithm run via subprocess.Popen process.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Target algorithm result (1 if solved, 0 else), runtime
-needed and event (0 or 1, if solved), or None</p>
+<dd class="field-even"><p>Target algorithm result (1 if solved, 0 otherwise), runtime needed,
+and event (0 or 1, indicating if solved), or None if no result.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[int | float, float, int]</p>
+<dd class="field-odd"><p>tuple of (int or float, float, int) or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -222,43 +224,42 @@ needed and event (0 or 1, if solved), or None</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.wrapper.tsp.TSP_RT.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">subprocess.Popen</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/wrapper/tsp.html#TSP_RT.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.wrapper.tsp.TSP_RT.start" title="Permalink to this definition"></a></dt>
-<dd><p>Start CaDiCaL via subprocess.Popen with stdout to
-subprocess.PIPE, configuration &lt;config&gt; on instance &lt;instance&gt; with</p>
-<blockquote>
-<div><p>timelimit &lt;timeout&gt;.</p>
-</div></blockquote>
+<dd><p>Start CaDiCaL via subprocess.Popen with stdout set to subprocess.PIPE,
+using the given configuration on the specified instance with a time
+limit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> (<em>Any</em>) – Parameters in a format as needed for target algorithm.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em>) – Maximum runtime allowed for target algorithm run in
-seconds.</p></li>
-<li><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p></li>
+<li><p><strong>config</strong> (<em>Any</em>) – Parameters in the format required by the target algorithm.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – Maximum runtime allowed for the target algorithm run in seconds.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – Path to the problem instance.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Target algorithm via subprocess.Popen process and starting</p>
+<dd class="field-even"><p>Target algorithm subprocess.Popen process and the start time of
+the process.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (subprocess.Popen, int)</p>
 </dd>
 </dl>
-<p>time of the process
-:rtype: tuple[subprocess.Popen, int]</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.wrapper.tsp.TSP_RT.translate_config">
 <span class="sig-name descname"><span class="pre">translate_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/wrapper/tsp.html#TSP_RT.translate_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.wrapper.tsp.TSP_RT.translate_config" title="Permalink to this definition"></a></dt>
 <dd><p>Convert dictionary representation of the configuration to a list of
-parameter name and value alternating.</p>
+parameter names and values alternating.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object - parameter values to run problem
-instance with.</p>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object - parameter values to run problem instance
+with.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of strings representation of the configuration</p>
+<dd class="field-even"><p>List of strings representation of the configuration.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[str]</p>
+<dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,16 +276,17 @@ functions for ReACTR++ implementation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.wrapper.tsp.TSP_RTpp.check_output">
 <span class="sig-name descname"><span class="pre">check_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/wrapper/tsp.html#TSP_RTpp.check_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.wrapper.tsp.TSP_RTpp.check_output" title="Permalink to this definition"></a></dt>
-<dd><p>Parsing runtime output of the target algorithm.</p>
+<dd><p>Parse runtime output of the target algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ta_output</strong> (<em>bytes</em>) – Output of the target algorithm.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of intermediate output values if provided by TA.</p>
+<dd class="field-even"><p>List of intermediate output values if provided by the target
+algorithm.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[float] or None</p>
+<dd class="field-odd"><p>list of float or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -297,10 +299,10 @@ entry is a sign of higher quality of the configuration regarding the
 target algorithm run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of InterimMeaning - is a higher or lower value better.</p>
+<dd class="field-odd"><p>Indicates if a higher or lower value is better.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.InterimMeaning" title="rtac.ac_functionalities.rtac_data.InterimMeaning">InterimMeaning</a>] or None</p>
+<dd class="field-even"><p>list of <a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.InterimMeaning" title="rtac.ac_functionalities.rtac_data.InterimMeaning">InterimMeaning</a> or None</p>
 </dd>
 </dl>
 </dd></dl>

@@ -128,7 +128,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.rtacdata_factory" title="rtac.ac_functionalities.rtac_data.rtacdata_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rtacdata_factory</span></code></a>(scenario, **kwargs)</p></td>
-<td><p>Class factory to return the initialized class with data structures appropriate to the RTAC method scenario.ac.</p></td>
+<td><p>Class factory to return the initialized class with data structures appropriate to the RTAC method <cite>scenario.ac</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -136,43 +136,43 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ACMethod" title="rtac.ac_functionalities.rtac_data.ACMethod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACMethod</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the RAC methods.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.AbstractRTACData" title="rtac.ac_functionalities.rtac_data.AbstractRTACData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractRTACData</span></code></a>(scenario)</p></td>
 <td><p>Abstract class to handle picklable data structures needed to coordinate and process tournaments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.BinaryParameter" title="rtac.ac_functionalities.rtac_data.BinaryParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BinaryParameter</span></code></a>(paramtype, default, int, ...)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.BinaryParameter" title="rtac.ac_functionalities.rtac_data.BinaryParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BinaryParameter</span></code></a>(paramtype, default, valtype, ...)</p></td>
+<td><p>Represents a binary parameter with optional default.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.CategoricalParameter" title="rtac.ac_functionalities.rtac_data.CategoricalParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CategoricalParameter</span></code></a>(paramtype, flag, ...)</p></td>
-<td><p></p></td>
+<td><p>Represents a categorical parameter with optional default.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Configuration</span></code></a>(id, conf, features, gen, gen_tourn)</p></td>
-<td><p></p></td>
+<td><p>Represents a Configuration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ContinuousParameter" title="rtac.ac_functionalities.rtac_data.ContinuousParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ContinuousParameter</span></code></a>(paramtype, minval, ...)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ContinuousParameter" title="rtac.ac_functionalities.rtac_data.ContinuousParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ContinuousParameter</span></code></a>(paramtype, minval, maxval)</p></td>
+<td><p>Represents a continuous (real) parameter with optional default, sampling behavior, and distributional assumptions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.DiscreteParameter" title="rtac.ac_functionalities.rtac_data.DiscreteParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiscreteParameter</span></code></a>(paramtype, minval, maxval, ...)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.DiscreteParameter" title="rtac.ac_functionalities.rtac_data.DiscreteParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiscreteParameter</span></code></a>(paramtype, minval, maxval)</p></td>
+<td><p>Represents a discrete (integer) parameter with optional default, sampling behavior, and distributional assumptions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Distribution</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the distribution types to draw random values from.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.GBData" title="rtac.ac_functionalities.rtac_data.GBData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GBData</span></code></a>(scenario, rtacdata_init, **kwargs)</p></td>
 <td><p>Class to handle picklable data structures needed to coordinate and process tournaments of the Gray-Box implementation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Generator" title="rtac.ac_functionalities.rtac_data.Generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Generator</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for configuration generator type.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.InterimMeaning" title="rtac.ac_functionalities.rtac_data.InterimMeaning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterimMeaning</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the meaning of the interim output: Whether increase or decrease signifies progress.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ParamType" title="rtac.ac_functionalities.rtac_data.ParamType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParamType</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the parameter type to be generated.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Parameter" title="rtac.ac_functionalities.rtac_data.Parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Parameter</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the parameter type to be generated.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RTACData</span></code></a>(scenario, **kwargs)</p></td>
 <td><p>Class to handle picklable data structures needed to coordinate and process tournaments of the ReACTR implementation.</p></td>
@@ -181,16 +181,16 @@
 <td><p>Class to handle picklable data structures needed to coordinate and process tournaments of the ReACTR++ implementation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TARun" title="rtac.ac_functionalities.rtac_data.TARun"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TARun</span></code></a>(config_id, config, res, time, status)</p></td>
-<td><p></p></td>
+<td><p>Represents a target algorithm run.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TARunStatus" title="rtac.ac_functionalities.rtac_data.TARunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TARunStatus</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the state of the configuration run.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TournamentStats" title="rtac.ac_functionalities.rtac_data.TournamentStats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TournamentStats</span></code></a>(id, tourn_nr, configs, ...)</p></td>
-<td><p></p></td>
+<td><p>Represents the stats of a tournament.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ValType" title="rtac.ac_functionalities.rtac_data.ValType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValType</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Enumeration for the type of values randomly generated.</p></td>
 </tr>
 </tbody>
 </table>
@@ -198,7 +198,17 @@
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ACMethod">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">ACMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ACMethod" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the RAC methods.</p>
+<section id="members">
+<h2>Members<a class="headerlink" href="#members" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>ReACTR<span class="classifier">int</span></dt><dd><p>Represents the ‘ReACTR’ option.</p>
+</dd>
+<dt>ReACTRpp<span class="classifier">int</span></dt><dd><p>Represents the ‘ReACTR++’ option.</p>
+</dd>
+<dt>CPPL<span class="classifier">int</span></dt><dd><p>Represents the ‘CPPL’ option.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ACMethod.CPPL">
 <span class="sig-name descname"><span class="pre">CPPL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ACMethod.CPPL" title="Permalink to this definition"></a></dt>
@@ -214,6 +224,7 @@
 <span class="sig-name descname"><span class="pre">ReACTRpp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ACMethod.ReACTRpp" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
@@ -222,12 +233,28 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract class to handle picklable data structures needed to coordinate
 and process tournaments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.BinaryParameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">BinaryParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">paramtype:</span> <span class="pre">str,</span> <span class="pre">default:</span> <span class="pre">Union[str,</span> <span class="pre">int,</span> <span class="pre">NoneType],</span> <span class="pre">valtype:</span> <span class="pre">rtac.ac_functionalities.rtac_data.ValType</span> <span class="pre">=</span> <span class="pre">&lt;ValType.int:</span> <span class="pre">2&gt;,</span> <span class="pre">values:</span> <span class="pre">list[str</span> <span class="pre">|</span> <span class="pre">int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.BinaryParameter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">BinaryParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valtype:</span> <span class="pre">~rtac.ac_functionalities.rtac_data.ValType</span> <span class="pre">=</span> <span class="pre">ValType.int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values:</span> <span class="pre">list[str</span> <span class="pre">|</span> <span class="pre">int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.BinaryParameter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a binary parameter with optional default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paramtype</strong> (<em>str</em>) – A string identifying the type of parameter.</p></li>
+<li><p><strong>default</strong> (<em>str</em><em> | </em><em>int</em><em>, </em><em>optional</em>) – Default value used, if specified.</p></li>
+<li><p><strong>valtype</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ValType" title="rtac.ac_functionalities.rtac_data.ValType"><em>ValType</em></a>) – Identifies the value type.</p></li>
+<li><p><strong>values</strong> (<em>list</em><em>[</em><em>str</em><em> | </em><em>int</em><em>]</em>) – List of the possible values the parameter can assume.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.BinaryParameter.paramtype">
 <span class="sig-name descname"><span class="pre">paramtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.BinaryParameter.paramtype" title="Permalink to this definition"></a></dt>
@@ -247,8 +274,22 @@ and process tournaments.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.CategoricalParameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">CategoricalParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valtype:</span> <span class="pre">rtac.ac_functionalities.rtac_data.ValType</span> <span class="pre">=</span> <span class="pre">&lt;ValType.str:</span> <span class="pre">1&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">Union[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values:</span> <span class="pre">list[str</span> <span class="pre">|</span> <span class="pre">int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.CategoricalParameter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">CategoricalParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valtype:</span> <span class="pre">~rtac.ac_functionalities.rtac_data.ValType</span> <span class="pre">=</span> <span class="pre">ValType.str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values:</span> <span class="pre">list[str</span> <span class="pre">|</span> <span class="pre">int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.CategoricalParameter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a categorical parameter with optional default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paramtype</strong> (<em>str</em>) – A string identifying the type of parameter.</p></li>
+<li><p><strong>flag</strong> (<em>bool</em>) – True if parameter is a flag, False if not.</p></li>
+<li><p><strong>valtype</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.ValType" title="rtac.ac_functionalities.rtac_data.ValType"><em>ValType</em></a>) – Identifies the value type.</p></li>
+<li><p><strong>default</strong> (<em>str</em><em> | </em><em>int</em><em>, </em><em>optional</em>) – Default value used, if specified.</p></li>
+<li><p><strong>minval</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum allowed value for the parameter.</p></li>
+<li><p><strong>maxval</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum allowed value for the parameter.</p></li>
+<li><p><strong>values</strong> (<em>list</em><em>[</em><em>str</em><em> | </em><em>int</em><em>]</em>) – List of the possible values the parameter can assume.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.CategoricalParameter.flag">
 <span class="sig-name descname"><span class="pre">flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.CategoricalParameter.flag" title="Permalink to this definition"></a></dt>
@@ -283,8 +324,20 @@ and process tournaments.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Configuration">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uuid.UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Generator" title="rtac.ac_functionalities.rtac_data.Generator"><span class="pre">rtac.ac_functionalities.rtac_data.Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tourn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Configuration" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Generator" title="rtac.ac_functionalities.rtac_data.Generator"><span class="pre">Generator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_tourn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Configuration" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a Configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – Unique identifier.</p></li>
+<li><p><strong>conf</strong> (<em>dict</em>) – Dictionary with parameter name as key and parameter value as value.</p></li>
+<li><p><strong>features</strong> (<em>list</em>) – Features associated with the configuration.</p></li>
+<li><p><strong>gen</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Generator" title="rtac.ac_functionalities.rtac_data.Generator"><em>Generator</em></a>) – Configuration generator type used to generate this configuration.</p></li>
+<li><p><strong>gen_tourn</strong> (<em>int</em>) – Tournament number in which the configuration was generated.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Configuration.conf">
 <span class="sig-name descname"><span class="pre">conf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Configuration.conf" title="Permalink to this definition"></a></dt>
@@ -314,8 +367,32 @@ and process tournaments.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ContinuousParameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">ContinuousParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitbydefault:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution:</span> <span class="pre">Optional[rtac.ac_functionalities.rtac_data.Distribution]</span> <span class="pre">=</span> <span class="pre">&lt;Distribution.uniform:</span> <span class="pre">1&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonpos:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonneg:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabpos:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabneg:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includezero:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilityzero:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ContinuousParameter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">ContinuousParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitbydefault</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><span class="pre">Distribution</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Distribution.uniform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonpos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonneg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabpos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabneg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includezero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilityzero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ContinuousParameter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a continuous (real) parameter with optional default,
+sampling behavior, and distributional assumptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paramtype</strong> (<em>str</em>) – A string identifying the type of parameter.</p></li>
+<li><p><strong>minval</strong> (<em>int</em>) – Minimum allowed value for the parameter.</p></li>
+<li><p><strong>maxval</strong> (<em>int</em>) – Maximum allowed value for the parameter.</p></li>
+<li><p><strong>default</strong> (<em>int</em><em>, </em><em>optional</em>) – Default value used, if specified.</p></li>
+<li><p><strong>splitbydefault</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use the default to split the parameter range for logarithmic
+distribution draws.</p></li>
+<li><p><strong>distribution</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><em>Distribution</em></a><em>, </em><em>optional</em>) – Distribution used for sampling (e.g., uniform, triangular). Defaults
+to uniform.</p></li>
+<li><p><strong>logonpos</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, apply logarithmic sampling on the positive part of the
+parameter range.</p></li>
+<li><p><strong>logonneg</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, apply logarithmic sampling on the negative part of the
+parameter range.</p></li>
+<li><p><strong>probabpos</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling from positive part of the range.</p></li>
+<li><p><strong>probabneg</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling from negative part of the range.</p></li>
+<li><p><strong>includezero</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, include zero as a possible sampled value.</p></li>
+<li><p><strong>probabilityzero</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling zero if <cite>includezero</cite> is True.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ContinuousParameter.distribution">
 <span class="sig-name descname"><span class="pre">distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><span class="pre">Distribution</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ContinuousParameter.distribution" title="Permalink to this definition"></a></dt>
@@ -375,8 +452,32 @@ and process tournaments.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.DiscreteParameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">DiscreteParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitbydefault:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution:</span> <span class="pre">Optional[rtac.ac_functionalities.rtac_data.Distribution]</span> <span class="pre">=</span> <span class="pre">&lt;Distribution.uniform:</span> <span class="pre">1&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonpos:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonneg:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabpos:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabneg:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includezero:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilityzero:</span> <span class="pre">Optional[float]</span> <span class="pre">=</span> <span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.DiscreteParameter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">DiscreteParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitbydefault</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><span class="pre">Distribution</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Distribution.uniform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonpos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logonneg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabpos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabneg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includezero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilityzero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.DiscreteParameter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a discrete (integer) parameter with optional default,
+sampling behavior, and distributional assumptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paramtype</strong> (<em>str</em>) – A string identifying the type of parameter.</p></li>
+<li><p><strong>minval</strong> (<em>int</em>) – Minimum allowed value for the parameter.</p></li>
+<li><p><strong>maxval</strong> (<em>int</em>) – Maximum allowed value for the parameter.</p></li>
+<li><p><strong>default</strong> (<em>int</em><em>, </em><em>optional</em>) – Default value used, if specified.</p></li>
+<li><p><strong>splitbydefault</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use the default to split the parameter range for logarithmic
+distribution draws.</p></li>
+<li><p><strong>distribution</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><em>Distribution</em></a><em>, </em><em>optional</em>) – Distribution used for sampling (e.g., uniform, triangular). Defaults
+to uniform.</p></li>
+<li><p><strong>logonpos</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, apply logarithmic sampling on the positive part of the
+parameter range.</p></li>
+<li><p><strong>logonneg</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, apply logarithmic sampling on the negative part of the
+parameter range.</p></li>
+<li><p><strong>probabpos</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling from positive part of the range.</p></li>
+<li><p><strong>probabneg</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling from negative part of the range.</p></li>
+<li><p><strong>includezero</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, include zero as a possible sampled value.</p></li>
+<li><p><strong>probabilityzero</strong> (<em>float</em><em>, </em><em>optional</em>) – Probability of sampling zero if <cite>includezero</cite> is True.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.DiscreteParameter.distribution">
 <span class="sig-name descname"><span class="pre">distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.Distribution" title="rtac.ac_functionalities.rtac_data.Distribution"><span class="pre">Distribution</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.DiscreteParameter.distribution" title="Permalink to this definition"></a></dt>
@@ -438,7 +539,15 @@ and process tournaments.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Distribution">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">Distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Distribution" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the distribution types to draw random values from.</p>
+<section id="id1">
+<h2>Members<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>uniform<span class="classifier">int</span></dt><dd><p>Represents the uniform distribution option.</p>
+</dd>
+<dt>log<span class="classifier">int</span></dt><dd><p>Represents the logarithmic distribution option.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Distribution.log">
 <span class="sig-name descname"><span class="pre">log</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Distribution.log" title="Permalink to this definition"></a></dt>
@@ -449,18 +558,39 @@ and process tournaments.</p>
 <span class="sig-name descname"><span class="pre">uniform</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Distribution.uniform" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.GBData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">GBData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtacdata_init</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.GBData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">GBData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtacdata_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">__init__</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.GBData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTACData</span></code></a></p>
 <p>Class to handle picklable data structures needed to coordinate
 and process tournaments of the Gray-Box implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>rtacdata_init</strong> (<em>AbstractRTACData.__init__</em>) – __init__ of the parent class.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments that vary by RTAC method.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.GBData.early_rtac_copy">
 <span class="sig-name descname"><span class="pre">early_rtac_copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.GBData.early_rtac_copy" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns a modified copy of self to be used in an early starting
+tournament after terminations by gray box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A modified copy of itself to be used in an early starting
+tournament after terminations by gray box.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.AbstractRTACData" title="rtac.ac_functionalities.rtac_data.AbstractRTACData">AbstractRTACData</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -468,7 +598,20 @@ and process tournaments of the Gray-Box implementation.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Generator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Generator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for configuration generator type.</p>
+<section id="id2">
+<h2>Members<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>default<span class="classifier">DiscreteParameter</span></dt><dd><p>Represents the default configuration generator.</p>
+</dd>
+<dt>random<span class="classifier">ContinuousParameter</span></dt><dd><p>Represents the random configuration generator.</p>
+</dd>
+<dt>crossover<span class="classifier">CategoricalParameter</span></dt><dd><p>Represents the genetic crossover configuration generator.</p>
+</dd>
+<dt>cppl<span class="classifier">BinaryParameter</span></dt><dd><p>Represents the surrogate-assisted genetic crossover configuration
+generator in CPPL.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Generator.cppl">
 <span class="sig-name descname"><span class="pre">cppl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Generator.cppl" title="Permalink to this definition"></a></dt>
@@ -484,13 +627,23 @@ and process tournaments of the Gray-Box implementation.</p>
 <span class="sig-name descname"><span class="pre">random</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Generator.random" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.InterimMeaning">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">InterimMeaning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.InterimMeaning" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the meaning of the interim output: Whether increase or
+decrease signifies progress. Only used in ReACTR++.</p>
+<section id="id3">
+<h2>Members<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>increase<span class="classifier">DiscreteParameter</span></dt><dd><p>Represents that increase of the value is progress.</p>
+</dd>
+<dt>decrease<span class="classifier">ContinuousParameter</span></dt><dd><p>Represents that decrease of the value is progress.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.InterimMeaning.decrease">
 <span class="sig-name descname"><span class="pre">decrease</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.InterimMeaning.decrease" title="Permalink to this definition"></a></dt>
@@ -501,13 +654,26 @@ and process tournaments of the Gray-Box implementation.</p>
 <span class="sig-name descname"><span class="pre">increase</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.InterimMeaning.increase" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ParamType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">ParamType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ParamType" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the parameter type to be generated.</p>
+<section id="id4">
+<h2>Members<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>discrete<span class="classifier">int</span></dt><dd><p>Represents the string option.</p>
+</dd>
+<dt>continuous<span class="classifier">int</span></dt><dd><p>Represents the integer option.</p>
+</dd>
+<dt>categorical<span class="classifier">int</span></dt><dd><p>Represents the string option.</p>
+</dd>
+<dt>binary<span class="classifier">int</span></dt><dd><p>Represents the integer option.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ParamType.binary">
 <span class="sig-name descname"><span class="pre">binary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ParamType.binary" title="Permalink to this definition"></a></dt>
@@ -528,13 +694,26 @@ and process tournaments of the Gray-Box implementation.</p>
 <span class="sig-name descname"><span class="pre">discrete</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ParamType.discrete" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Parameter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Parameter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the parameter type to be generated.</p>
+<section id="id5">
+<h2>Members<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>discrete<span class="classifier">DiscreteParameter</span></dt><dd><p>Represents an string parameter.</p>
+</dd>
+<dt>continuous<span class="classifier">ContinuousParameter</span></dt><dd><p>Represents an integer parameter.</p>
+</dd>
+<dt>categorical<span class="classifier">CategoricalParameter</span></dt><dd><p>Represents an string parameter.</p>
+</dd>
+<dt>binary<span class="classifier">BinaryParameter</span></dt><dd><p>Represents an integer parameter.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.Parameter.binary">
 <span class="sig-name descname"><span class="pre">binary</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.BinaryParameter'&gt;</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Parameter.binary" title="Permalink to this definition"></a></dt>
@@ -555,6 +734,7 @@ and process tournaments of the Gray-Box implementation.</p>
 <span class="sig-name descname"><span class="pre">discrete</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.DiscreteParameter'&gt;</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.Parameter.discrete" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
@@ -563,6 +743,14 @@ and process tournaments of the Gray-Box implementation.</p>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.rtac_data.AbstractRTACData" title="rtac.ac_functionalities.rtac_data.AbstractRTACData"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRTACData</span></code></a></p>
 <p>Class to handle picklable data structures needed to coordinate
 and process tournaments of the ReACTR implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments that vary by RTAC method.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -571,12 +759,33 @@ and process tournaments of the ReACTR implementation.</p>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTACData</span></code></a></p>
 <p>Class to handle picklable data structures needed to coordinate
 and process tournaments of the ReACTR++ implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments that vary by RTAC method.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TARun">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">TARun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TARunStatus" title="rtac.ac_functionalities.rtac_data.TARunStatus"><span class="pre">rtac.ac_functionalities.rtac_data.TARunStatus</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARun" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">TARun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TARunStatus" title="rtac.ac_functionalities.rtac_data.TARunStatus"><span class="pre">TARunStatus</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARun" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a target algorithm run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_id</strong> (<em>str</em>) – Unique identifier derived from an UUID.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Dictionary with parameter name as key and parameter value as value.</p></li>
+<li><p><strong>res</strong> (<em>int</em><em> | </em><em>float</em>) – Tournament result (objective value) of the target algorithm run.</p></li>
+<li><p><strong>time</strong> (<em>float</em>) – Time when the target algorithm run stopped. Set to time limit if the
+configuration did not solve the problem instance.</p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="#rtac.ac_functionalities.rtac_data.TARunStatus" title="rtac.ac_functionalities.rtac_data.TARunStatus"><em>TARunStatus</em></a>) – State of the configuration.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TARun.config">
 <span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARun.config" title="Permalink to this definition"></a></dt>
@@ -608,7 +817,25 @@ and process tournaments of the ReACTR++ implementation.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TARunStatus">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">TARunStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARunStatus" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the state of the configuration run.</p>
+<section id="id6">
+<h2>Members<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>running<span class="classifier">DiscreteParameter</span></dt><dd><p>Configuration is started and running.</p>
+</dd>
+<dt>finished<span class="classifier">ContinuousParameter</span></dt><dd><p>Configuration has finished the problem instance.</p>
+</dd>
+<dt>capped<span class="classifier">CategoricalParameter</span></dt><dd><p>Configuration run has been terminated due to another configuration
+being finished.</p>
+</dd>
+<dt>terminated<span class="classifier">BinaryParameter</span></dt><dd><p>Configuration has been terminated by gray box.</p>
+</dd>
+<dt>timeout<span class="classifier">BinaryParameter</span></dt><dd><p>Configuration has been terminated because the time limit has been
+reached</p>
+</dd>
+<dt>awaiting_start<span class="classifier">BinaryParameter</span></dt><dd><p>Configuration has not been started yet in an early starting tournament.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TARunStatus.awaiting_start">
 <span class="sig-name descname"><span class="pre">awaiting_start</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARunStatus.awaiting_start" title="Permalink to this definition"></a></dt>
@@ -639,12 +866,30 @@ and process tournaments of the ReACTR++ implementation.</p>
 <span class="sig-name descname"><span class="pre">timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TARunStatus.timeout" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TournamentStats">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">TournamentStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">id:</span> <span class="pre">uuid.UUID,</span> <span class="pre">tourn_nr:</span> <span class="pre">int,</span> <span class="pre">configs:</span> <span class="pre">list[uuid.UUID],</span> <span class="pre">winner:</span> <span class="pre">str,</span> <span class="pre">results:</span> <span class="pre">list[int</span> <span class="pre">|</span> <span class="pre">float],</span> <span class="pre">times:</span> <span class="pre">list[float],</span> <span class="pre">rtac_times:</span> <span class="pre">list[float],</span> <span class="pre">kills:</span> <span class="pre">list[uuid.UUID],</span> <span class="pre">TARuns:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.TARun'&gt;,</span> <span class="pre">None)]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TournamentStats" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">TournamentStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">id:</span> <span class="pre">~uuid.UUID,</span> <span class="pre">tourn_nr:</span> <span class="pre">int,</span> <span class="pre">configs:</span> <span class="pre">list[uuid.UUID],</span> <span class="pre">winner:</span> <span class="pre">str,</span> <span class="pre">results:</span> <span class="pre">list[int</span> <span class="pre">|</span> <span class="pre">float],</span> <span class="pre">times:</span> <span class="pre">list[float],</span> <span class="pre">rtac_times:</span> <span class="pre">list[float],</span> <span class="pre">kills:</span> <span class="pre">list[uuid.UUID],</span> <span class="pre">TARuns:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.TARun'&gt;,</span> <span class="pre">None)]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TournamentStats" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the stats of a tournament.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Unique identifier derived from an UUID.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Number of the tournament since RTAC init.</p></li>
+<li><p><strong>configs</strong> (<em>list</em><em>[</em><em>UUID</em><em>]</em>) – List of configuration IDs in the tournament.</p></li>
+<li><p><strong>winner</strong> (<em>str</em>) – ID of the tournament winner.</p></li>
+<li><p><strong>results</strong> (<em>list</em><em>[</em><em>int</em><em> | </em><em>float</em><em>]</em>) – Objective values of the contenders.</p></li>
+<li><p><strong>times</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Runtimes of the contenders.</p></li>
+<li><p><strong>rtac_times</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Runtimes of the contenders + overhead of the configurator during the
+tournament.</p></li>
+<li><p><strong>kills</strong> (<em>list</em><em>[</em><em>UUID</em><em>]</em>) – IDs of the contenders terminated by the gray box.</p></li>
+<li><p><strong>TARuns</strong> (<em>dict</em><em>[</em><em>str: TARun</em><em>]</em>) – List of TARun objects corresponding to ‘configs’.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.TournamentStats.TARuns">
 <span class="sig-name descname"><span class="pre">TARuns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.TARun'&gt;,</span> <span class="pre">None)]</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.TournamentStats.TARuns" title="Permalink to this definition"></a></dt>
@@ -696,7 +941,15 @@ and process tournaments of the ReACTR++ implementation.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ValType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">ValType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ValType" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Enumeration for the type of values randomly generated.</p>
+<section id="id7">
+<h2>Members<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>str<span class="classifier">int</span></dt><dd><p>Represents the string option.</p>
+</dd>
+<dt>int<span class="classifier">int</span></dt><dd><p>Represents the integer option.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.ValType.int">
 <span class="sig-name descname"><span class="pre">int</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ValType.int" title="Permalink to this definition"></a></dt>
@@ -707,23 +960,27 @@ and process tournaments of the ReACTR++ implementation.</p>
 <span class="sig-name descname"><span class="pre">str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.ValType.str" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.rtac_data.rtacdata_factory">
-<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">rtacdata_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.AbstractRTACData" title="rtac.ac_functionalities.rtac_data.AbstractRTACData"><span class="pre">AbstractRTACData</span></a></span></span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.rtacdata_factory" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.rtac_data.</span></span><span class="sig-name descname"><span class="pre">rtacdata_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></span><a class="headerlink" href="#rtac.ac_functionalities.rtac_data.rtacdata_factory" title="Permalink to this definition"></a></dt>
 <dd><p>Class factory to return the initialized class with data structures
-appropriate to the RTAC method scenario.ac.</p>
+appropriate to the RTAC method <cite>scenario.ac</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments that vary by RTAC method.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Inititialized AbstractRTACData object matching the RTAC method of
-the scenario.</p>
+<dd class="field-even"><p>Initialized AbstractRTACData object matching the RTAC method
+of the scenario.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.AbstractRTACData" title="rtac.ac_functionalities.rtac_data.AbstractRTACData">AbstractRTACData</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData">RTACData</a> or <a class="reference internal" href="#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp">RTACDatapp</a></p>
 </dd>
 </dl>
 </dd></dl>

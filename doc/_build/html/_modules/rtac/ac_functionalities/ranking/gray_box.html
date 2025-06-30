@@ -73,7 +73,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for rtac.ac_functionalities.ranking.gray_box</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">six</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implements gray-box model based on cost-sensitive random forest from CostCla.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">six</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -148,6 +152,7 @@
                   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                   <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patched __init__ version for the BaseBagging class.&quot;&quot;&quot;</span>
     <span class="c1"># Handle estimator argument rename in sklearn &gt;= 1.2</span>
     <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">sklearn_version</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;1.2&quot;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BaseBagging</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -176,12 +181,60 @@
 
 
 <div class="viewcode-block" id="Gray_Box"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Gray_Box</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class containing gray-box model and data processing functions.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gb_cla</span> <span class="o">=</span> <span class="n">CostSensitiveRandomPatchesClassifier</span>
  
-<div class="viewcode-block" id="Gray_Box.prepare_predict_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_predict_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec_data</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span>
-                             <span class="n">mtp</span><span class="p">,</span> <span class="n">pair_cores</span><span class="p">):</span>
+<div class="viewcode-block" id="Gray_Box.prepare_predict_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_predict_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rec_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+            <span class="n">gb_pw_inst_archive</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mtp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
+            <span class="n">pair_cores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform single runtime output data instances into pairwise </span>
+<span class="sd">        comparison data instances.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+
+<span class="sd">        Implementation based on the paper: “Realtime gray-box algorithm </span>
+<span class="sd">        configuration using cost-sensitive classification” </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec_data : dict[int, list]</span>
+<span class="sd">            All runtime output data recorded so far in the tournament sorted by </span>
+<span class="sd">            core the target algorithm runs on</span>
+<span class="sd">        instances : list[list]</span>
+<span class="sd">            Unique instances of recorded runtime output.</span>
+<span class="sd">        gb_pw_inst_archive : list[list]</span>
+<span class="sd">            All unique pairwise comparison instances.</span>
+<span class="sd">        mtp : dict[int, int]</span>
+<span class="sd">            Key is core, value is the last time point of the data recorded.</span>
+<span class="sd">        pair_cores : list[list[int]]</span>
+<span class="sd">            Core pairs corresponding to the Configurations compared in </span>
+<span class="sd">            gb_pw_inst_archive.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **pw_instances** : list[list],</span>
+<span class="sd">              Pairwise comparisons of Configurations based on the most current </span>
+<span class="sd">              output.</span>
+<span class="sd">            - **cores** : list[list],</span>
+<span class="sd">              Core pairs corresponding to the Configurations compared in </span>
+<span class="sd">              pw_istances.</span>
+<span class="sd">            - **instances** : bool,</span>
+<span class="sd">              Unique instances of recorded runtime output.</span>
+<span class="sd">            - **gb_pw_inst_archive** : list[list],</span>
+<span class="sd">              All unique pairwise comparison instances.</span>
+<span class="sd">            - **max_time_points** : dict[int, int],</span>
+<span class="sd">              Key is core, value is the last time point of the data recorded.</span>
+<span class="sd">            - **pair_cores** : list[list[int]],</span>
+<span class="sd">              Core pairs corresponding to the Configurations compared in </span>
+<span class="sd">              gb_pw_inst_archive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Get last timepoint of recording for configs, if there were any</span>
         <span class="n">max_time_points</span> <span class="o">=</span> <span class="p">{}</span>
@@ -235,8 +288,49 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">instances</span><span class="p">,</span> <span class="n">gb_pw_inst_archive</span><span class="p">,</span> <span class="n">mtp</span><span class="p">,</span> <span class="n">pair_cores</span></div>
 
-<div class="viewcode-block" id="Gray_Box.prepare_train_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_train_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">winner</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span>
-                           <span class="n">y</span><span class="p">,</span> <span class="n">cost_mat</span><span class="p">):</span>
+<div class="viewcode-block" id="Gray_Box.prepare_train_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_train_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">cores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+            <span class="n">winner</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+            <span class="n">y</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">cost_mat</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjust and add pairwise runtime output data gathered in tournament to </span>
+<span class="sd">        the total runtime output data gathered so far to be used it for model </span>
+<span class="sd">        training.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_train : list[list]</span>
+<span class="sd">            Total pairwise runtime output data gathered so far.</span>
+<span class="sd">        data : list[list]</span>
+<span class="sd">            Pairwise runtime output data gathered during last tournament.</span>
+<span class="sd">        cores : list[list],</span>
+<span class="sd">            Core pairs corresponding to the Configurations compared in data.</span>
+<span class="sd">        winner : int</span>
+<span class="sd">            Index of the winning Configuration of the last tournament.</span>
+<span class="sd">        res : dict[int, float]</span>
+<span class="sd">            Results of the last tournament.</span>
+<span class="sd">        instances : list[list]</span>
+<span class="sd">            Unique instances of recorded runtime output.</span>
+<span class="sd">        y : list[int]</span>
+<span class="sd">            0 signififying Configuration_0 is better, 1 signifying </span>
+<span class="sd">            Configuration_1 is better within the pairwise comparison </span>
+<span class="sd">            corresponding to instances in X_train.</span>
+<span class="sd">        cost_mat : list[list]</span>
+<span class="sd">            Cost matrix corresponding to instances in X_train.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **X_train** : list[list],</span>
+<span class="sd">              Updated total pairwise runtime output data gathered so far.</span>
+<span class="sd">            - **y** : list[list],</span>
+<span class="sd">              0 signififying Configuration_0 is better, 1 signifying </span>
+<span class="sd">              Configuration_1 is better within the pairwise comparison </span>
+<span class="sd">              corresponding to instances in updated X_train.</span>
+<span class="sd">            - **cost_mat** : list[list],</span>
+<span class="sd">              Cost matrix corresponding to instances in updated X_train.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">max_res</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
         <span class="n">disregard</span> <span class="o">=</span> <span class="p">[]</span>
@@ -271,7 +365,32 @@
 
         <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cost_mat</span></div>
 
-<div class="viewcode-block" id="Gray_Box.train_gb"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">train_gb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">cost_mat_train</span><span class="p">,</span> <span class="n">cores</span><span class="p">):</span>
+<div class="viewcode-block" id="Gray_Box.train_gb"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">train_gb</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">y_train</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+            <span class="n">cost_mat_train</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">cores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CostSensitiveRandomPatchesClassifier</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train gray-box model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_train : list[list]</span>
+<span class="sd">            Total pairwise runtime output data gathered so far.</span>
+<span class="sd">        y_train : list[int]</span>
+<span class="sd">            0 signififying Configuration_0 is better, 1 signifying </span>
+<span class="sd">            Configuration_1 is better within the pairwise comparison </span>
+<span class="sd">            corresponding to instances in X_train.</span>
+<span class="sd">        cost_mat_train : list[list]</span>
+<span class="sd">            Cost matrix corresponding to instances in X_train.</span>
+<span class="sd">        cores : list[list],</span>
+<span class="sd">            Core pairs corresponding to the Configurations compared in X_train.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        CostSensitiveRandomPatchesClassifier or None</span>
+<span class="sd">            Trained gray-box model or None, if not sufficient data for </span>
+<span class="sd">            training.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="n">cores</span><span class="p">):</span>
@@ -288,7 +407,27 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Gray_Box.classify_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">classify_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<div class="viewcode-block" id="Gray_Box.classify_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">classify_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_pred</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">cores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+                         <span class="n">model</span><span class="p">:</span> <span class="n">CostSensitiveRandomPatchesClassifier</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Classify configurations in the current tournament based o current </span>
+<span class="sd">        pairwise comparison features.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_pred : list[list]</span>
+<span class="sd">            Pairwise comparison instances from most recent outputs.</span>
+<span class="sd">        cores : list[list]</span>
+<span class="sd">            Core number pairs corresponding to X_pred entries.</span>
+<span class="sd">        model : CostSensitiveRandomPatchesClassifier</span>
+<span class="sd">            Trained gray-box model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            0 if C_0 is predicted to be better, 1 if otherwise, corresponding </span>
+<span class="sd">            to cores.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="n">cores</span><span class="p">):</span>
             <span class="n">predictions</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="c1"># self.model = model</span>
@@ -299,7 +438,26 @@
 
             <span class="k">return</span> <span class="n">predictions</span></div>
 
-<div class="viewcode-block" id="Gray_Box.term_list"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">term_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">cores</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">):</span>
+<div class="viewcode-block" id="Gray_Box.term_list"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.gray_box.html#rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">term_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">cores</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span> <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process predictions and decide if and which Configuration runs should </span>
+<span class="sd">        be terminated.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pred : list</span>
+<span class="sd">            0 if C_0 is predicted to be better, 1 if otherwise, corresponding </span>
+<span class="sd">            to cores.</span>
+<span class="sd">        cores : list[list]</span>
+<span class="sd">            Core number pairs.</span>
+<span class="sd">        verbosity : int</span>
+<span class="sd">            Hyperparameter turning on and off additional terminal outputs.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            Core indices of Configuration runs to be terminated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">better_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
 

@@ -128,13 +128,21 @@ instances/tournaments as well as stats about toournaments and results.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Class with all functions and loggers concerning logging and loading
 RTAC and tournament data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.AbstractLogs.general_log">
 <span class="sig-name descname"><span class="pre">general_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#AbstractLogs.general_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.AbstractLogs.general_log" title="Permalink to this definition"></a></dt>
 <dd><p>Log message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Any message provided.</p>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Any message provided as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -143,7 +151,12 @@ RTAC and tournament data.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.AbstractLogs.init_rtac_logs">
 <span class="sig-name descname"><span class="pre">init_rtac_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#AbstractLogs.init_rtac_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.AbstractLogs.init_rtac_logs" title="Permalink to this definition"></a></dt>
 <dd><p>Initializes loggers for realtime algorithm configuration data
-concerning all methods.</p>
+that are shared by all methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -154,17 +167,19 @@ concerning all methods.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.AbstractLogs.rtac_log">
-<span class="sig-name descname"><span class="pre">rtac_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TournamentStats" title="rtac.ac_functionalities.rtac_data.TournamentStats"><span class="pre">TournamentStats</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#AbstractLogs.rtac_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.AbstractLogs.rtac_log" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">rtac_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TournamentStats" title="rtac.ac_functionalities.rtac_data.TournamentStats"><span class="pre">TournamentStats</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#AbstractLogs.rtac_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.AbstractLogs.rtac_log" title="Permalink to this definition"></a></dt>
 <dd><p>Logs for realtime algorithm configuration data
 concerning all methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p></li>
-<li><p><strong>tourn_stats</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TournamentStats" title="rtac.ac_functionalities.rtac_data.TournamentStats"><em>TournamentStats</em></a>) – Object containing statistics about the previous
-tournament.</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary throughout the rtac
+modules.</p></li>
+<li><p><strong>tourn_stats</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.TournamentStats" title="rtac.ac_functionalities.rtac_data.TournamentStats"><em>TournamentStats</em></a>) – Object containing statistics about the previous tournament.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -172,10 +187,13 @@ tournament.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.AbstractLogs.scenario_log">
 <span class="sig-name descname"><span class="pre">scenario_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#AbstractLogs.scenario_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.AbstractLogs.scenario_log" title="Permalink to this definition"></a></dt>
-<dd><p>Save scenario.</p>
+<dd><p>Save RTAC scenario.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -200,54 +218,90 @@ RTAC and tournament data for ReACTR implementation.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.RTACLogs.init_ranking_logs">
 <span class="sig-name descname"><span class="pre">init_ranking_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.init_ranking_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.init_ranking_logs" title="Permalink to this definition"></a></dt>
 <dd><p>Initializes loggers for data concerning ReACTR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.RTACLogs.load_data">
-<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple[dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.Configuration'&gt;,</span> <span class="pre">None)],</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">typing.Any,</span> <span class="pre">None)],</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.Configuration'&gt;,</span> <span class="pre">None)],</span> <span class="pre">int,</span> <span class="pre">typing.Optional[typing.Any]]</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.load_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.load_data" title="Permalink to this definition"></a></dt>
 <dd><p>Loads data necessary for resuming the algorithm configuration from
 last logged state of ReACTR.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Configuration pool, scores and contender list of previously
-logged tournament, number of previously logged tournament.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tourn_nr</strong> (<em>int</em><em> | </em><em>None</em>) – Either int to load logs of tournament nr. tourn_nr or None if
+loading tournament nr. 0 for experimental mode.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[dict[str: Configuration], dict[str: tuple[int, int]],
-dict[str: Configuration], int]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pool</strong> : dict[str, Configuration],
+Configuration pool.</p></li>
+<li><p><strong>assessment</strong> : dict[str, Any],
+Scores/ Skills, confidences of logged tournament.</p></li>
+<li><p><strong>contender_dict</strong> : dict[str, Configuration],
+List of contending Configurations from logged tournament.</p></li>
+<li><p><strong>tourn_nr</strong> : int,
+Number of logged tournament.</p></li>
+<li><p><strong>bandit_models</strong> : dict[str, Any],
+All objects needed for CPPL model employment.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.RTACLogs.parse_array">
-<span class="sig-name descname"><span class="pre">parse_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.parse_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.parse_array" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">parse_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.parse_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.parse_array" title="Permalink to this definition"></a></dt>
+<dd><p>Helper function for loading logs of nd.arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>val</strong> (<em>str</em>) – Loaded string to decode and transform.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decoded and transformed form of val.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int or float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If val could not be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.logs.RTACLogs.ranking_log">
-<span class="sig-name descname"><span class="pre">ranking_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pool:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.Configuration'&gt;,</span> <span class="pre">None)],</span> <span class="pre">assessment:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">typing.Any,</span> <span class="pre">None)],</span> <span class="pre">tourn_nr:</span> <span class="pre">int,</span> <span class="pre">contender_dict:</span> <span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.Configuration'&gt;,</span> <span class="pre">None)],</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.ranking_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.ranking_log" title="Permalink to this definition"></a></dt>
-<dd><p>Logs data concerning ReACTR.</p>
+<span class="sig-name descname"><span class="pre">ranking_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assessment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/logs.html#RTACLogs.ranking_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.logs.RTACLogs.ranking_log" title="Permalink to this definition"></a></dt>
+<dd><p>Logs data concerning RAC method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pool</strong> (<em>dict</em>) – Dictionary with configuration id as key and configuration
-as value with scenario.contenders == #items .</p></li>
-<li><p><strong>assessment</strong> (<em>dict</em>) – Dictionary with configuration id as key and
+<li><p><strong>pool</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – Dictionary with configuration id as key and configuration
+as value with scenario.contenders == #items.</p></li>
+<li><p><strong>assessment</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Dictionary with configuration id as key and
 assessment depending on the AC method used, e.g., trueskill scores,
 or bandit model.</p></li>
-<li><p><strong>contender_dict</strong> (<em>dict</em>) – Dictionary with configuration id as key and
+<li><p><strong>tourn</strong> (<em>nr : int</em>) – Number of tournament after which logs are done.</p></li>
+<li><p><strong>contender_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – Dictionary with configuration id as key and
 configuration as value: contenders of the previous tournament.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional keyword arguments. Possible keys include:</p>
+<ul>
+<li><p><cite>standard_scaler</cite>  sklearn.preprocessing.StandardScaler</p></li>
+<li><p><cite>min_max_scaler</cite> sklearn.preprocessing.MinMaxScaler</p></li>
+<li><p><cite>pca_obj_params</cite> sklearn.decomposition.PCA</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs<span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments. Possible keys include:</p>
-<ul class="simple">
-<li><p><cite>standard_scaler</cite> sklearn</p></li>
-<li><p><cite>min_max_scaler</cite> sklearn</p></li>
-<li><p><cite>pca_obj_params</cite> sklearn</p></li>
-</ul>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

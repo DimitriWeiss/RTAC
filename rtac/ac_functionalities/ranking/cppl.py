@@ -1,7 +1,9 @@
+"""Implements the CPPL class for RTAC."""
 
 import random
 import uuid
 import copy
+import argparse
 import importlib
 from collections import Counter
 from itertools import islice
@@ -29,12 +31,28 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class CPPL():
-    """CPPL Bandit and AC functions."""
+    """
+    CPPL Bandit and AC functions.
 
-    def __init__(self, scenario, pool, contender_dict=None):
-        """Initialize CPPL object."""
+    Note
+    ----
+
+    Implementation based on the paper: "Pool-based realtime algorithm
+    configuration: A preselection bandit approach"
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    pool : dict
+        Pool of configurations.
+    contender_dict : dict
+        Dictionary containing Configurations that ran in last tournament.
+    """
+
+    def __init__(self, scenario: argparse.Namespace, pool: dict,
+                 contender_dict: dict = None):
         self.time_sum = 0
-
         self.scenario = scenario
         self.keeptop = self.scenario.keeptop
         config_space = scenario.config_space
@@ -110,7 +128,22 @@ class CPPL():
 
         self.record_bandit()
 
-    def compute_array_dimension(self, nc_pca_f, nc_pca_p):
+    def compute_array_dimension(self, nc_pca_f: int,
+                                nc_pca_p: int) -> int:
+        """Compute the correct dimension of np.ndarrays used in bandit.
+
+        Parameters
+        ----------
+        nc_pca_f : int
+            Dimension of PCA for problem instance features.
+        nc_pca_p : int
+            Dimension of PCA for Configuration values.
+
+        Returns
+        -------
+        int
+            Dimension of np.ndarrays used in bandit.
+        """
         if self.scenario.jfm in ('concatenation', 'kronecker'):
             d = nc_pca_f + nc_pca_p
         elif self.scenario.jfm == 'polynomial':
@@ -120,7 +153,14 @@ class CPPL():
                 d = d + 3 + i
         return d
 
-    def record_bandit(self):
+    def record_bandit(self) -> None:
+        """
+        Records bandit state to later log it.
+
+        Returns
+        -------
+        None
+        """
         self.bandit = {'theta_hat': np.array2string(self.theta_hat,
                                                     threshold=np.inf),
                        'theta_bar': np.array2string(self.theta_bar,
@@ -151,7 +191,13 @@ class CPPL():
         else:
             self.bandit_models = {}
 
-    def process_results(self, queue1=None, queue2=None):
+    def process_results(self) -> None:
+        """
+        Processing results of the last tournament.
+        Returns
+        -------
+        None
+        """
 
         self.update_data()
 
@@ -187,7 +233,14 @@ class CPPL():
 
             self.record_bandit()
 
-    def update_data(self):
+    def update_data(self) -> None:
+        """
+        Update data used in bandit computations by tournament results.
+
+        Returns
+        -------
+        None
+        """
 
         with threadpool_limits(limits=1):
 
@@ -229,7 +282,14 @@ class CPPL():
 
         self.context_specific_feature_matrix()
 
-    def context_specific_feature_matrix(self):
+    def context_specific_feature_matrix(self) -> None:
+        """
+        Compute the context-specific feature matrix.
+
+        Returns
+        -------
+        None
+        """
         with threadpool_limits(limits=1):
             self.X_t = np.zeros((self.pool_size, len(self.theta_bar)),
                                 dtype=np.float32)
@@ -242,7 +302,15 @@ class CPPL():
 
             normalize(self.X_t, norm='max', copy=False)
 
-    def gradient(self):
+    def gradient(self) -> np.ndarray:
+        """
+        Computes gradient learnt from results.
+
+        Returns
+        -------
+        np.ndarray
+            Gradient learnt from all previous results.
+        """
         with threadpool_limits(limits=1):
             d = 0
             n = np.zeros(self.len_theta_bar)
@@ -253,7 +321,15 @@ class CPPL():
 
             return self.X_t[self.Y_t, :] - (n / d)
 
-    def hessian(self):
+    def hessian(self) -> np.ndarray:
+        """
+        Computes Hessian matrix expressing confidence in skills.
+
+        Returns
+        -------
+        np.ndarray
+            Hessian matrix expressing confidence in skills.
+        """
         with threadpool_limits(limits=1):
 
             t_1 = np.zeros((self.len_theta_bar))
@@ -275,7 +351,24 @@ class CPPL():
 
             return (n_1 / (d ** 2)) - (n_2 / d)
 
-    def joinFeatureMap(self, x, y, mode):
+    def joinFeatureMap(self, x, y, mode) -> np.ndarray:
+        """
+        Joining Configuration values and problem instance features.
+
+        Parameters
+        ----------
+        x : np.ndarray
+            Configuration values.
+        y: np.ndarray
+            Problem instance features.
+        mode: str
+            Mode of combining Configuration values and instance features.
+
+        Returns
+        -------
+        np.ndarray
+            Combined Configuration values and problem instance features.
+        """
         with threadpool_limits(limits=1):
             if mode == 'concatenation':
                 return np.concatenate((x, y), axis=0) 
@@ -286,16 +379,51 @@ class CPPL():
                 return poly.fit_transform(
                     np.concatenate((x, y), axis=0).reshape(1, -1))
 
-    def manage_pool(self):
+    def manage_pool(self) -> None:
+        """
+        Deciding if Configurations need to be replaced and generating new 
+        ones if necessary.
+
+        Returns
+        -------
+        None
+        """
         self.insert_in_pool(self.generate_configs(self.discard_configs()))
 
-    def discard_configs(self):
+    def discard_configs(self) -> int:
+        """
+        Assess the quality of the Configurations in the pool and decide which 
+        ones to replace.
+
+        Returns
+        -------
+        int
+            Number of Configurations to be replaced.
+        """
 
         self.asses_configurations()
 
         return len(self.discard)
 
-    def crossover(self, parents, nr_children, core):
+    def crossover(self, parents: list[Configuration],
+                  nr_children: int) -> list[Configuration]:
+        """
+        Perform genetic crossover on the provided Configurations to generate 
+        offspring, with small probability of randomly generated Configurations 
+        nr_children of times.
+
+        Parameters
+        ----------
+        parents : list[Configuration]
+            The Configurations to be used for genetic crossover.
+        nr_children : int
+            Number of how many offspring to generate.
+        
+        Returns
+        -------
+        list[Configuration]
+            List of generated Configurations.
+        """
 
         parent_a, parent_b = parents
 
@@ -325,7 +453,27 @@ class CPPL():
 
         return new_candids
 
-    def generate_configs(self, nr_discarded):
+    def generate_configs(
+            self, nr_discarded: int) -> dict[str, Configuration] | None:
+        """
+        Perform genetic crossover on the provided Configurations to generate 
+        offspring, with small probability of randomly generated Configurations 
+        on each available core. Asses generated Configurations with CPPL 
+        model. Ensure no duplicates are inserted into the pool (possible due 
+        to CPPL model preferring configuration values). Aim at providing 
+        nr_discarding Configurations (if number is not reduced by omitting 
+        duplicates).
+
+        Parameters
+        ----------
+        nr_discarded : int
+            Number of how many new Configurations to generate.
+        
+        Returns
+        -------
+        dict[str, Configuration] or None
+            Dict of generated Configurations or None.
+        """
 
         for _ in range(self.scenario.number_cores):
             # Choose the two configurations assessed as best as parents
@@ -341,8 +489,7 @@ class CPPL():
             with ThreadPoolExecutor() as executor:
                 futures = [executor.submit(
                            self.crossover, parents,
-                           nr_discarded * self.scenario.gen_mult,
-                           i)
+                           nr_discarded * self.scenario.gen_mult)
                            for i in range(self.scenario.number_cores)]
 
                 for future in as_completed(futures):
@@ -470,7 +617,16 @@ class CPPL():
                     print('Replaced contender', disc_id,
                           'by contender generated via', c.gen, '\n')
 
-    def skill_and_confidence(self):
+    def skill_and_confidence(self) -> None:
+        """
+        Compute the skill and confidence values for Configurations in pool 
+        based on current feature matrix and save the indices of nr_cores best 
+        of them to self.S_t.
+
+        Returns
+        -------
+        None
+        """
         with threadpool_limits(limits=1):
 
             self.S_t_prior = copy.deepcopy(self.S_t)
@@ -556,7 +712,27 @@ class CPPL():
                           self.c_t[self.S_t_prior[core]], ')')
                 print('\n\n')
 
-    def assess_children(self, transformed_configs, nd):
+    def assess_children(
+            self, transformed_configs: np.ndarray, nd: int) -> list[int]:
+        """
+        Compute the skill and confidence values for newly generated 
+        Configurations based on feature matrix computed for the set of newly 
+        generated configurations and return the indices of nd best 
+        of them.
+
+        Parameters
+        ----------
+        transformed_configs : np.ndarray
+            transformed values of generated Configurations
+        nd : int
+            Number of configurations to be replaced in the pool.
+
+        Returns
+        -------
+        list[int]
+            List of indices of the nd best Configurations from all newly 
+            generated Configurations.
+        """
         with threadpool_limits(limits=1):
             # self.t = self.scenario.cpplt
             ltc = len(transformed_configs)
@@ -630,7 +806,15 @@ class CPPL():
 
         return S_t
 
-    def asses_configurations(self):
+    def asses_configurations(self) -> None:
+        """
+        Comparatively asses which Configurations are to be replaced from the 
+        pool based on skills and confidence computed by CPPL model.
+
+        Returns
+        -------
+        None
+        """
         self.discard = []
 
         for i in range(self.pool_size):
@@ -642,7 +826,15 @@ class CPPL():
                     self.discard.append(i)
                     break
 
-    def select_contenders(self, queue1=None, queue2=None):
+    def select_contenders(self) -> None:
+        """
+        Select Configurations to run in next tournament and save them in 
+        self.contender_dict.
+
+        Returns
+        -------
+        None
+        """
         self.contender_dict = {}
         pool_list = list(copy.deepcopy(self.pool).values())
         best = []
@@ -683,12 +875,37 @@ class CPPL():
 
         self.prior_contender_dict = self.contender_dict
 
-    def init_param_scaler(self, config_space):
+    def init_param_scaler(self, config_space: argparse.Namespace) -> None:
+        """
+        Initialize MinMaxScaler to be used on Configuration values.
+
+        Parameters
+        ----------
+        config_space : argparse.Namespace
+            Namespace containing all settings for the RTAC.
+
+        Returns
+        -------
+        None
+        """
         self.split_param_types(config_space)
         self.min_max_scaler = MinMaxScaler()
         self.min_max_scaler.fit([self.lower_bounds, self.upper_bounds])
 
-    def split_param_types(self, config_space):
+    def split_param_types(self, config_space: argparse.Namespace) -> None:
+        """
+        Split parameter space by categorical and everything else.
+
+        Parameters
+        ----------
+        config_space : argparse.Namespace
+            Namespace containing all settings for the RTAC.
+
+        Returns
+        -------
+        None
+        """
+
         # Split categorical parameters and rest for later OneHotEncoding
         self.non_cat_param_names = []
         self.cat_param_names = []
@@ -723,13 +940,34 @@ class CPPL():
                     self.lower_bounds.append(param.lower)
                     self.upper_bounds.append(param.upper)
 
-    def init_onehot_encoder(self):
+    def init_onehot_encoder(self) -> None:
+        """
+        Initialize OneHotEncoder to be used on categorical Configuration 
+        values.
+
+        Returns
+        -------
+        None
+        """
         self.one_hot_enc = \
             OneHotEncoder(categories=self.cat_values,
                           sparse_output=False,
                           handle_unknown='ignore')
 
-    def transform_conf(self, conf):
+    def transform_conf(self, conf: Configuration) -> np.ndarray:
+        """
+        Transorm Configuration values with MinMaxScaler and OneHotEncoder.
+
+        Parameters
+        ----------
+        conf : Configuration
+            Configuration to be transformed.
+
+        Returns
+        -------
+        np.ndarray
+            Transformed Configuration values.
+        """
         with threadpool_limits(limits=1):
             ncvt = self.min_max_scaler.transform([[conf.conf[k]
                                                  for k in
@@ -751,7 +989,19 @@ class CPPL():
 
         return np.concatenate((ncvt, cvt), axis=None)
 
-    def pre_train(self, feature_path):
+    def pre_train(self, feature_path: str) -> None:
+        """
+        Pretrain StandardScaler to be used on problem instance features.
+
+        Parameters
+        ----------
+        feature_path : str
+            Path to the CSV file containing the features.
+
+        Returns
+        -------
+        None
+        """
         import ast
         features = []
         with open(f'{feature_path}') as f:

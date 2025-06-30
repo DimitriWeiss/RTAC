@@ -107,6 +107,7 @@
              
   <section id="module-rtac.ac_functionalities.ranking.gray_box">
 <span id="rtac-ac-functionalities-ranking-gray-box"></span><h1>rtac.ac_functionalities.ranking.gray_box<a class="headerlink" href="#module-rtac.ac_functionalities.ranking.gray_box" title="Permalink to this heading"></a></h1>
+<p>Implements gray-box model based on cost-sensitive random forest from CostCla.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -114,7 +115,7 @@
 <td><p>Patched version of cost_loss with np.float replaced by float.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_patched_init</span></code>(self[, base_estimator, ...])</p></td>
-<td><p></p></td>
+<td><p>Patched __init__ version for the BaseBagging class.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_patched_partition_estimators</span></code>(n_estimators, ...)</p></td>
 <td><p>Patched version of _partition_estimators with np.int replaced by int.</p></td>
@@ -125,7 +126,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box" title="rtac.ac_functionalities.ranking.gray_box.Gray_Box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gray_Box</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Class containing gray-box model and data processing functions.</p></td>
 </tr>
 </tbody>
 </table>
@@ -133,30 +134,165 @@
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ranking.gray_box.</span></span><span class="sig-name descname"><span class="pre">Gray_Box</span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class containing gray-box model and data processing functions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs">
-<span class="sig-name descname"><span class="pre">classify_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.classify_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">classify_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CostSensitiveRandomPatchesClassifier</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.classify_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.classify_configs" title="Permalink to this definition"></a></dt>
+<dd><p>Classify configurations in the current tournament based o current
+pairwise comparison features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_pred</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Pairwise comparison instances from most recent outputs.</p></li>
+<li><p><strong>cores</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Core number pairs corresponding to X_pred entries.</p></li>
+<li><p><strong>model</strong> (<em>CostSensitiveRandomPatchesClassifier</em>) – Trained gray-box model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 if C_0 is predicted to be better, 1 if otherwise, corresponding
+to cores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data">
-<span class="sig-name descname"><span class="pre">prepare_predict_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_pw_inst_archive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pair_cores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.prepare_predict_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">prepare_predict_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rec_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gb_pw_inst_archive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pair_cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.prepare_predict_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_predict_data" title="Permalink to this definition"></a></dt>
+<dd><p>Transform single runtime output data instances into pairwise
+comparison data instances.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Implementation based on the paper: “Realtime gray-box algorithm
+configuration using cost-sensitive classification”</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rec_data</strong> (<em>dict</em><em>[</em><em>int</em><em>, </em><em>list</em><em>]</em>) – All runtime output data recorded so far in the tournament sorted by
+core the target algorithm runs on</p></li>
+<li><p><strong>instances</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Unique instances of recorded runtime output.</p></li>
+<li><p><strong>gb_pw_inst_archive</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – All unique pairwise comparison instances.</p></li>
+<li><p><strong>mtp</strong> (<em>dict</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – Key is core, value is the last time point of the data recorded.</p></li>
+<li><p><strong>pair_cores</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>int</em><em>]</em><em>]</em>) – Core pairs corresponding to the Configurations compared in
+gb_pw_inst_archive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pw_instances</strong> : list[list],
+Pairwise comparisons of Configurations based on the most current
+output.</p></li>
+<li><p><strong>cores</strong> : list[list],
+Core pairs corresponding to the Configurations compared in
+pw_istances.</p></li>
+<li><p><strong>instances</strong> : bool,
+Unique instances of recorded runtime output.</p></li>
+<li><p><strong>gb_pw_inst_archive</strong> : list[list],
+All unique pairwise comparison instances.</p></li>
+<li><p><strong>max_time_points</strong> : dict[int, int],
+Key is core, value is the last time point of the data recorded.</p></li>
+<li><p><strong>pair_cores</strong> : list[list[int]],
+Core pairs corresponding to the Configurations compared in
+gb_pw_inst_archive.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data">
-<span class="sig-name descname"><span class="pre">prepare_train_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">winner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.prepare_train_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">prepare_train_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">winner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_mat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.prepare_train_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.prepare_train_data" title="Permalink to this definition"></a></dt>
+<dd><p>Adjust and add pairwise runtime output data gathered in tournament to
+the total runtime output data gathered so far to be used it for model
+training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Total pairwise runtime output data gathered so far.</p></li>
+<li><p><strong>data</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Pairwise runtime output data gathered during last tournament.</p></li>
+<li><p><strong>cores</strong> (<em>list</em><em>[</em><em>list</em><em>]</em><em>,</em>) – Core pairs corresponding to the Configurations compared in data.</p></li>
+<li><p><strong>winner</strong> (<em>int</em>) – Index of the winning Configuration of the last tournament.</p></li>
+<li><p><strong>res</strong> (<em>dict</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Results of the last tournament.</p></li>
+<li><p><strong>instances</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Unique instances of recorded runtime output.</p></li>
+<li><p><strong>y</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – 0 signififying Configuration_0 is better, 1 signifying
+Configuration_1 is better within the pairwise comparison
+corresponding to instances in X_train.</p></li>
+<li><p><strong>cost_mat</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Cost matrix corresponding to instances in X_train.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_train</strong> : list[list],
+Updated total pairwise runtime output data gathered so far.</p></li>
+<li><p><strong>y</strong> : list[list],
+0 signififying Configuration_0 is better, 1 signifying
+Configuration_1 is better within the pairwise comparison
+corresponding to instances in updated X_train.</p></li>
+<li><p><strong>cost_mat</strong> : list[list],
+Cost matrix corresponding to instances in updated X_train.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list">
-<span class="sig-name descname"><span class="pre">term_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.term_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">term_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.term_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.term_list" title="Permalink to this definition"></a></dt>
+<dd><p>Process predictions and decide if and which Configuration runs should
+be terminated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred</strong> (<em>list</em>) – 0 if C_0 is predicted to be better, 1 if otherwise, corresponding
+to cores.</p></li>
+<li><p><strong>cores</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Core number pairs.</p></li>
+<li><p><strong>verbosity</strong> (<em>int</em>) – Hyperparameter turning on and off additional terminal outputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Core indices of Configuration runs to be terminated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb">
-<span class="sig-name descname"><span class="pre">train_gb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_mat_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.train_gb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">train_gb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_mat_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CostSensitiveRandomPatchesClassifier</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/gray_box.html#Gray_Box.train_gb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.gray_box.Gray_Box.train_gb" title="Permalink to this definition"></a></dt>
+<dd><p>Train gray-box model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Total pairwise runtime output data gathered so far.</p></li>
+<li><p><strong>y_train</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – 0 signififying Configuration_0 is better, 1 signifying
+Configuration_1 is better within the pairwise comparison
+corresponding to instances in X_train.</p></li>
+<li><p><strong>cost_mat_train</strong> (<em>list</em><em>[</em><em>list</em><em>]</em>) – Cost matrix corresponding to instances in X_train.</p></li>
+<li><p><strong>cores</strong> (<em>list</em><em>[</em><em>list</em><em>]</em><em>,</em>) – Core pairs corresponding to the Configurations compared in X_train.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Trained gray-box model or None, if not sufficient data for
+training.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CostSensitiveRandomPatchesClassifier or None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

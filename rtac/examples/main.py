@@ -4,6 +4,7 @@ from rtac.utils.ensure_package import ensure_package
 from rtac.rtac import rtac_factory
 import sys
 import os
+import argparse
 
 
 # Absolute path to the current file
@@ -13,9 +14,21 @@ file_path = os.path.abspath(__file__)
 file_dir = os.path.dirname(file_path).split('examples')[0]
 
 
-def main(scenario, instance_file):
-    '''Run RAC process on, potentially infinite, problem instance sequence.'''
+def main(scenario: argparse.Namespace, instance_file: str) -> None:
+    """
+    Run RAC process on, potentially infinite, problem instance sequence.
 
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    instance_file : str
+        Path to the problem instance to be solved.
+
+    Returns
+    -------
+    None
+    """
     instances = []
     with open(f'{instance_file}', 'r') as f:
         for line in f:
@@ -37,7 +50,14 @@ def main(scenario, instance_file):
             rtac.solve_instance(instance)
 
 
-def run_example():
+def run_example() -> None:
+    """
+    Runs RTAC example with python_tsp.
+
+    Returns
+    -------
+    None
+    """
     ensure_package('python_tsp', '0.4.1')
 
     with open(f'{file_dir}/data/tsp_scenario_rt_test.txt', 'r') as f:

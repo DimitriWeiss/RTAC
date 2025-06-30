@@ -87,40 +87,60 @@
 
 
 <div class="viewcode-block" id="AbstractWrapper"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractWrapper</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract target algorithm wrapper class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract target algorithm wrapper class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure target algorithm is executble by using absolute path to</span>
-<span class="sd">        target algorithm.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure target algorithm is executble by using absolute path to</span>
+<span class="sd">        target algorithm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="AbstractWrapper.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper.translate_config">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to the format</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert dictionary representation of the configuration to the format</span>
 <span class="sd">        needed by the wrapper to pass to the target algorithm.</span>
 
-<span class="sd">        :param config: Configuration object of parameter values to run</span>
-<span class="sd">            problem instance with.v</span>
-<span class="sd">        :type config: Configuration</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : Configuration</span>
+<span class="sd">            Configuration object of parameter values to run problem instance </span>
+<span class="sd">            with.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Any</span>
+<span class="sd">            Any form of the configuration that is needed by the target </span>
+<span class="sd">            algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="AbstractWrapper.start"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.abstract_wrapper.html#rtac.wrapper.abstract_wrapper.AbstractWrapper.start">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">timelimit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
               <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the target algorithm via subprocess.Popen with stdout to</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the target algorithm via subprocess.Popen with stdout to</span>
 <span class="sd">        subprocess.PIPE.</span>
 
-<span class="sd">        :param params: Parameters in a format as needed for target algorithm.</span>
-<span class="sd">        :type params: Any</span>
-<span class="sd">        :param timelimit: Maximum runtime allowed for target algorithm run in</span>
-<span class="sd">            seconds.</span>
-<span class="sd">        :type timelimit: int</span>
-<span class="sd">        :param instance: Path to problem instance.</span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :returns: Target algorithm via subprocess.Popen process and starting</span>
-<span class="sd">        time of the process</span>
-<span class="sd">        :rtype: tuple[subprocess.Popen, int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        params : Any</span>
+<span class="sd">            Parameters in a format as needed for target algorithm.</span>
+<span class="sd">        timelimit : int</span>
+<span class="sd">            Maximum runtime allowed for target algorithm run in seconds.</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **proc** : subbrocess.Process,</span>
+<span class="sd">              The process started with the target algorithm</span>
+<span class="sd">            - **proc_cpu_time** : int,</span>
+<span class="sd">              CPU time of the subprocess.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">proc</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;echo&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">],</span>
                      <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
@@ -133,19 +153,29 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">check_if_solved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nnr</span><span class="p">:</span> <span class="n">non_block_read</span><span class="p">,</span>
                         <span class="n">proc</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
                             <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bytes output of the subprocess.Popen process running the target</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bytes output of the subprocess.Popen process running the target</span>
 <span class="sd">        algorithm is checked to determine if the problem instance is solved.</span>
 
-<span class="sd">        :param ta_output: Output of the target algorithm.</span>
-<span class="sd">        :type ta_output: bytes</span>
-<span class="sd">        :param nnr: Non blocking read function for accessing the</span>
-<span class="sd">            subprocess.PIPE output of the target algorithm</span>
-<span class="sd">        :type nnr: non_nlock_read</span>
-<span class="sd">        :param proc: Target algorithm run via subprocess.Popen process</span>
-<span class="sd">        :type proc: subprocess.Popen</span>
-<span class="sd">        :returns: Target algorithm result, runtime needed and event</span>
-<span class="sd">            (0 or 1, if solved), or None</span>
-<span class="sd">        :rtype: tuple[int | float, float, int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ta_output : bytes</span>
+<span class="sd">            Output of the target algorithm.</span>
+<span class="sd">        nnr : non_nlock_read</span>
+<span class="sd">            Non-blocking read function for accessing the subprocess.PIPE output</span>
+<span class="sd">            of the target algorithm.</span>
+<span class="sd">        proc : subprocess.Popen</span>
+<span class="sd">            Target algorithm run via subprocess.Popen process.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple or None</span>
+<span class="sd">            - **result** : int | float,</span>
+<span class="sd">              Objective value.</span>
+<span class="sd">            - **time** : float,</span>
+<span class="sd">              Runtime needed.</span>
+<span class="sd">            - **event** : int,</span>
+<span class="sd">              0 or 1, if solved.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># Check if output is not empty bytes</span>
             <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
@@ -155,21 +185,6 @@
             <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">event</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div></div>
-
-
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">class AbstractWrapperpp(AbstractWrapper):</span>
-
-<span class="sd">    @abstractmethod</span>
-<span class="sd">    def check_output(ta_output):</span>
-<span class="sd">        &quot;&quot;&quot;Parsing runtime output of the solver.&quot;&quot;&quot;</span>
-<span class="sd">        if ta_output != b&#39;&#39;:</span>
-<span class="sd">            interim = []</span>
-
-<span class="sd">            return interim</span>
-<span class="sd">        else:</span>
-<span class="sd">            return &#39;No output&#39;</span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
            </div>

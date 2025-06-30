@@ -17,28 +17,41 @@ from rtac.ac_functionalities.rtac_data import (
     TARunStatus
 )
 from rtac.ac_functionalities.ta_runner import BaseTARunner
-from rtac.ac_functionalities.rtac_data import Configuration, RTACData, ACMethod
+from rtac.ac_functionalities.rtac_data import (
+    Configuration,
+    RTACData,
+    ACMethod,
+    RTACDatapp
+)
 from rtac.ac_functionalities.logs import RTACLogs
 import argparse
 
 
 class AbstractTournament(ABC):
+    """
+    Abstract class for tournaments.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    ta_runner : BaseTARunner
+        Target algorithm runner object.
+    rtac_data : RTACData | RTACDatapp
+        Object containing data and objects necessary throughout the RTAC 
+        modules.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    """
 
     def __init__(self, scenario: argparse.Namespace, ta_runner: BaseTARunner,
-                 rtac_data: RTACData, logs: RTACLogs) -> None:
-        """Initializes tournament class for ReACTR tournaments.
-        If self.scenario.baselineperf the configuration used is the default
-        configuration according to the configuration space definitin json.
+                 rtac_data: RTACData | RTACDatapp, logs: RTACLogs):
+        """
+        Initializes the tournament class for ReACTR tournaments.
 
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param ta_runner: Target algorithm runner object.
-        :type: BaseTARunner
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
+        If `self.scenario.baselineperf` is set, the configuration used is the
+        default configuration according to the configuration space definition 
+        JSON.
         """
         self.scenario = scenario
         self.ta_runner_class = ta_runner
@@ -55,30 +68,44 @@ class AbstractTournament(ABC):
     def start_tournament(self, instance: str,
                          contender_dict: dict[str: Configuration],
                          tourn_nr: int) -> None:
-        """Sets up tournament data and information and starts the tournament
-        with scenario.number_cores configured target algorithms running in
-        paralel with settings according to the RTAC method used.
+        """
+        Sets up tournament data and information and starts the tournament with
+        `scenario.number_cores` configured target algorithms running in parallel,
+        using settings according to the RTAC method.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param contender_dict: Dictonary containing configurations to run in
-            the tournament with configuration id as key and Configuration
-            object as value.
-        :type instance: dict[str: Configuration]
-        :param tourn_nr: Number of the tournament during this RTAC run.
-        :type tourn_nr: int
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        contender_dict : dict[str, Configuration]
+            Dictionary containing configurations to run in the tournament, with
+            configuration IDs as keys and Configuration objects as values.
+        tourn_nr : int
+            Number of the tournament during this RTAC run.
+
+        Returns
+        -------
+        None
         """
 
     @abstractmethod
-    def watch_tournament(self):
-        """Function to observe the tournament and enforce the timelimit
-        scenario.timeout if reached according to the RTAC method used."""
+    def watch_tournament(self) -> None:
+        """
+        Function to observe the tournament and enforce the timelimit
+        scenario.timeout if reached according to the RTAC method used.
+
+        Returns
+        -------
+        None
+        """
 
     def close_tournament(self) -> None:
-        """Function that initiates termination of all target algorithm runs.
+        """
+        Initiates termination of all target algorithm runs.
 
-        :param process: Target algorithm run process.
-        :type process: subprocess.Popen
+        Returns
+        -------
+        None
         """
         self.rtac_data.ev.set()
         self.rtac_data.event = 1
@@ -94,12 +121,19 @@ class AbstractTournament(ABC):
             self.terminate_run(core, self.rtac_data.process[core])
 
     def terminate_run(self, core: int, process: subprocess.Popen) -> None:
-        """Function that enforces termination of a target algorithm run.
+        """
+        Enforces termination of a target algorithm run.
 
-        :param core: Index of the process in the list of processes.
-        :type core: int
-        :param process: Target algorithm run process.
-        :type process: subprocess.Popen
+        Parameters
+        ----------
+        core : int
+            Index of the process in the list of processes.
+        process : subprocess.Popen
+            Target algorithm run process to terminate.
+
+        Returns
+        -------
+        None
         """
         if core not in self.terminated_configs:
             if self.scenario.verbosity == 2:             
@@ -122,7 +156,18 @@ class AbstractTournament(ABC):
 
             self.terminated_configs.append(core)
 
-    def pid_alive(self, pid):
+    def pid_alive(self, pid) -> None:
+        """Checks if process is till alive using PID.
+
+        Parameters
+        ----------
+        pid : int
+            Unique identifier for process.
+
+        Returns
+        -------
+        None
+        """
         try:
             os.kill(pid, 0)
             return True
@@ -131,23 +176,33 @@ class AbstractTournament(ABC):
 
 
 class Tournament(AbstractTournament):
-    """Tournament class with functions needed for ReACTR method tournaments."""
+    """
+    Tournament class with functions needed for ReACTR method tournaments.
+    """
 
     def start_tournament(self, instance: str,
                          contender_dict: dict[str: Configuration],
-                         tourn_nr: int, cores_start: list) -> None:
-        """Sets up tournament data and information and starts the tournament
-        with scenario.number_cores configured target algorithms running in
-        paralel according to the ReACTR method.
+                         tourn_nr: int, cores_start: list[int]) -> None:
+        """
+        Sets up tournament data and starts the tournament with
+        `scenario.number_cores` configured target algorithms running in 
+        parallel according to the ReACTR method.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param contender_dict: Dictonary containing configurations to run in
-            the tournament with configuration id as key and Configuration
-            object as value.
-        :type instance: dict[str: Configuration]
-        :param tourn_nr: Number of the tournament during this RTAC run.
-        :type tourn_nr: int
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        contender_dict : dict[str, Configuration]
+            Dictionary containing configurations to run in the tournament, with
+            configuration IDs as keys and Configuration objects as values.
+        tourn_nr : int
+            Number of the tournament during this RTAC run.
+        cores_start : list[int]
+            List of cores which to start the contenders on.
+
+        Returns
+        -------
+        None
         """
         self.terminated_configs = []
         self.instance = instance
@@ -198,7 +253,19 @@ class Tournament(AbstractTournament):
         for core in cores_start:
             set_affinity_recursive(self.rtac_data.process[core], core)
 
-    def fill_tournament(self, cores_start: list):
+    def fill_tournament(self, cores_start: list[int]) -> None:
+        """
+        Fills up the remaining cores to be used in an early started tournament.
+
+        Parameters
+        ----------
+        cores_start : list[int]
+            List of cores which to start the contenders on.
+
+        Returns
+        -------
+        None
+        """
         for core in cores_start:
             self.ta_runner = \
                 self.ta_runner_class(self.scenario, self.logs, core)
@@ -223,8 +290,14 @@ class Tournament(AbstractTournament):
             set_affinity_recursive(self.rtac_data.process[core], core)
 
     def watch_tournament(self) -> None:
-        """Function to observe the tournament and enforce the timelimit
-        scenario.timeout if reached."""
+        """
+        Function to observe the tournament and enforce the timelimit
+        scenario.timeout if reached.
+
+        Returns
+        -------
+        None
+        """
 
         while any(proc.is_alive() for proc in self.rtac_data.process):
             time.sleep(1)  # Timeout is int, so checking every second is enough
@@ -236,12 +309,25 @@ class Tournament(AbstractTournament):
 
 
 class Tournament_GB:
-    """Class that contains gray-box tournament functions to be inserted into 
-    tournament classes if scenario.gray_box is True."""
+    """
+    Class that contains gray-box tournament functions to be inserted into 
+    tournament classes if scenario.gray_box is True.
+    """
 
-    def watch_tournament_gray_box(self, early_tournament=False):
-        """Function to observe the tournament and enforce the timelimit
-        scenario.timeout if reached."""
+    def watch_tournament_gray_box(self, early_tournament=False) -> None:
+        """
+        Function to observe the tournament and enforce the timelimit
+        scenario.timeout if reached.
+
+        Parameters
+        ----------
+        early_tournament : bool
+            True if tournament is early starter, False if not.
+
+        Returns
+        -------
+        None
+        """
 
         gb_check_time = time.time()
         self.gb_pw_inst_archive = []
@@ -287,26 +373,34 @@ class Tournament_GB:
 
 
 class Tournamentpp(Tournament):
-    """Tournament class with functions needed for ReACTR method tournaments."""
+    """
+    Tournament class with functions needed for ReACTR method tournaments.
+    """
 
 
 def tournament_factory(scenario: argparse.Namespace, ta_runner: BaseTARunner,
-                       rtac_data: RTACData, logs: RTACLogs) -> Tournament:
-    """Class factory to return the initialized TournamentManager class
-    appropriate to the RTAC method scenario.ac.
+                       rtac_data: RTACData | RTACDatapp, logs: RTACLogs
+                       ) -> Tournament | Tournamentpp:
+    """
+    Class factory to return the initialized TournamentManager class
+    appropriate to the RTAC method `scenario.ac`.
 
-    :param scenario: Namespace containing all settings for the RTAC.
-    :type scenario: argparse.Namespace
-    :param ta_runner: Target algorithm runner object.
-    :type: BaseTARunner
-    :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-    :type rtac_data: RTACData
-    :param logs: Object containing loggers and logging functions.
-    :type: RTACLogs
-    :returns: Inititialized Tournament object matching the RTAC method
-        of the scenario.
-    :rtype: Tournament
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    ta_runner : BaseTARunner
+        Target algorithm runner object.
+    rtac_data : RTACData | RTACDatapp
+        Object containing data and objects necessary throughout the RTAC 
+        modules.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+
+    Returns
+    -------
+    Tournament or Tournamentpp
+        Initialized Tournament object matching the RTAC method of the scenario.
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
         tournament = Tournament

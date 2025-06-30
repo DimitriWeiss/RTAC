@@ -107,6 +107,7 @@
              
   <section id="module-rtac.ac_functionalities.ranking.cppl">
 <span id="rtac-ac-functionalities-ranking-cppl"></span><h1>rtac.ac_functionalities.ranking.cppl<a class="headerlink" href="#module-rtac.ac_functionalities.ranking.cppl" title="Permalink to this heading"></a></h1>
+<p>Implements the CPPL class for RTAC.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -117,63 +118,203 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ranking.cppl.</span></span><span class="sig-name descname"><span class="pre">CPPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.ranking.cppl.</span></span><span class="sig-name descname"><span class="pre">CPPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>CPPL Bandit and AC functions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Implementation based on the paper: “Pool-based realtime algorithm
+configuration: A preselection bandit approach”</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>pool</strong> (<em>dict</em>) – Pool of configurations.</p></li>
+<li><p><strong>contender_dict</strong> (<em>dict</em>) – Dictionary containing Configurations that ran in last tournament.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.asses_configurations">
-<span class="sig-name descname"><span class="pre">asses_configurations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.asses_configurations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.asses_configurations" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">asses_configurations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.asses_configurations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.asses_configurations" title="Permalink to this definition"></a></dt>
+<dd><p>Comparatively asses which Configurations are to be replaced from the
+pool based on skills and confidence computed by CPPL model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.assess_children">
-<span class="sig-name descname"><span class="pre">assess_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformed_configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.assess_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.assess_children" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">assess_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformed_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.assess_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.assess_children" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the skill and confidence values for newly generated
+Configurations based on feature matrix computed for the set of newly
+generated configurations and return the indices of nd best
+of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transformed_configs</strong> (<em>np.ndarray</em>) – transformed values of generated Configurations</p></li>
+<li><p><strong>nd</strong> (<em>int</em>) – Number of configurations to be replaced in the pool.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of indices of the nd best Configurations from all newly
+generated Configurations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.compute_array_dimension">
-<span class="sig-name descname"><span class="pre">compute_array_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nc_pca_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nc_pca_p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.compute_array_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.compute_array_dimension" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">compute_array_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nc_pca_f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nc_pca_p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.compute_array_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.compute_array_dimension" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the correct dimension of np.ndarrays used in bandit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nc_pca_f</strong> (<em>int</em>) – Dimension of PCA for problem instance features.</p></li>
+<li><p><strong>nc_pca_p</strong> (<em>int</em>) – Dimension of PCA for Configuration values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dimension of np.ndarrays used in bandit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.context_specific_feature_matrix">
-<span class="sig-name descname"><span class="pre">context_specific_feature_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.context_specific_feature_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.context_specific_feature_matrix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">context_specific_feature_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.context_specific_feature_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.context_specific_feature_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the context-specific feature matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.crossover">
-<span class="sig-name descname"><span class="pre">crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.crossover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.crossover" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">crossover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.crossover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.crossover" title="Permalink to this definition"></a></dt>
+<dd><p>Perform genetic crossover on the provided Configurations to generate
+offspring, with small probability of randomly generated Configurations
+nr_children of times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parents</strong> (<em>list</em><em>[</em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – The Configurations to be used for genetic crossover.</p></li>
+<li><p><strong>nr_children</strong> (<em>int</em>) – Number of how many offspring to generate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of generated Configurations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.discard_configs">
-<span class="sig-name descname"><span class="pre">discard_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.discard_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.discard_configs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">discard_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.discard_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.discard_configs" title="Permalink to this definition"></a></dt>
+<dd><p>Assess the quality of the Configurations in the pool and decide which
+ones to replace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of Configurations to be replaced.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.generate_configs">
-<span class="sig-name descname"><span class="pre">generate_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nr_discarded</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.generate_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.generate_configs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">generate_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nr_discarded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.generate_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.generate_configs" title="Permalink to this definition"></a></dt>
+<dd><p>Perform genetic crossover on the provided Configurations to generate
+offspring, with small probability of randomly generated Configurations
+on each available core. Asses generated Configurations with CPPL
+model. Ensure no duplicates are inserted into the pool (possible due
+to CPPL model preferring configuration values). Aim at providing
+nr_discarding Configurations (if number is not reduced by omitting
+duplicates).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nr_discarded</strong> (<em>int</em>) – Number of how many new Configurations to generate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict of generated Configurations or None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a>] or None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.gradient">
-<span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.gradient" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Computes gradient learnt from results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Gradient learnt from all previous results.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.hessian">
-<span class="sig-name descname"><span class="pre">hessian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.hessian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.hessian" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">hessian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.hessian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.hessian" title="Permalink to this definition"></a></dt>
+<dd><p>Computes Hessian matrix expressing confidence in skills.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Hessian matrix expressing confidence in skills.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.init_onehot_encoder">
-<span class="sig-name descname"><span class="pre">init_onehot_encoder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.init_onehot_encoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.init_onehot_encoder" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">init_onehot_encoder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.init_onehot_encoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.init_onehot_encoder" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize OneHotEncoder to be used on categorical Configuration
+values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.init_param_scaler">
-<span class="sig-name descname"><span class="pre">init_param_scaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.init_param_scaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.init_param_scaler" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">init_param_scaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.init_param_scaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.init_param_scaler" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize MinMaxScaler to be used on Configuration values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_space</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.insert_in_pool">
@@ -182,53 +323,135 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.joinFeatureMap">
-<span class="sig-name descname"><span class="pre">joinFeatureMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.joinFeatureMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.joinFeatureMap" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">joinFeatureMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.joinFeatureMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.joinFeatureMap" title="Permalink to this definition"></a></dt>
+<dd><p>Joining Configuration values and problem instance features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – Configuration values.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) – Problem instance features.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Mode of combining Configuration values and instance features.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Combined Configuration values and problem instance features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.manage_pool">
-<span class="sig-name descname"><span class="pre">manage_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.manage_pool" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">manage_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.manage_pool" title="Permalink to this definition"></a></dt>
+<dd><p>Deciding if Configurations need to be replaced and generating new
+ones if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.pre_train">
-<span class="sig-name descname"><span class="pre">pre_train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.pre_train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.pre_train" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">pre_train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.pre_train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.pre_train" title="Permalink to this definition"></a></dt>
+<dd><p>Pretrain StandardScaler to be used on problem instance features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_path</strong> (<em>str</em>) – Path to the CSV file containing the features.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.process_results">
-<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.process_results" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.process_results" title="Permalink to this definition"></a></dt>
+<dd><p>Processing results of the last tournament.
+:rtype: None</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.record_bandit">
-<span class="sig-name descname"><span class="pre">record_bandit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.record_bandit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.record_bandit" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">record_bandit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.record_bandit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.record_bandit" title="Permalink to this definition"></a></dt>
+<dd><p>Records bandit state to later log it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.select_contenders">
-<span class="sig-name descname"><span class="pre">select_contenders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.select_contenders" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">select_contenders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.select_contenders" title="Permalink to this definition"></a></dt>
+<dd><p>Select Configurations to run in next tournament and save them in
+self.contender_dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.skill_and_confidence">
-<span class="sig-name descname"><span class="pre">skill_and_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.skill_and_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.skill_and_confidence" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">skill_and_confidence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.skill_and_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.skill_and_confidence" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the skill and confidence values for Configurations in pool
+based on current feature matrix and save the indices of nr_cores best
+of them to self.S_t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.split_param_types">
-<span class="sig-name descname"><span class="pre">split_param_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.split_param_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.split_param_types" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">split_param_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.split_param_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.split_param_types" title="Permalink to this definition"></a></dt>
+<dd><p>Split parameter space by categorical and everything else.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_space</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.transform_conf">
-<span class="sig-name descname"><span class="pre">transform_conf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.transform_conf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.transform_conf" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">transform_conf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.transform_conf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.transform_conf" title="Permalink to this definition"></a></dt>
+<dd><p>Transorm Configuration values with MinMaxScaler and OneHotEncoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>conf</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration to be transformed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed Configuration values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.ranking.cppl.CPPL.update_data">
-<span class="sig-name descname"><span class="pre">update_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.update_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.update_data" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">update_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/ranking/cppl.html#CPPL.update_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.ranking.cppl.CPPL.update_data" title="Permalink to this definition"></a></dt>
+<dd><p>Update data used in bandit computations by tournament results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

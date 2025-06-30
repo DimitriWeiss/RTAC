@@ -13,7 +13,7 @@ import threading
 from multiprocessing.sharedctypes import Synchronized
 import multiprocessing as mp
 from rtac.ac_functionalities.ta_runner import ta_runner_factory as ta_runner
-from rtac.ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod
+from rtac.ac_functionalities.rtac_data import rtacdata_factory as rtacdata, ACMethod, RTACData, RTACDatapp
 from rtac.ac_functionalities.tournament_manager import tourn_manager_factory as TM
 from rtac.ac_functionalities.logs import RTACLogs
 import faulthandler
@@ -21,14 +21,19 @@ faulthandler.enable()
 
 
 class AbstractRTAC(ABC):
-    """Realtime Algorithm Configuration class."""
+    """
+    Realtime Algorithm Configuration class.
 
-    def __init__(self, scenario: argparse.Namespace) -> None:
-        """Realtime algorithm configuration class to be used to solve problem
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
+
+    def __init__(self, scenario: argparse.Namespace):
+        """
+        Realtime algorithm configuration class to be used to solve problem
         instances successively.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
         """
         self.huge_float = sys.float_info.max * 1e-100
         self.scenario = scenario
@@ -42,45 +47,98 @@ class AbstractRTAC(ABC):
         self.early_instance = mp.Manager().list([None])
 
     def init_tournament_manager(self) -> None:
+        """
+        Initialize tournament manager object.
+
+        Returns
+        -------
+        None
+        """
         self.rtac_data = rtacdata(self.scenario)
         self.tournament_manager = TM(self.scenario, self.ta_runner, self.logs,
                                      self.rtac_data)
 
     def init_rtac_data(self) -> None:
-        """Initializes new RTAC data."""
+        """
+        Initialize new RTAC data.
+
+        Returns
+        -------
+        None
+        """
         if self.tournament_manager.tourn_nr > 0:
             self.rtac_data = rtacdata(self.scenario)
 
     @abstractmethod
     def solve_instance(self, instance: str) -> None:
-        """Solves problem instance and performs all associated
-        functionalities."""
+        """
+        Solves problem instance and performs all associated
+        functionalities.
 
-    @abstractmethod
-    def plot_performances(self, results: bool = False,
-                          times: bool = False) -> None:
-        """Plots results of the logged RTAC run and saves figure."""
+        Parameters
+        ----------
+        instance : str
+            Path to problem instance.
+
+        Returns
+        -------
+        None
+        """
 
 
 class RTAC(AbstractRTAC):
-    """Implementation of ReACTR."""
+    """
+    Implementation of ReACTR.
 
-    def __init__(self, scenario: argparse.Namespace) -> None:
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
+
+    def __init__(self, scenario: argparse.Namespace):
+        """
+        Initialize RTAC object.
+        """
         AbstractRTAC.__init__(self, scenario)
         self.rtac_thread = [None, None]
 
     def solve_instance(self, instance: str, next_instance: str = None,
-                       early_rtac_data=None) -> None:
+                       early_rtac_data: RTACData | RTACDatapp = None) -> None:
+        """
+        Solve problem instance.
+
+        Parameters
+        ----------
+        instance : str
+            Path to problem instance.
+        next_instance : str
+            Path to next problem instance. Defaults to None.
+        early_rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
+        """
         if self.scenario.gray_box:
             self.gray_box(instance, next_instance, early_rtac_data)
         else:
             self.black_box(instance)
 
     def black_box(self, instance: str = None) -> None:
-        """Solves problem instance and performs all associated functionalities.
+        """
+        Solves problem instance and performs all associated functionalities.
 
-        :param instance: Path to the problem instance file.
-        :type instance: str
+        Parameters
+        ----------
+        instance : str
+            Path to problem instance. Defaults to None.
+
+        Returns
+        -------
+        None
         """
         self.init_rtac_data()
 
@@ -92,11 +150,23 @@ class RTAC(AbstractRTAC):
         self.result_output(instance)
 
     def gray_box(self, instance: str, next_instance: str = None,
-                 early_rtac_data=None) -> None:
-        """Solves problem instance and performs all associated functionalities.
+                 early_rtac_data: RTACData | RTACDatapp = None) -> None:
+        """
+        Solves problem instance and performs all associated functionalities.
 
-        :param instance: Path to the problem instance file.
-        :type instance: str
+        Parameters
+        ----------
+        instance : str
+            Path to problem instance.
+        next_instance : str
+            Path to next problem instance. Defaults to None.
+        early_rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
         """
         if instance != self.early_instance[0]:
             self.instance = instance
@@ -124,10 +194,30 @@ class RTAC(AbstractRTAC):
                     'es_rtac_data': es_rtac_data})
         self.rtac_thread[thread_idx].start()
 
-    def provide_early_instance(self, early_instance):
+    def provide_early_instance(self, early_instance: str) -> None:
+        """
+        If next instance is available early, use this function to pass it to 
+        the gray-box RAC method.
+
+        Parameters
+        ----------
+        early_instance : str
+            Path to next problem instance. Defaults to None.
+
+        Returns
+        -------
+        None
+        """
         self.early_instance[0] = early_instance
 
-    def wrap_up_gb(self):
+    def wrap_up_gb(self) -> None:
+        """
+        Wrap up gray-box RAC method for this ionstance / instance-pair.
+
+        Returns
+        -------
+        None
+        """
         for rtac_thread in self.rtac_thread:
             if isinstance(rtac_thread, threading.Thread):
                 rtac_thread.join()
@@ -135,7 +225,19 @@ class RTAC(AbstractRTAC):
         self.result_output(self.instance)
         self.early_instance = mp.Manager().list([None])
 
-    def result_output(self, instance):
+    def result_output(self, instance: str) -> None:
+        """
+        Print result to terminal.
+
+        Parameters
+        ----------
+        instance : str
+            Path to problem instance.
+
+        Returns
+        -------
+        None
+        """
         if not self.rtac_data.skip:
 
             print('\n')
@@ -163,23 +265,42 @@ class RTAC(AbstractRTAC):
 
     def plot_performances(self, results: bool = False,
                           times: bool = False) -> None:
-        """Plot results of the logged RTAC run and save figure.
-
-        :param results: True if scenario was objective quality minimization.
-        :type results: bool
-        :param times: True if scenario was runtime minimization.
-        :type times: bool
         """
-        if results:
-            ...
-        elif times:
-            ...
+        Plots results of the logged RTAC run and saves figure.
+
+        Parameters
+        ----------
+        results : bool
+            True if objective value minimization scenario. Defaults to False.
+        times : bool
+            True if runtime minimization scenario. Defaults to False.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        NotImplementedError
+            This method is not implemented yet.
+        """
+
+        raise NotImplementedError("This method is not implemented yet.")
 
 
 class RTACpp(RTAC):
-    """Implementation of ReACTR++."""
+    """
+    Implementation of ReACTR++.
+    """
 
     def init_tournament_manager(self) -> None:
+        """
+        Initialize tournament manager object for ReACTR++.
+
+        Returns
+        -------
+        None
+        """
         module = importlib.import_module(self.scenario.wrapper)
         name = self.scenario.wrapper_name
         wrapper = getattr(module, name)()
@@ -190,21 +311,33 @@ class RTACpp(RTAC):
                                      self.rtac_data)
 
     def init_rtac_data(self) -> None:
-        """Initializes new RTAC data. Override for ReACTR++ implementation."""
+        """
+        Initialize new RTAC data for ReACTR++.
+
+        Returns
+        -------
+        None
+        """
         if self.tournament_manager.tourn_nr > 0:
             self.rtac_data = \
                 rtacdata(self.scenario, interim_meaning=self.interim_meaning)
 
 
 def rtac_factory(scenario: argparse.Namespace) -> AbstractRTAC:
-    """Class factory to return the initialized RTAC class
-    appropriate to the RTAC method scenario.ac.
+    """
+    Class factory to return the initialized RTAC class
+    appropriate to the RTAC method `scenario.ac`.
 
-    :param scenario: Namespace containing all settings for the RTAC.
-    :type scenario: argparse.Namespace
-    :returns: Inititialized AbstractRTAC object matching the RTAC method
-        of the scenario.
-    :rtype: AbstractRTAC
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+
+    Returns
+    -------
+    AbstractRTAC
+        Initialized AbstractRTAC object matching the RTAC method of the 
+        scenario.
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
         return RTAC(scenario)

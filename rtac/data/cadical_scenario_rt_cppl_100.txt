@@ -23,11 +23,11 @@
 --epsilon_greedy
 --gen_mult 2
 #--isolate_bandit
---log_folder logs
---wrapper wrapper.cadical
+--log_folder /media/dweiss/Transcend7/RTAC/RTAC/rtac/logs
+--wrapper rtac.wrapper.cadical
 --wrapper_name Cadical
---feature_gen feature_gen.cadical_feats
+--feature_gen rtac.feature_gen.cadical_feats
 --feature_gen_name CadFeats
---feature_path ./feature_gen/cad_features/Features_power_law_SAT_drift_100.csv
---instance_pre_train ./feature_gen/cad_features//pre_train_features_100.txt
---param_file data/params_cadical.json
+--feature_path /media/dweiss/Transcend7/RTAC/RTAC/rtac/feature_gen/cad_features/Features_power_law_SAT_drift_100.csv
+--instance_pre_train /media/dweiss/Transcend7/RTAC/RTAC/rtac/feature_gen/cad_features/pre_train_features_100.txt
+--param_file /media/dweiss/Transcend7/RTAC/RTAC/rtac/data/params_cadical.json

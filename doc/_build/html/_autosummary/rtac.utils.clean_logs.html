@@ -110,20 +110,40 @@
 <td><p>Check if any process is using the file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.utils.clean_logs.remove_fuse_hidden_files" title="rtac.utils.clean_logs.remove_fuse_hidden_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_fuse_hidden_files</span></code></a>(directory)</p></td>
-<td><p></p></td>
+<td><p>Removes hidden fuse files that may clutter the log directory.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="rtac.utils.clean_logs.is_file_open">
-<span class="sig-prename descclassname"><span class="pre">rtac.utils.clean_logs.</span></span><span class="sig-name descname"><span class="pre">is_file_open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/utils/clean_logs.html#is_file_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.clean_logs.is_file_open" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">rtac.utils.clean_logs.</span></span><span class="sig-name descname"><span class="pre">is_file_open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/rtac/utils/clean_logs.html#is_file_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.clean_logs.is_file_open" title="Permalink to this definition"></a></dt>
 <dd><p>Check if any process is using the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to the file we want to know if it is open.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if file is open, False if not.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rtac.utils.clean_logs.remove_fuse_hidden_files">
-<span class="sig-prename descclassname"><span class="pre">rtac.utils.clean_logs.</span></span><span class="sig-name descname"><span class="pre">remove_fuse_hidden_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/utils/clean_logs.html#remove_fuse_hidden_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.clean_logs.remove_fuse_hidden_files" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">rtac.utils.clean_logs.</span></span><span class="sig-name descname"><span class="pre">remove_fuse_hidden_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/utils/clean_logs.html#remove_fuse_hidden_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.clean_logs.remove_fuse_hidden_files" title="Permalink to this definition"></a></dt>
+<dd><p>Removes hidden fuse files that may clutter the log directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Path to the directory to declutter from fuse files.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

@@ -81,13 +81,18 @@
 
 
 <div class="viewcode-block" id="TSPFeats"><a class="viewcode-back" href="../../../_autosummary/rtac.feature_gen.tsp_feats.html#rtac.feature_gen.tsp_feats.TSPFeats">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSPFeats</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dummy TSP feature generator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummy TSP feature generator.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize dummy TSP feature generator..</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to feature files directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="sd">        :param path: Path to feature files directory.</span>
-<span class="sd">        :type path: str</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize dummy TSP feature generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="p">{}</span>
     
@@ -99,13 +104,18 @@
                     <span class="n">features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span>
 
-<div class="viewcode-block" id="TSPFeats.get_features"><a class="viewcode-back" href="../../../_autosummary/rtac.feature_gen.tsp_feats.html#rtac.feature_gen.tsp_feats.TSPFeats.get_features">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="TSPFeats.get_features"><a class="viewcode-back" href="../../../_autosummary/rtac.feature_gen.tsp_feats.html#rtac.feature_gen.tsp_feats.TSPFeats.get_features">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get features for instance.</span>
 
-<span class="sd">        :param instance: Name of instance.</span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :returns: List of features for instance.</span>
-<span class="sd">        :rtype: list</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to get the features for.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of the problem instance features.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">feats</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">k</span><span class="p">),</span>

@@ -56,10 +56,10 @@
 <li class="toctree-l4"><a class="reference internal" href="rtac.ac_functionalities.ranking.html">rtac.ac_functionalities.ranking</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">rtac.ac_functionalities.result_processing</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing"><code class="docutils literal notranslate"><span class="pre">AbstractResultProcessing</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.Contender"><code class="docutils literal notranslate"><span class="pre">Contender</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessing"><code class="docutils literal notranslate"><span class="pre">ResultProcessing</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL"><code class="docutils literal notranslate"><span class="pre">ResultProcessingCPPL</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp"><code class="docutils literal notranslate"><span class="pre">ResultProcessingpp</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.contender"><code class="docutils literal notranslate"><span class="pre">contender</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.processing_factory"><code class="docutils literal notranslate"><span class="pre">processing_factory()</span></code></a></li>
 </ul>
 </li>
@@ -115,7 +115,7 @@ the next tournament ar performed.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.processing_factory" title="rtac.ac_functionalities.result_processing.processing_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">processing_factory</span></code></a>(scenario, logs)</p></td>
-<td><p>Class factory to return the initialized class with data structures appropriate to the RTAC method scenario.ac.</p></td>
+<td><p>Class factory to return the initialized class with data structures appropriate to the RTAC method <cite>scenario.ac</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -125,17 +125,17 @@ the next tournament ar performed.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing" title="rtac.ac_functionalities.result_processing.AbstractResultProcessing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractResultProcessing</span></code></a>(scenario, logs)</p></td>
 <td><p>Abstract class with functions to process tournament results.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessing" title="rtac.ac_functionalities.result_processing.ResultProcessing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessing</span></code></a>(scenario, logs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.Contender" title="rtac.ac_functionalities.result_processing.Contender"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Contender</span></code></a>()</p></td>
+<td><p>Helper object for setting trueskill ranks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessing" title="rtac.ac_functionalities.result_processing.ResultProcessing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessing</span></code></a>(scenario, logs)</p></td>
 <td><p>Processes results of previous tournament.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL" title="rtac.ac_functionalities.result_processing.ResultProcessingCPPL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessingCPPL</span></code></a>(scenario, logs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL" title="rtac.ac_functionalities.result_processing.ResultProcessingCPPL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessingCPPL</span></code></a>(scenario, logs)</p></td>
 <td><p>Process results of previous tournament.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp" title="rtac.ac_functionalities.result_processing.ResultProcessingpp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessingpp</span></code></a>(scenario, logs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp" title="rtac.ac_functionalities.result_processing.ResultProcessingpp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResultProcessingpp</span></code></a>(scenario, logs)</p></td>
 <td><p>Process results of prvious tournament.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.contender" title="rtac.ac_functionalities.result_processing.contender"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contender</span></code></a>()</p></td>
-<td><p>Helper object for setting trueskill ranks.</p></td>
 </tr>
 </tbody>
 </table>
@@ -144,18 +144,28 @@ the next tournament ar performed.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">AbstractResultProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract class with functions to process tournament results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>logs</strong> (<a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><em>RTACLogs</em></a>) – Object containing loggers and logging functions.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.get_contender_dict">
 <span class="sig-name descname"><span class="pre">get_contender_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict[slice(&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'rtac.ac_functionalities.rtac_data.Configuration'&gt;,</span> <span class="pre">None)]</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.get_contender_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.get_contender_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Returns contender_dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Configuration selected to run in next</p>
+<dd class="field-odd"><p>Configuration selected to run in next tournament/on next problem
+instance. Dictionary with configuration id as key and Configuration
+object as value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, <a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a>]</p>
 </dd>
 </dl>
-<p>tournament/on next problem instance. Dictionary with configuration id
-as key and Configuration object as value.
-:rtype: dict[str: Configuration]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -168,7 +178,7 @@ implementation.</p>
 <dd class="field-odd"><p>Randomly selected contenders.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
+<dd class="field-even"><p>dict[str, <a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -177,50 +187,92 @@ implementation.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.manage_pool">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">manage_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.manage_pool" title="Permalink to this definition"></a></dt>
 <dd><p>Replace contenders in pool if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_results">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_results" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_results" title="Permalink to this definition"></a></dt>
 <dd><p>Perform tournament result processing necessary to replace contenders
 in pool and select contenders for next tournament/problem instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary throughout the rtac
+modules.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – ID of the problem instance. Defaults to None.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Tournament number. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn">
-<span class="sig-name descname"><span class="pre">process_tourn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.process_tourn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_tourn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.process_tourn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn" title="Permalink to this definition"></a></dt>
 <dd><p>Manage result processing.</p>
+<dl class="simple">
+<dt>rtac_data: RTACData | RTACDatapp</dt><dd><p>Object containing data and objects necessary throughout the RTAC
+modules.</p>
+</dd>
+<dt>instance<span class="classifier">str</span></dt><dd><p>ID of the configuration to have won the previous tournament.
+Defaults to None.</p>
+</dd>
+<dt>tourn_nr: int</dt><dd><p>Number of the tournament that is processed.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ID of the winner or None if problem instance could not be solved.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>ID of the configuration to have won the previous tournament</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str or None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal">
-<span class="sig-name descname"><span class="pre">result_summary_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.result_summary_terminal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">result_summary_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.result_summary_terminal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal" title="Permalink to this definition"></a></dt>
+<dd><p>Print the sum of the winner results of all tournaments so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – List of results of previous tournament.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Number of previous tournament. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.AbstractResultProcessing.select_contenders">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_contenders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#AbstractResultProcessing.select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing.select_contenders" title="Permalink to this definition"></a></dt>
 <dd><p>Select contenders for next tournament/problem instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.Contender">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">Contender</span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#Contender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.Contender" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper object for setting trueskill ranks.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -228,6 +280,19 @@ throughout the rtac modules.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">ResultProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing" title="rtac.ac_functionalities.result_processing.AbstractResultProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractResultProcessing</span></code></a></p>
 <p>Processes results of previous tournament.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Implementation based on the paper: “ReACTR: Realtime Algorithm
+Configuration through Tournament Rankings”</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>logs</strong> (<a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><em>RTACLogs</em></a>) – Object containing loggers and logging functions.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessing.find_best">
 <span class="sig-name descname"><span class="pre">find_best</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing.find_best"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing.find_best" title="Permalink to this definition"></a></dt>
@@ -235,9 +300,9 @@ throughout the rtac modules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>current_dict</strong> (<em>int</em>) – Dictionary with confguration ids as key and
+<li><p><strong>current_dict</strong> (<em>list</em>) – Dictionary with configuration ids as key and
 trueskill scores (mu, sigma) as value.</p></li>
-<li><p><strong>current_dict</strong> – Number of best configurations to draw.</p></li>
+<li><p><strong>n_best</strong> (<em>int</em>) – Number of best configurations to draw.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -261,10 +326,16 @@ trueskill scores (mu, sigma) as value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Index of winner and ranks.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>winner</strong> : int,
+Index of the winner.</p></li>
+<li><p><strong>ranks</strong> : list[int],
+Ranks of the contenders.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[int, list[int]]</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -273,24 +344,42 @@ trueskill scores (mu, sigma) as value.</p></li>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessing.init_scores">
 <span class="sig-name descname"><span class="pre">init_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing.init_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing.init_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize scores dict for trueskill.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessing.manage_pool">
 <span class="sig-name descname"><span class="pre">manage_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing.manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing.manage_pool" title="Permalink to this definition"></a></dt>
 <dd><p>Replace contenders in pool according to Mu and Sigma (TrueSKill).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessing.process_results">
-<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing.process_results" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessing.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessing.process_results" title="Permalink to this definition"></a></dt>
 <dd><p>Perform tournament result processing necessary to replace contenders
-in pool and select contenders for next tournament/problem instance
-according to ReACTR implementation.</p>
+in the pool and select contenders for the next tournament/problem
+instance according to the ReACTR implementation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – ID of the configuration to have won the previous tournament.
+Defaults to None.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Number of the tournament that is processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -301,6 +390,11 @@ throughout the rtac modules.</p>
 <dd><p>Select scenario.contenders == #contenders for next
 tournament/problem instance: top number of
 ‘self.scenario.keeptop’ and the rest randomly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -310,56 +404,147 @@ tournament/problem instance: top number of
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">ResultProcessingCPPL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing" title="rtac.ac_functionalities.result_processing.AbstractResultProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractResultProcessing</span></code></a></p>
 <p>Process results of previous tournament.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>logs</strong> (<a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><em>RTACLogs</em></a>) – Object containing loggers and logging functions.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool">
-<span class="sig-name descname"><span class="pre">cppl_manage_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">cppl_manage_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool" title="Permalink to this definition"></a></dt>
+<dd><p>Replace contenders in pool if necessary. Runs in separate thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contender_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – List of contenders in the upcoming tournament. Loaded from logas or
+randomly selected.</p></li>
+<li><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue to send data back to main thread.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results">
-<span class="sig-name descname"><span class="pre">cppl_process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">cppl_process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results" title="Permalink to this definition"></a></dt>
+<dd><p>Perform tournament result processing necessary to replace contenders
+in the pool and select contenders for the next tournament/problem
+instance within a separate thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contender_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – List of contenders in the upcoming tournament. Loaded from logas or
+randomly selected.</p></li>
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – ID of the configuration to have won the previous tournament.
+Defaults to None.</p></li>
+<li><p><strong>pool</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – Initial pool of Configurations. Loaded from logas or randomly
+generated.</p></li>
+<li><p><strong>ob</strong> (<em>bool</em>) – True if scenario is objective value minimization, False if not.</p></li>
+<li><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue to send data back to main thread.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders">
-<span class="sig-name descname"><span class="pre">cppl_select_contenders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">cppl_select_contenders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.cppl_select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders" title="Permalink to this definition"></a></dt>
+<dd><p>Select contenders for next tournament/problem instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue to send data back to main thread.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl">
-<span class="sig-name descname"><span class="pre">init_cppl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_config_gen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.init_cppl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">init_cppl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_config_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.RandomConfigGen" title="rtac.ac_functionalities.config_gens.RandomConfigGen"><span class="pre">RandomConfigGen</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">contender_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">rtac.ac_functionalities.rtac_data.Configuration</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.init_cppl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize cppl in isolated mode. The bandit functions are called and
+executed in a separate thread so no build up in background threads of
+libraries that numpy, scipy and sklearn depend on is possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>pool</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – Initial pool of Configurations. Loaded from logas or randomly
+generated.</p></li>
+<li><p><strong>random_config_gen</strong> (<a class="reference internal" href="rtac.ac_functionalities.config_gens.html#rtac.ac_functionalities.config_gens.RandomConfigGen" title="rtac.ac_functionalities.config_gens.RandomConfigGen"><em>RandomConfigGen</em></a>) – Random configuration generator.</p></li>
+<li><p><strong>contender_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a><em>]</em>) – List of contenders in the upcoming tournament. Loaded from logas or
+randomly selected.</p></li>
+<li><p><strong>queue</strong> (<em>multiprocessing.Queue</em>) – Queue to send data back to main thread.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.manage_pool">
 <span class="sig-name descname"><span class="pre">manage_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.manage_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.manage_pool" title="Permalink to this definition"></a></dt>
 <dd><p>Replace contenders in pool if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results">
-<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.process_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results" title="Permalink to this definition"></a></dt>
 <dd><p>Perform tournament result processing necessary to replace contenders
-in pool and select contenders for next tournament/problem instance.</p>
+in the pool and select contenders for the next tournament/problem
+instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – ID of the configuration to have won the previous tournament.
+Defaults to None.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Number of the tournament that is processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn">
-<span class="sig-name descname"><span class="pre">process_tourn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.process_tourn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_tourn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtac_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><span class="pre">RTACData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><span class="pre">RTACDatapp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourn_nr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.process_tourn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn" title="Permalink to this definition"></a></dt>
 <dd><p>Manage result processing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a>) – Object containing data and objects necessary
-throughout the rtac modules.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rtac_data</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACData" title="rtac.ac_functionalities.rtac_data.RTACData"><em>RTACData</em></a><em> | </em><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.RTACDatapp" title="rtac.ac_functionalities.rtac_data.RTACDatapp"><em>RTACDatapp</em></a>) – Object containing data and objects necessary
+throughout the rtac modules.</p></li>
+<li><p><strong>instance</strong> (<em>str</em>) – ID of the configuration to have won the previous tournament.
+Defaults to None.</p></li>
+<li><p><strong>tourn_nr</strong> (<em>int</em>) – Number of the tournament that is processed. Defaults to None.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>ID of the configuration to have won the previous tournament</p>
+<dd class="field-even"><p>ID of the configuration to have won the previous tournament.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -369,8 +554,13 @@ throughout the rtac modules.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders">
-<span class="sig-name descname"><span class="pre">select_contenders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">select_contenders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingCPPL.select_contenders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders" title="Permalink to this definition"></a></dt>
 <dd><p>Select contenders for next tournament/problem instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -388,11 +578,11 @@ throughout the rtac modules.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ranks</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of objective results of previous tournament.</p></li>
-<li><p><strong>rank</strong> (<em>float</em>) – a single result.</p></li>
+<li><p><strong>rank</strong> (<em>float</em>) – A single result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of indices of this result in the results list.</p>
+<dd class="field-even"><p>List of indices of this result in the results list.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[int]</p>
@@ -404,7 +594,7 @@ throughout the rtac modules.</p>
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.ResultProcessingpp.get_winner">
 <span class="sig-name descname"><span class="pre">get_winner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#ResultProcessingpp.get_winner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp.get_winner" title="Permalink to this definition"></a></dt>
 <dd><p>Get index of the winning configuration including last known
-intermidiate outputs to break ties. Additionally output complete
+intermediate outputs to break ties. Additionally outputs complete
 ranking to compute more detailed assessment with trueskill.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -414,38 +604,40 @@ ranking to compute more detailed assessment with trueskill.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Index of winner and ranks.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>winner</strong> : int,
+Index of the winner.</p></li>
+<li><p><strong>ranks</strong> : list[int],
+Ranks of the contenders..</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[int, list[int]]</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.contender">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">contender</span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#contender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.contender" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Helper object for setting trueskill ranks.</p>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.result_processing.processing_factory">
-<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">processing_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.AbstractResultProcessing" title="rtac.ac_functionalities.result_processing.AbstractResultProcessing"><span class="pre">AbstractResultProcessing</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#processing_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.processing_factory" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.result_processing.</span></span><span class="sig-name descname"><span class="pre">processing_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><span class="pre">RTACLogs</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessing" title="rtac.ac_functionalities.result_processing.ResultProcessing"><span class="pre">ResultProcessing</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp" title="rtac.ac_functionalities.result_processing.ResultProcessingpp"><span class="pre">ResultProcessingpp</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL" title="rtac.ac_functionalities.result_processing.ResultProcessingCPPL"><span class="pre">ResultProcessingCPPL</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/result_processing.html#processing_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.result_processing.processing_factory" title="Permalink to this definition"></a></dt>
 <dd><p>Class factory to return the initialized class with data structures
-appropriate to the RTAC method scenario.ac.</p>
+appropriate to the RTAC method <cite>scenario.ac</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p></li>
+<li><p><strong>logs</strong> (<a class="reference internal" href="rtac.ac_functionalities.logs.html#rtac.ac_functionalities.logs.RTACLogs" title="rtac.ac_functionalities.logs.RTACLogs"><em>RTACLogs</em></a>) – Object containing loggers and logging functions.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Inititialized BaseTARunner object matching the RTAC method of
+<dd class="field-even"><p>Initialized BaseTARunner object matching the RTAC method of
 the scenario.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.ta_runner.html#rtac.ac_functionalities.ta_runner.BaseTARunner" title="rtac.ac_functionalities.ta_runner.BaseTARunner">BaseTARunner</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessing" title="rtac.ac_functionalities.result_processing.ResultProcessing">ResultProcessing</a> or <a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingpp" title="rtac.ac_functionalities.result_processing.ResultProcessingpp">ResultProcessingpp</a> or <a class="reference internal" href="#rtac.ac_functionalities.result_processing.ResultProcessingCPPL" title="rtac.ac_functionalities.result_processing.ResultProcessingCPPL">ResultProcessingCPPL</a></p>
 </dd>
 </dl>
 </dd></dl>

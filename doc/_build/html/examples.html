@@ -264,6 +264,7 @@
 </section>
 <section id="scenario-file-examples">
 <h2>Scenario File Examples<a class="headerlink" href="#scenario-file-examples" title="Permalink to this heading"></a></h2>
+<p>The following scenario file examples assume a runtime minimization scenario. To minimize objective value of the target algorithm, add –objective_min. Further, the following scenario files assume the availability of 8 cores (or 4 cores with 8 threads in total, which is not optimal but still works well). If your machine has more available cores and you can spare them you should increase –number_cores. Additionally, the experimental setting is assumed here. This means that at the start of the RAC process, logs of data for tournament 0 are loaded to allow for comparability between runs. If you are not aiming at this, omit the flag –experimental.</p>
 <section id="reactr">
 <h3>ReACTR<a class="headerlink" href="#reactr" title="Permalink to this heading"></a></h3>
 <p>To run ReACTR, you can use a scenario file like this:</p>
@@ -392,6 +393,7 @@
 </section>
 <section id="parameter-files">
 <h2>Parameter Files<a class="headerlink" href="#parameter-files" title="Permalink to this heading"></a></h2>
+<p>Currently, two ways of declaring parameter space definition are possible in RTAC, PCS and a custom json based on a json schema.</p>
 <section id="pcs">
 <h3>PCS<a class="headerlink" href="#pcs" title="Permalink to this heading"></a></h3>
 <p>You can find documentation for PCS at <a class="reference external" href="https://automl.github.io/ConfigSpace/latest/">PCS Documentation</a>. Here is an example:</p>
@@ -479,14 +481,6 @@ miim integer [1, 100] [10]
 ‘values’: [‘true’, ‘false’],
 ‘default’: ‘true’},</p>
 </dd>
-<dt>‘param_g3al’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
-‘values’: [‘true’, ‘false’],
-‘default’: ‘true’},</p>
-</dd>
-<dt>‘param_4nie’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
-‘values’: [‘true’, ‘false’],
-‘default’: ‘true’},</p>
-</dd>
 <dt>‘param_f3ed’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘int’,
 ‘minval’: 1,
 ‘maxval’: 3,
@@ -529,10 +523,6 @@ miim integer [1, 100] [10]
 ‘values’: [‘true’, ‘false’],
 ‘default’: ‘true’},</p>
 </dd>
-<dt>‘param_jnjw’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
-‘values’: [‘true’, ‘false’],
-‘default’: ‘true’},</p>
-</dd>
 <dt>‘param_mb9s’: {‘paramtype’: ‘discrete’,</dt><dd><p>‘minval’: 1,
 ‘maxval’: 3,
 ‘default’: 1},</p>
@@ -554,10 +544,6 @@ miim integer [1, 100] [10]
 ‘default’: ‘false’},</p>
 </dd>
 <dt>‘param_g0aj’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
-‘values’: [‘true’, ‘false’],
-‘default’: ‘true’},</p>
-</dd>
-<dt>‘param_hlcw’: {‘paramtype’: ‘categorical’,</dt><dd><p>‘valtype’: ‘str’,
 ‘values’: [‘true’, ‘false’],
 ‘default’: ‘true’},</p>
 </dd>
@@ -640,7 +626,7 @@ miim integer [1, 100] [10]
     <span class="n">main</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">instance_file</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Of course, you can adjust the script to wait and receive problem instances to be passed to rtac.solve_instance.</p>
+<p>Naturally, you can adjust the script to wait and receive problem instances to be passed to rtac.solve_instance and / or rtac.provide_early_instance.</p>
 </section>
 </section>
 

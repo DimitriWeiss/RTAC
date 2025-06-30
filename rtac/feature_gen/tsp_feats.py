@@ -6,13 +6,18 @@ import numpy
 
 
 class TSPFeats():
-    """Dummy TSP feature generator."""
+    """
+    Dummy TSP feature generator.
 
-    def __init__(self, path: str) -> None:
-        """Initialize dummy TSP feature generator..
+    Parameters
+    ----------
+    path : str
+        Path to feature files directory.
+    """
 
-        :param path: Path to feature files directory.
-        :type path: str
+    def __init__(self, path: str):
+        """
+        Initialize dummy TSP feature generator.
         """
         self.features = {}
     
@@ -24,13 +29,18 @@ class TSPFeats():
                     features = list(json.loads(handle.read()).values())
                 self.features[filename] = features
 
-    def get_features(self, instance) -> list:
+    def get_features(self, instance: str) -> list:
         """Get features for instance.
 
-        :param instance: Name of instance.
-        :type instance: str
-        :returns: List of features for instance.
-        :rtype: list
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to get the features for.
+
+        Returns
+        -------
+        list
+            A list of the problem instance features.
         """
         instance = instance.split('/')[-1]
         feats = next((v for k, v in self.features.items() if instance in k),

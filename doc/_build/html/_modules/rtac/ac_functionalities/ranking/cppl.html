@@ -73,10 +73,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for rtac.ac_functionalities.ranking.cppl</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="sd">&quot;&quot;&quot;Implements the CPPL class for RTAC.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
@@ -104,12 +106,28 @@
 
 
 <div class="viewcode-block" id="CPPL"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CPPL</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;CPPL Bandit and AC functions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CPPL Bandit and AC functions.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">contender_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize CPPL object.&quot;&quot;&quot;</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+
+<span class="sd">    Implementation based on the paper: &quot;Pool-based realtime algorithm</span>
+<span class="sd">    configuration: A preselection bandit approach&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    pool : dict</span>
+<span class="sd">        Pool of configurations.</span>
+<span class="sd">    contender_dict : dict</span>
+<span class="sd">        Dictionary containing Configurations that ran in last tournament.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                 <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_sum</span> <span class="o">=</span> <span class="mi">0</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keeptop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">keeptop</span>
         <span class="n">config_space</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">config_space</span>
@@ -185,7 +203,22 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">record_bandit</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CPPL.compute_array_dimension"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.compute_array_dimension">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">compute_array_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_pca_f</span><span class="p">,</span> <span class="n">nc_pca_p</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.compute_array_dimension"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.compute_array_dimension">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">compute_array_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nc_pca_f</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                <span class="n">nc_pca_p</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the correct dimension of np.ndarrays used in bandit.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nc_pca_f : int</span>
+<span class="sd">            Dimension of PCA for problem instance features.</span>
+<span class="sd">        nc_pca_p : int</span>
+<span class="sd">            Dimension of PCA for Configuration values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Dimension of np.ndarrays used in bandit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">jfm</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;concatenation&#39;</span><span class="p">,</span> <span class="s1">&#39;kronecker&#39;</span><span class="p">):</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">nc_pca_f</span> <span class="o">+</span> <span class="n">nc_pca_p</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">jfm</span> <span class="o">==</span> <span class="s1">&#39;polynomial&#39;</span><span class="p">:</span>
@@ -195,7 +228,14 @@
                 <span class="n">d</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">i</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
-<div class="viewcode-block" id="CPPL.record_bandit"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.record_bandit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">record_bandit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.record_bandit"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.record_bandit">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">record_bandit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Records bandit state to later log it.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;theta_hat&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta_hat</span><span class="p">,</span>
                                                     <span class="n">threshold</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
                        <span class="s1">&#39;theta_bar&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta_bar</span><span class="p">,</span>
@@ -226,7 +266,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="CPPL.process_results"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.process_results"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processing results of the last tournament.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_data</span><span class="p">()</span>
 
@@ -262,7 +308,14 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">record_bandit</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CPPL.update_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.update_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.update_data"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.update_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update data used in bandit computations by tournament results.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 
@@ -304,7 +357,14 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">context_specific_feature_matrix</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CPPL.context_specific_feature_matrix"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.context_specific_feature_matrix">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">context_specific_feature_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.context_specific_feature_matrix"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.context_specific_feature_matrix">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">context_specific_feature_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the context-specific feature matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">X_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta_bar</span><span class="p">)),</span>
                                 <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -317,7 +377,15 @@
 
             <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_t</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.gradient"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.gradient">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.gradient"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.gradient">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes gradient learnt from results.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Gradient learnt from all previous results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_theta_bar</span><span class="p">)</span>
@@ -328,7 +396,15 @@
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Y_t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.hessian"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.hessian">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.hessian"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.hessian">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes Hessian matrix expressing confidence in skills.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Hessian matrix expressing confidence in skills.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 
             <span class="n">t_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">len_theta_bar</span><span class="p">))</span>
@@ -350,7 +426,24 @@
 
             <span class="k">return</span> <span class="p">(</span><span class="n">n_1</span> <span class="o">/</span> <span class="p">(</span><span class="n">d</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">n_2</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.joinFeatureMap"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.joinFeatureMap">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">joinFeatureMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.joinFeatureMap"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.joinFeatureMap">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">joinFeatureMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Joining Configuration values and problem instance features.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : np.ndarray</span>
+<span class="sd">            Configuration values.</span>
+<span class="sd">        y: np.ndarray</span>
+<span class="sd">            Problem instance features.</span>
+<span class="sd">        mode: str</span>
+<span class="sd">            Mode of combining Configuration values and instance features.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Combined Configuration values and problem instance features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;concatenation&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> 
@@ -361,16 +454,51 @@
                 <span class="k">return</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="CPPL.manage_pool"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.manage_pool"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deciding if Configurations need to be replaced and generating new </span>
+<span class="sd">        ones if necessary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">insert_in_pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_configs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_configs</span><span class="p">()))</span></div>
 
-<div class="viewcode-block" id="CPPL.discard_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.discard_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">discard_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.discard_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.discard_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">discard_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assess the quality of the Configurations in the pool and decide which </span>
+<span class="sd">        ones to replace.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Number of Configurations to be replaced.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">asses_configurations</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discard</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.crossover"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.crossover">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">crossover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">nr_children</span><span class="p">,</span> <span class="n">core</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.crossover"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.crossover">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">crossover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Configuration</span><span class="p">],</span>
+                  <span class="n">nr_children</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Configuration</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform genetic crossover on the provided Configurations to generate </span>
+<span class="sd">        offspring, with small probability of randomly generated Configurations </span>
+<span class="sd">        nr_children of times.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parents : list[Configuration]</span>
+<span class="sd">            The Configurations to be used for genetic crossover.</span>
+<span class="sd">        nr_children : int</span>
+<span class="sd">            Number of how many offspring to generate.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[Configuration]</span>
+<span class="sd">            List of generated Configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">parent_a</span><span class="p">,</span> <span class="n">parent_b</span> <span class="o">=</span> <span class="n">parents</span>
 
@@ -400,7 +528,27 @@
 
         <span class="k">return</span> <span class="n">new_candids</span></div>
 
-<div class="viewcode-block" id="CPPL.generate_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.generate_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nr_discarded</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.generate_configs"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.generate_configs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_configs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">nr_discarded</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform genetic crossover on the provided Configurations to generate </span>
+<span class="sd">        offspring, with small probability of randomly generated Configurations </span>
+<span class="sd">        on each available core. Asses generated Configurations with CPPL </span>
+<span class="sd">        model. Ensure no duplicates are inserted into the pool (possible due </span>
+<span class="sd">        to CPPL model preferring configuration values). Aim at providing </span>
+<span class="sd">        nr_discarding Configurations (if number is not reduced by omitting </span>
+<span class="sd">        duplicates).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nr_discarded : int</span>
+<span class="sd">            Number of how many new Configurations to generate.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, Configuration] or None</span>
+<span class="sd">            Dict of generated Configurations or None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
             <span class="c1"># Choose the two configurations assessed as best as parents</span>
@@ -416,8 +564,7 @@
             <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
                 <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
                            <span class="bp">self</span><span class="o">.</span><span class="n">crossover</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span>
-                           <span class="n">nr_discarded</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gen_mult</span><span class="p">,</span>
-                           <span class="n">i</span><span class="p">)</span>
+                           <span class="n">nr_discarded</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gen_mult</span><span class="p">)</span>
                            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">)]</span>
 
                 <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
@@ -545,7 +692,16 @@
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Replaced contender&#39;</span><span class="p">,</span> <span class="n">disc_id</span><span class="p">,</span>
                           <span class="s1">&#39;by contender generated via&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.skill_and_confidence"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.skill_and_confidence">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">skill_and_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.skill_and_confidence"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.skill_and_confidence">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">skill_and_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the skill and confidence values for Configurations in pool </span>
+<span class="sd">        based on current feature matrix and save the indices of nr_cores best </span>
+<span class="sd">        of them to self.S_t.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">S_t_prior</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S_t</span><span class="p">)</span>
@@ -631,7 +787,27 @@
                           <span class="bp">self</span><span class="o">.</span><span class="n">c_t</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">S_t_prior</span><span class="p">[</span><span class="n">core</span><span class="p">]],</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.assess_children"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.assess_children">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assess_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_configs</span><span class="p">,</span> <span class="n">nd</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.assess_children"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.assess_children">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assess_children</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">transformed_configs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">nd</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the skill and confidence values for newly generated </span>
+<span class="sd">        Configurations based on feature matrix computed for the set of newly </span>
+<span class="sd">        generated configurations and return the indices of nd best </span>
+<span class="sd">        of them.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transformed_configs : np.ndarray</span>
+<span class="sd">            transformed values of generated Configurations</span>
+<span class="sd">        nd : int</span>
+<span class="sd">            Number of configurations to be replaced in the pool.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[int]</span>
+<span class="sd">            List of indices of the nd best Configurations from all newly </span>
+<span class="sd">            generated Configurations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="c1"># self.t = self.scenario.cpplt</span>
             <span class="n">ltc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transformed_configs</span><span class="p">)</span>
@@ -705,7 +881,15 @@
 
         <span class="k">return</span> <span class="n">S_t</span></div>
 
-<div class="viewcode-block" id="CPPL.asses_configurations"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.asses_configurations">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">asses_configurations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.asses_configurations"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.asses_configurations">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">asses_configurations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Comparatively asses which Configurations are to be replaced from the </span>
+<span class="sd">        pool based on skills and confidence computed by CPPL model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discard</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span><span class="p">):</span>
@@ -717,7 +901,15 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">discard</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                     <span class="k">break</span></div>
 
-<div class="viewcode-block" id="CPPL.select_contenders"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.select_contenders"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select Configurations to run in next tournament and save them in </span>
+<span class="sd">        self.contender_dict.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">pool_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">best</span> <span class="o">=</span> <span class="p">[]</span>
@@ -758,12 +950,37 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">prior_contender_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span></div>
 
-<div class="viewcode-block" id="CPPL.init_param_scaler"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.init_param_scaler">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_param_scaler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_space</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.init_param_scaler"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.init_param_scaler">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_param_scaler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_space</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize MinMaxScaler to be used on Configuration values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config_space : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">split_param_types</span><span class="p">(</span><span class="n">config_space</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_max_scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_max_scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_bounds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper_bounds</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="CPPL.split_param_types"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.split_param_types">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">split_param_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_space</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.split_param_types"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.split_param_types">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">split_param_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_space</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Split parameter space by categorical and everything else.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config_space : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Split categorical parameters and rest for later OneHotEncoding</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_cat_param_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cat_param_names</span> <span class="o">=</span> <span class="p">[]</span>
@@ -798,13 +1015,34 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">lower_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">upper_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.init_onehot_encoder"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.init_onehot_encoder">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_onehot_encoder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.init_onehot_encoder"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.init_onehot_encoder">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_onehot_encoder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize OneHotEncoder to be used on categorical Configuration </span>
+<span class="sd">        values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">one_hot_enc</span> <span class="o">=</span> \
             <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cat_values</span><span class="p">,</span>
                           <span class="n">sparse_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                           <span class="n">handle_unknown</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.transform_conf"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.transform_conf">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">transform_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.transform_conf"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.transform_conf">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">transform_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transorm Configuration values with MinMaxScaler and OneHotEncoder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conf : Configuration</span>
+<span class="sd">            Configuration to be transformed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Transformed Configuration values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">ncvt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_max_scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">([[</span><span class="n">conf</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                                                  <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span>
@@ -826,7 +1064,19 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ncvt</span><span class="p">,</span> <span class="n">cvt</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CPPL.pre_train"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.pre_train">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pre_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_path</span><span class="p">):</span>
+<div class="viewcode-block" id="CPPL.pre_train"><a class="viewcode-back" href="../../../../_autosummary/rtac.ac_functionalities.ranking.cppl.html#rtac.ac_functionalities.ranking.cppl.CPPL.pre_train">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pre_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pretrain StandardScaler to be used on problem instance features.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        feature_path : str</span>
+<span class="sd">            Path to the CSV file containing the features.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
         <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">feature_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

@@ -13,31 +13,48 @@ from collections import OrderedDict
 from multiprocessing.sharedctypes import Synchronized
 from rtac.ac_functionalities.tournament import tournament_factory
 from rtac.ac_functionalities.result_processing import processing_factory
-from rtac.ac_functionalities.rtac_data import TARunStatus, RTACData, ACMethod
+from rtac.ac_functionalities.rtac_data import (
+    TARunStatus,
+    RTACData,
+    RTACDatapp,
+    ACMethod,
+    TournamentStats
+)
 from rtac.ac_functionalities.ta_runner import BaseTARunner
+from rtac.ac_functionalities.tournament import Tournament, Tournamentpp
 from rtac.ac_functionalities.logs import RTACLogs
 from rtac.ac_functionalities.ranking.gray_box import Gray_Box
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rtac.rtac import RTAC
+
 
 class AbstractTournamentManager(ABC):
-    """Abstract tournament manager class."""
+    """
+    Abstract tournament manager class.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    ta_runner : BaseTARunner
+        Target algorithm runner object.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    rtac_data : RTACData | RTACDatapp
+        Object containing data and objects necessary throughout the RTAC 
+        modules.
+    """
 
     def __init__(self, scenario: argparse.Namespace, ta_runner: BaseTARunner,
-                 logs: RTACLogs, rtac_data: RTACData) -> None:
-        """Initialize tournamnt management class with data and objects
-        necessary for RTAC method used. If self.scenario.resume, data of last
-        logged tournament is loaded and algorithm configuration is performed
-        from that state.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param ta_runner: Target algorithm runner object.
-        :type: BaseTARunner
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
+                 logs: RTACLogs, rtac_data: RTACData | RTACDatapp):
+        """
+        Initialize tournament management class with data and objects
+        necessary for the RTAC method used. If `self.scenario.resume` is set,
+        data from the last logged tournament is loaded and algorithm 
+        configuration resumes from that state.
         """
         self.huge_float = sys.float_info.max * 1e-100
         self.scenario = scenario
@@ -92,9 +109,30 @@ class AbstractTournamentManager(ABC):
         self.logs.init_rtac_logs()
         self.logs.init_ranking_logs()
 
-    def set_tourn_status(self, tournamentstats, rtac_data, tournament) -> None:
-        """Setting the results of the tournament and status of the target
-        algorithm runs to rtac_data.TournamentStats."""
+    def set_tourn_status(
+            self, tournamentstats: TournamentStats,
+            rtac_data: RTACData | RTACDatapp, 
+            tournament: Tournament | Tournamentpp
+    ) -> TournamentStats:
+        """
+        Setting the results of the tournament and status of the target
+        algorithm runs to rtac_data.TournamentStats.
+
+        Parameters
+        ----------
+        tournamentstats : TournamentStats
+            Stats summarizing the tournament results.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+        tournament : Tournament | Tournamentpp
+            Tournament object.
+
+        Returns
+        -------
+        TournamentStats
+            Stats summarizing the tournament results.
+        """
         tournamentstats.results = rtac_data.ta_res[:]
         tournamentstats.times = rtac_data.ta_res_time[:]
         tournamentstats.rtac_times = rtac_data.ta_rtac_time[:]
@@ -111,21 +149,49 @@ class AbstractTournamentManager(ABC):
         return tournamentstats
 
     @abstractmethod
-    def solve_instance(self, instance: str, rtac_data: RTACData,
-                       next_instance: str = None, rtac=None) -> RTACData:
-        """Solving the problem instance according to the RTAC method used.
-        :param instance: path to the problem instance to solve.
-        
-        :type instance: str
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :returns: Updated object containing data and objects necessary
-            throughout the rtac modules
-        :rtype: RTACData
+    def solve_instance(self, instance: str, rtac_data: RTACData | RTACDatapp,
+                       next_instance: str = None, 
+                       rtac: 'RTAC' = None) -> RTACData:
+        """
+        Solve the problem instance according to the RTAC method used.
+
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+        next_instance : str
+            Problem instance ID. Degaults to None.
+        rtac : RTAC
+            The self reference of rtac.rtac.RTAC to enable the tournament 
+            manager to start a tournament run ftom RTAC.
+
+        Returns
+        -------
+        RTACData
+            Updated object containing data and objects necessary throughout the 
+            RTAC modules.
         """
 
-    def manage_tournament(self, instance: str, rtac_data: RTACData):
+    def manage_tournament(self, instance: str,
+                          rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Manages the procedure of the tournament.
+
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
+        """
 
         msg = f'#  Start solving instance {instance}...  #'
         len_msg = len(msg)
@@ -165,10 +231,38 @@ class AbstractTournamentManager(ABC):
         self.res_process.tourn_nr = self.tourn_nr
         self.tournament.tourn_nr = self.tourn_nr
 
-    def general_logging(self, scenario=None, rtac_data=None,
-                        tournamentstats=None, tourn_nr=None,
-                        tournament=None, early_tourn=False,
-                        instance=None) -> None:
+    def general_logging(self, scenario: argparse.Namespace = None, 
+                        rtac_data: RTACData | RTACDatapp = None,
+                        tournamentstats: TournamentStats = None,
+                        tourn_nr: int = None,
+                        tournament: Tournament | Tournamentpp = None,
+                        early_tourn: bool = False,
+                        instance: str = None) -> None:
+        """
+        Carries out logging of general information about the tournament.
+
+        Parameters
+        ----------
+        scenario : argparse.Namespace
+            Namespace containing all settings for the RTAC.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+        tournamentstats : TournamentStats
+            Stats summarizing the tournament results.
+        tourn_nr : int
+            Number of the tournament.
+        tournament : Tournament | Tournamentpp
+            Tournament object.
+        early_tourn : bool
+            True if tournament starts early, Flase if not.
+        instance: str
+            ID of the problem instance to be solved.
+
+        Returns
+        -------
+        None
+        """
         if scenario is None:
             scenario = self.scenario
             rtac_data = self.rtac_data
@@ -224,7 +318,21 @@ class AbstractTournamentManager(ABC):
             + f' (nr. {tourn_nr}) is {tournamentstats.winner}'
         self.logs.general_log(log_message)
 
-    def adjust_time_results(self, rtac_data):
+    def adjust_time_results(self, rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Adjusts the time results of the early tournament by the time that was 
+        saved from the early starting.
+
+        Parameters
+        ----------
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
+        """
         if all(res == self.scenario.timeout
                 for res in rtac_data.ta_res_time[:]):
             self.finished.wait()
@@ -245,7 +353,20 @@ class AbstractTournamentManager(ABC):
 
         return rtac_data
 
-    def get_tourn_nr(self, rtac_data):
+    def get_tourn_nr(self, rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Get the number of the tournament to be logged.
+
+        Parameters
+        ----------
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
+        """
         if not bool(rtac_data.early_start_tournament.value):
             tourn_nr = self.tourn_nr
         else:
@@ -255,22 +376,31 @@ class AbstractTournamentManager(ABC):
 
 
 class TournamentManager(AbstractTournamentManager):
-    """Tournament manager class for the ReACTR implementation."""
+    """
+    Tournament manager class for the ReACTR implementation.
+    """
 
-    def solve_instance(self, instance: str, rtac_data: RTACData,
+    def solve_instance(self, instance: str, rtac_data: RTACData | RTACDatapp,
                        **kwargs) -> RTACData:
-        """Solving the problem instance according to the ReACTR implementation.
-        :param instance: path to the problem instance to solve.
-
-        :type instance: str
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :returns: Updated object containing data and objects necessary
-            throughout the rtac modules
-        :rtype: RTACData
         """
+        Solving the problem instance according to the ReACTR implementation.
 
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the rtac 
+            modules.
+        **kwargs
+            Additional keyword arguments that vary by RTAC method.
+
+        Returns
+        -------
+        RTACData
+            Updated object containing data and objects necessary throughout the 
+            rtac modules.
+        """
         self.rtac_data = self.tournament.rtac_data = rtac_data
         tourn_nr = self.get_tourn_nr(rtac_data)
 
@@ -284,22 +414,31 @@ class TournamentManager(AbstractTournamentManager):
 
 
 class TournamentManagerCPPL(AbstractTournamentManager):
-    """Tournament manager class for the CPPL implementation."""
+    """
+    Tournament manager class for the CPPL implementation.
+    """
 
-    def solve_instance(self, instance: str, rtac_data: RTACData,
+    def solve_instance(self, instance: str, rtac_data: RTACData | RTACDatapp,
                        **kwargs) -> RTACData:
-        """Solving the problem instance according to the CPPL implementation.
-        :param instance: path to the problem instance to solve.
-
-        :type instance: str
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :returns: Updated object containing data and objects necessary
-            throughout the rtac modules
-        :rtype: RTACData
         """
+        Solving the problem instance according to the CPPL implementation.
 
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the rtac 
+            modules.
+        **kwargs
+            Additional keyword arguments that vary by RTAC method.
+
+        Returns
+        -------
+        RTACData
+            Updated object containing data and objects necessary throughout the 
+            rtac modules.
+        """
         self.rtac_data = self.tournament.rtac_data = rtac_data
         tourn_nr = self.get_tourn_nr(rtac_data)
 
@@ -314,11 +453,19 @@ class TournamentManagerCPPL(AbstractTournamentManager):
 
 
 class GrayBox:
-    """This class contains functions needed for the gray-box
-    functionality of the tournament manager classes."""
+    """
+    This class contains functions needed for the gray-box
+    functionality of the tournament manager classes.
+    """
 
-    def train_gray_box_model(self):
+    def train_gray_box_model(self) -> None:
+        """
+        Train gray-box modelö with the total data gathered so far.
 
+        Returns
+        -------
+        None
+        """
         self.gb_pw_inst_archive = self.tournament.gb_pw_inst_archive
 
         if self.gb_pw_inst_archive:
@@ -350,7 +497,26 @@ class GrayBox:
             self.tournament.gray_box = self.gray_box
             self.tournament.gb_model = self.gb_model
 
-    def manage_tournament(self, instance: str, rtac_data: RTACData, **kwargs):
+    def manage_tournament(self, instance: str, rtac_data: RTACData | RTACDatapp,
+                          **kwargs) -> None:
+        """
+        Manages the procedure of the tournament. Runs early tournament if 
+        CPU cores were freed by the gray-box model.
+
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+        **kwargs
+            Additional keyword arguments that vary by RTAC method.
+
+        Returns
+        -------
+        None
+        """
         if instance not in self.instance_history:
             self.instance_history.append(instance)
             if self.kwargs['es_rtac_data'] is None:
@@ -481,7 +647,20 @@ class GrayBox:
             # starting tournment
             self.rtac_data.skip = True
 
-    def early_start(self, currenttime):
+    def early_start(self, currenttime: float) -> None:
+        """
+        Starts early tournament with only as many contenders as were terminated 
+        by the gray-box model.
+
+        Parameters
+        ----------
+        currenttime : float
+            Time in the tournament at which contenders were terminated.
+
+        Returns
+        -------
+        None
+        """
         self.term_list = copy.deepcopy(self.tournament.term_list)
         if self.next_instance:
             print('\n')
@@ -514,11 +693,26 @@ class GrayBox:
 
             threading.Thread(target=self.wait_for_event, daemon=True).start()
 
-    def wait_for_event(self):
+    def wait_for_event(self) -> None:
+        """
+        Waits for the tournament to finish and triggers the start of the 
+        remaining cores in the early tournament.
+
+        Returns
+        -------
+        None
+        """
         self.finished.wait()
         self.fill_early_tournament()
 
-    def fill_early_tournament(self):
+    def fill_early_tournament(self) -> None:
+        """
+        Manages and starts the remaining contenders in the early tournament.
+
+        Returns
+        -------
+        None
+        """
         if not self.early_finished.is_set():
             self.es_tournament.contender_dict = \
                 self.res_process.get_contender_dict()
@@ -540,7 +734,19 @@ class GrayBox:
                 self.early_rtac_data.cores_start
             )
 
-    def es_output(self, instance):
+    def es_output(self, instance: str) -> None:
+        """
+        Prints info from early tournament to terminal.
+
+        Parameters
+        ----------
+        instance : int
+            ID of the instance to be solved in the early starting tournament.
+
+        Returns
+        -------
+        None
+        """
         print('\n')
 
         if not self.es_scenario.objective_min:
@@ -567,19 +773,29 @@ class GrayBox:
 
 def tourn_manager_factory(scenario: argparse.Namespace,
                           ta_runner: BaseTARunner, logs: RTACLogs,
-                          rtac_data: RTACData) -> AbstractTournamentManager:
-    """Class factory to return the initialized TournamentManager class
+                          rtac_data: RTACData | RTACDatapp
+                          ) -> AbstractTournamentManager:
+    """
+    Class factory to return the initialized TournamentManager class
     appropriate to the RTAC method scenario.ac.
 
-    :param scenario: Namespace containing all settings for the RTAC.
-    :type scenario: argparse.Namespace
-    :param ta_runner: Target algorithm runner object.
-    :type: BaseTARunner
-    :param logs: Object containing loggers and logging functions.
-    :type: RTACLogs
-    :returns: Inititialized TournamentManager object matching the RTAC method
-        of the scenario.
-    :rtype: BaseTARunner
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    ta_runner : BaseTARunner
+        Target algorithm runner object.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+    Returns
+    -------
+    AbstractTournamentManager
+        Initialized TournamentManager object matching the RTAC method of the 
+        scenario.
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.ReACTRpp):
         tourn_manager = TournamentManager

@@ -11,21 +11,33 @@ import time
 import signal
 import importlib
 import argparse
-from rtac.ac_functionalities.rtac_data import ACMethod, Configuration, RTACData
+from rtac.ac_functionalities.rtac_data import (
+    ACMethod,
+    Configuration,
+    RTACData,
+    RTACDatapp
+)
 from rtac.ac_functionalities.logs import RTACLogs
 
 
 def non_block_read(ta_output: bytes, logs: RTACLogs = None) -> str:
-    """Function for reading subprocess.PIPE output without blocking the
-    application until there is output. It looks up if there is output and
-    disconnects.
+    """
+    Function for reading `subprocess.PIPE` output without blocking
+    the application until there is output. It checks for output and exits
+    immediately if none is available.
 
-    :param ta_output: subprocess.PIPE output.
-    :type ta_output: bytes
-    :param logs: Object containing loggers and logging functions.
-    :type: RTACLogs
-    :returns: Either output as string or an empty string if nothing was there.
-    :rytpe: str
+    Parameters
+    ----------
+    ta_output : bytes
+        `subprocess.PIPE` output to be read.
+    logs : RTACLogs
+        Object containing loggers and logging functions. Defaults to None.
+
+    Returns
+    -------
+    str
+        Either the output as a string or an empty string if no output was 
+        available.
     """
     fd = ta_output.fileno()
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -39,101 +51,149 @@ def non_block_read(ta_output: bytes, logs: RTACLogs = None) -> str:
 
 
 class AbstractTARunner(ABC):
-    """Abstract TARunner."""
+    """
+    Abstract TARunner.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    core : int
+        Number of the parallel run started on a core.
+    """
 
     @abstractmethod
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs,
-                 core: int) -> None:
-        """Initializes target algorithm runner, loads and instantiates target
+                 core: int):
+        """
+        Initializes target algorithm runner, loads and instantiates target
         algorithm wrapper.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
-        :param core: Number of the parallel run started on a core.
-        :type: int
         """
 
     @abstractmethod
     def translate_config(self, config: Configuration) -> Any:
-        """Convert dictionary representation of the configuration to the format
+        """
+        Convert dictionary representation of the configuration to the format
         needed by the wrapper to pass to the target algorithm.
 
-        :param config: Configuration of parameter values to run problem
-            instance with.
-        :type config: Configuration
-        :return: new representation of the configuration
-        :rtype: Any
+        Parameters
+        ----------
+        config : Configuration
+            Configuration of parameter values to run the problem instance with.
+
+        Returns
+        -------
+        Any
+            New representation of the configuration suitable for the target 
+            algorithm.
         """
 
     @abstractmethod
     def start_run(self, instance: str, config: Configuration,
-                  rtac_data: RTACData) -> None:
-        """Starts target algorithm run and populates data necessary for
-        corination of tournament members.
+                  rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Starts the target algorithm run and populates data necessary for
+        coronation of tournament members.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param config: Representation of the configuration
-        :type: Any
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        config : Configuration
+            Representation of the configuration.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
         """
 
     @abstractmethod
     def check_output(self, ta_output: bytes) -> None:
-        """Checks the output, if there was any, and declares instance as solved
-        by the contender, if the marker for it was present.
+        """
+        Checks the output, if there was any, and declares the instance as 
+        solved by the contender if the corresponding marker is present.
 
-        :param ta_output: subprocess.PIPE output.
-        :type ta_output: bytes
+        Parameters
+        ----------
+        ta_output : bytes
+            Output from `subprocess.PIPE`.
+
+        Returns
+        -------
+        None
         """
 
     @abstractmethod
     def check_result(self) -> None:
-        """If this contender solved the problem instance the rtac data is
+        """
+        If this contender solved the problem instance the rtac data is
         populated by the resulting information according to the RTAC method
-        scenario.ac."""
+        scenario.ac.
+
+        Returns
+        -------
+        None
+        """
 
     @abstractmethod
     def kill_run(self) -> None:
-        """Terminates this process/ target algorithm run, as well as the other
+        """
+        Terminates this process/ target algorithm run, as well as the other
         contenders. Several layers of termination are included to ensure
-        termination on different platforms."""
+        termination on different platforms.
+
+        Returns
+        -------
+        None
+        """
 
     @abstractmethod
     def run(self, instance: str, config: Configuration,
-            rtac_data: RTACData) -> None:
-        """Manages the target algorithm runner functions depending on state of
-        the run according to the RTAC method scenario.ac.
+            rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Manages the target algorithm runner functions depending on the state of
+        the run, according to the RTAC method specified in `scenario.ac`.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param config: Configuration of parameter values to run problem
-            instance with.
-        :type config: Configuration
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        config : Configuration
+            Configuration of parameter values to run the problem instance with.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
         """
 
 
 class BaseTARunner(AbstractTARunner):
-    """Target algorithm runner for ReACTR implementation."""
+    """
+    Target algorithm runner for ReACTR implementation.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    core : int
+        Identifier for the parallel run on a specific core.
+    """
     
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs,
                  core: int) -> None:
-        """Initializes target algorithm runner, loads and instantiates target
-        algorithm wrapper.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        :param logs: Object containing loggers and logging functions.
-        :type: RTACLogs
-        :param core: Number of the parallel run started on a core.
-        :type: int
+        """
+        Initializes the target algorithm runner, loads, and instantiates the
+        target algorithm wrapper.
         """
         self.scenario = scenario
         if self.scenario.gray_box:
@@ -147,14 +207,19 @@ class BaseTARunner(AbstractTARunner):
         self.wrapper = getattr(module, name)()
 
     def translate_config(self, config: Configuration) -> Any:
-        """Convert dictionary representation of the configuration to the format
+        """
+        Convert dictionary representation of the configuration to the format
         needed by the wrapper to pass to the target algorithm.
 
-        :param config: Configuration of parameter values to run problem
-            instance with.
-        :type config: Configuration
-        :return: new representation of the configuration
-        :rtype: Any
+        Parameters
+        ----------
+        config : Configuration
+            Configuration of parameter values to run the problem instance with.
+
+        Returns
+        -------
+        Any
+            New representation of the configuration.
         """
         self.config_id = config.id
         translated_config = self.wrapper.translate_config(config)
@@ -162,17 +227,24 @@ class BaseTARunner(AbstractTARunner):
         return translated_config
 
     def start_run(self, instance: str, config: Any,
-                  rtac_data: RTACData) -> None:
-        """Starts target algorithm run and populates data necessary for
-        corination of tournament members.
+                  rtac_data: RTACData | RTACDatapp) -> None:
+        """
+        Starts the target algorithm run and populates data necessary for
+        coronation of tournament members.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param config: Representation of the configuration
-        :type: Any
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        config : Any
+            Representation of the configuration.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
         """
         self.config = config
         self.instance = instance
@@ -193,11 +265,18 @@ class BaseTARunner(AbstractTARunner):
         self.rtac_data.status[self.core] = 1  # TARunStatus.running
 
     def check_output(self, ta_output: bytes) -> None:
-        """Checks the output, if there was any, and declares instance as solved
-        by the contender, if the marker for it was present.
+        """
+        Checks the output, if there was any, and declares the instance as 
+        solved by the contender if the corresponding marker is present.
 
-        :param ta_output: subprocess.PIPE output.
-        :type ta_output: bytes
+        Parameters
+        ----------
+        ta_output : bytes
+            Output from `subprocess.PIPE`.
+
+        Returns
+        -------
+        None
         """
         if ta_output != b'':
             if_solved = \
@@ -214,8 +293,14 @@ class BaseTARunner(AbstractTARunner):
                 self.gb_record(ta_output)
 
     def check_result(self) -> None:
-        """If this contender solved the problem instance the rtac data is
-        populated by the resulting information."""
+        """
+        If this contender solved the problem instance the rtac data is
+        populated by the resulting information.
+
+        Returns
+        -------
+        None
+        """
         self.subnow = time.process_time_ns()
         self.rtac_data.ta_rtac_time[self.core] = \
             round(
@@ -232,9 +317,15 @@ class BaseTARunner(AbstractTARunner):
         self.rtac_data.status[self.core] = 2  # TARunStatus.finished
 
     def kill_run(self) -> None:
-        """Terminates this process/ target algorithm run, as well as the other
+        """
+        Terminates this process/ target algorithm run, as well as the other
         contenders. Several layers of termination are included to ensure
-        termination on different platforms."""
+        termination on different platforms.
+
+        Returns
+        -------
+        None
+        """
         if self.rtac_data.status[self.core] != 2:
             self.rtac_data.status[self.core] = 3  # TARunStatus.capped
         self.running = False
@@ -258,18 +349,24 @@ class BaseTARunner(AbstractTARunner):
                 pass
 
     def run(self, instance: str, config: Configuration,
-            rtac_data: RTACData, sync_event: Event) -> None:
-        """Manages the target algorithm runner functions depending on state of
-        the run.
+            rtac_data: RTACData | RTACDatapp, sync_event: Event) -> None:
+        """
+        Manages the target algorithm runner functions depending on the state
+        of the run.
 
-        :param instance: path to the problem instance to solve.
-        :type instance: str
-        :param config: Configuration of parameter values to run problem
-            instance with.
-        :type config: Configuration
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
+        Parameters
+        ----------
+        instance : str
+            Path to the problem instance to solve.
+        config : Configuration
+            Configuration of parameter values to run the problem instance with.
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the RTAC 
+            modules.
+
+        Returns
+        -------
+        None
         """
         sync_event.wait()
         self.start_run(instance, config, rtac_data)
@@ -300,21 +397,39 @@ class BaseTARunner(AbstractTARunner):
 
 
 class TARunnerpp(BaseTARunner):
-    """Target algorithm runner for ReACTR++ implementation."""
+    """
+    Target algorithm runner for ReACTR++ implementation.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    core : int
+        Identifier for the parallel run on a specific core.
+    """
 
     def __init__(self, scenario: argparse.Namespace, logs: RTACLogs,
-                 core: int) -> None:
+                 core: int):
         BaseTARunner.__init__(self, scenario, logs, core)
         self.interim_check_increment = scenario.timeout / 150
         self.interim_check_time = time.time()
 
     def check_output(self, ta_output: bytes) -> None:
-        """Checks the output, if there was any, and declares instance as solved
-        by the contender, if the marker for it was present or outputs
-        intermediate target algorithm output.
+        """
+        Checks the output, if there was any, and either declares the instance 
+        as solved by the contender (if the corresponding marker is present) or 
+        outputs intermediate target algorithm output.
 
-        :param ta_output: subprocess.PIPE output.
-        :type ta_output: bytes
+        Parameters
+        ----------
+        ta_output : bytes
+            Output from `subprocess.PIPE`.
+
+        Returns
+        -------
+        None
         """
         if ta_output != b'':
             if_solved = \
@@ -342,6 +457,18 @@ class TARunnerpp(BaseTARunner):
 
 
 def gb_record(self, ta_output: bytes) -> None:
+    """
+    Records runtime output of the target algorithm if there was any new.
+
+    Parameters
+    ----------
+    ta_output : bytes
+        Output from `subprocess.PIPE`.
+
+    Returns
+    ------
+    None
+    """
     now = time.time()
     elapsed_time = now - self.last_check
     if elapsed_time >= self.scenario.gb_read_time:
@@ -369,19 +496,25 @@ def gb_record(self, ta_output: bytes) -> None:
 
 
 def ta_runner_factory(scenario: argparse.Namespace, logs: RTACLogs,
-                      core: int) -> AbstractTARunner:
-    """Class factory to return the initialized target algorithm runner class
-    appropriate to the RTAC method scenario.ac.
+                      core: int) -> BaseTARunner | TARunnerpp:
+    """
+    Class factory to return the initialized target algorithm runner class
+    appropriate to the RTAC method specified in `scenario.ac`.
 
-    :param scenario: Namespace containing all settings for the RTAC.
-    :type scenario: argparse.Namespace
-    :param logs: Object containing loggers and logging functions.
-    :type: RTACLogs
-    :param core: Number of the parallel run started on a core.
-    :type: int
-    :returns: Inititialized AbstractTARunner object matching the RTAC method of
-        the scenario.
-    :rtype: AbstractTARunner
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    logs : RTACLogs
+        Object containing loggers and logging functions.
+    core : int
+        Number of the parallel run started on a core.
+
+    Returns
+    -------
+    BaseTARunner or TARunnerpp
+        Initialized target algorithm runner object matching the RTAC method
+        of the scenario.
     """
     if scenario.ac in (ACMethod.ReACTR, ACMethod.CPPL):
         tarunner = BaseTARunner

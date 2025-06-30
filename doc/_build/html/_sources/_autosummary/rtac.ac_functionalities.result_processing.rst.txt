@@ -24,10 +24,10 @@ rtac.ac\_functionalities.result\_processing
    .. autosummary::
    
       AbstractResultProcessing
+      Contender
       ResultProcessing
       ResultProcessingCPPL
       ResultProcessingpp
-      contender
    
    
 

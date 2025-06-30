@@ -10,7 +10,7 @@ packages = find_packages()
 install_requires = [line.strip() for line in open('requirements.txt')]
 
 setup(name='rtac',
-      version='0.0.1.2',
+      version='0.0.1.3',
       description=("RTAC is a collection of Realtime Algorithm" 
                    " Configuration methods."),
       long_description=README,

@@ -84,6 +84,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking</span><span class="w"> </span><span class="kn">import</span> <span class="n">trueskill</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">RTACDatapp</span><span class="p">,</span>
     <span class="n">Configuration</span><span class="p">,</span>
     <span class="n">ACMethod</span><span class="p">,</span>
     <span class="n">InterimMeaning</span><span class="p">,</span>
@@ -102,24 +103,26 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rankdata</span>
 
 
-<div class="viewcode-block" id="contender"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.contender">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">contender</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Contender"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.Contender">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Contender</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper object for setting trueskill ranks.&quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="AbstractResultProcessing"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractResultProcessing</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class with functions to process tournament results.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class with functions to process tournament results.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize tournament result processing class.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        scenario</span>
-<span class="sd">            Namespace containing all settings for the RTAC.</span>
-<span class="sd">        logs</span>
-<span class="sd">            Object containing loggers and logging functions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span>
@@ -133,11 +136,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_data</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AbstractResultProcessing.init_data"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.init_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing data according to ReACTR</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament result processing data according to ReACTR</span>
 <span class="sd">        implementation.</span>
 
-<span class="sd">        :returns: Randomly selected contenders.</span>
-<span class="sd">        :rtype: dict</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, Configuration]</span>
+<span class="sd">            Randomly selected contenders.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
             <span class="c1"># Data is loaded instead of intialized.</span>
@@ -169,33 +175,66 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">[</span><span class="n">rp</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rp</span></div>
 
 <div class="viewcode-block" id="AbstractResultProcessing.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_results">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
                         <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform tournament result processing necessary to replace contenders</span>
 <span class="sd">        in pool and select contenders for next tournament/problem instance.</span>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the rtac </span>
+<span class="sd">            modules.</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the problem instance. Defaults to None.</span>
+<span class="sd">        tourn_nr : int</span>
+<span class="sd">            Tournament number. Defaults to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="AbstractResultProcessing.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.manage_pool">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool if necessary.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace contenders in pool if necessary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="AbstractResultProcessing.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.select_contenders">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select contenders for next tournament/problem instance.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select contenders for next tournament/problem instance.</span>
 
-<div class="viewcode-block" id="AbstractResultProcessing.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage result processing.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :returns: ID of the configuration to have won the previous tournament</span>
-<span class="sd">        :rtype: str</span>
+<div class="viewcode-block" id="AbstractResultProcessing.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span> 
+                      <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manage result processing.</span>
+
+<span class="sd">        rtac_data: RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament. </span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        tourn_nr: int</span>
+<span class="sd">            Number of the tournament that is processed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or None</span>
+<span class="sd">            ID of the winner or None if problem instance could not be solved.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
 
@@ -216,16 +255,34 @@
         <span class="k">return</span> <span class="n">winner</span></div>
 
 <div class="viewcode-block" id="AbstractResultProcessing.get_contender_dict"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.get_contender_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_contender_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns contender_dict.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns contender_dict.</span>
 
-<span class="sd">        :returns: Configuration selected to run in next</span>
-<span class="sd">        tournament/on next problem instance. Dictionary with configuration id</span>
-<span class="sd">        as key and Configuration object as value.</span>
-<span class="sd">        :rtype: dict[str: Configuration]</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, Configuration]</span>
+<span class="sd">            Configuration selected to run in next tournament/on next problem </span>
+<span class="sd">            instance. Dictionary with configuration id as key and Configuration </span>
+<span class="sd">            object as value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span></div>
 
-<div class="viewcode-block" id="AbstractResultProcessing.result_summary_terminal"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">result_summary_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">tourn_nr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractResultProcessing.result_summary_terminal"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.AbstractResultProcessing.result_summary_terminal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">result_summary_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                                <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the sum of the winner results of all tournaments so far.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results : list[float]</span>
+<span class="sd">            List of results of previous tournament.</span>
+<span class="sd">        tourn_nr : int</span>
+<span class="sd">            Number of previous tournament. Defaults to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">tourn_nr</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">=</span> <span class="n">tourn_nr</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
@@ -255,36 +312,59 @@
 
 
 <div class="viewcode-block" id="ResultProcessing"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ResultProcessing</span><span class="p">(</span><span class="n">AbstractResultProcessing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processes results of previous tournament.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes results of previous tournament.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing class as necessary for</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+
+<span class="sd">    Implementation based on the paper: “ReACTR: Realtime Algorithm </span>
+<span class="sd">    Configuration through Tournament Rankings”</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament result processing class as necessary for</span>
 <span class="sd">        ReACTR implementation.</span>
-
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
-<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">        :type: RTACLogs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_scores</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ResultProcessing.init_scores"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.init_scores">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize scores dict for trueskill.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize scores dict for trueskill.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> 
                                         <span class="p">(</span><span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_MU</span><span class="p">,</span>
                                          <span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_SIGMA</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ResultProcessing.find_best"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.find_best">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the configurations scored as best by trueskill.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the configurations scored as best by trueskill.</span>
 
-<span class="sd">        :param current_dict: Dictionary with confguration ids as key and</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        current_dict : list</span>
+<span class="sd">            Dictionary with configuration ids as key and</span>
 <span class="sd">            trueskill scores (mu, sigma) as value.</span>
-<span class="sd">        :type current_dict: dict</span>
-<span class="sd">        :param current_dict: Number of best configurations to draw.</span>
-<span class="sd">        :type current_dict: int</span>
-<span class="sd">        :returns: List of best configurations.</span>
-<span class="sd">        :rtype: list</span>
+<span class="sd">        n_best : int</span>
+<span class="sd">            Number of best configurations to draw.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            List of best configurations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">best_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">current_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
 
@@ -292,14 +372,23 @@
 
 <div class="viewcode-block" id="ResultProcessing.get_winner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.get_winner">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_winner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> \
             <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get index of the winning configuration and ranks.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get index of the winning configuration and ranks.</span>
 
-<span class="sd">        :param times: List of time results of previous tournament.</span>
-<span class="sd">        :type times: list[float]</span>
-<span class="sd">        :param res: List of objective results of previous tournament.</span>
-<span class="sd">        :type res: list[float]</span>
-<span class="sd">        :returns: Index of winner and ranks.</span>
-<span class="sd">        :rtype: tuple[int, list[int]]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        times : list[float]</span>
+<span class="sd">            List of time results of previous tournament.</span>
+<span class="sd">        res : list[float]</span>
+<span class="sd">            List of objective results of previous tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **winner** : int,</span>
+<span class="sd">              Index of the winner.</span>
+<span class="sd">            - **ranks** : list[int],</span>
+<span class="sd">              Ranks of the contenders.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
             <span class="n">winner</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
@@ -316,15 +405,28 @@
 
         <span class="k">return</span> <span class="n">winner</span><span class="p">,</span> <span class="n">ranks</span></div>
 
-<div class="viewcode-block" id="ResultProcessing.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="ResultProcessing.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span> 
+                        <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
-<span class="sd">        in pool and select contenders for next tournament/problem instance</span>
-<span class="sd">        according to ReACTR implementation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in the pool and select contenders for the next tournament/problem </span>
+<span class="sd">        instance according to the ReACTR implementation.</span>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary</span>
 <span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament. </span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        tourn_nr: int</span>
+<span class="sd">            Number of the tournament that is processed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
         <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
@@ -349,6 +451,9 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
             <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">core</span><span class="p">,</span> <span class="n">contender</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="n">contender</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">RuntimeFeatures</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
             <span class="n">tourn_results</span> <span class="o">=</span> \
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="p">[[</span><span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">times</span><span class="p">)]]</span>
 
@@ -368,7 +473,7 @@
         <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">number_cores</span><span class="p">):</span>
             <span class="n">skill</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">0</span><span class="p">],</span> 
                      <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">contender_ids</span><span class="p">[</span><span class="n">core</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">contender</span><span class="p">()</span>
+            <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span> <span class="o">=</span> <span class="n">Contender</span><span class="p">()</span>
             <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">skill</span> <span class="o">=</span> <span class="n">skill</span>
             <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
 
@@ -392,7 +497,13 @@
                       <span class="n">individuals</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">.</span><span class="n">skill</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ResultProcessing.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool according to Mu and Sigma (TrueSKill).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace contenders in pool according to Mu and Sigma (TrueSKill).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Replace contenders in self.pool, if performance below average</span>
         <span class="n">contender_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">contenders</span><span class="p">):</span>
@@ -481,9 +592,15 @@
                         <span class="p">(</span><span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_MU</span><span class="p">,</span> <span class="n">trueskill</span><span class="o">.</span><span class="n">INITIAL_SIGMA</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ResultProcessing.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessing.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select scenario.contenders == #contenders for next</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select scenario.contenders == #contenders for next</span>
 <span class="sd">        tournament/problem instance: top number of </span>
-<span class="sd">        &#39;self.scenario.keeptop&#39; and the rest randomly.&quot;&quot;&quot;</span>
+<span class="sd">        &#39;self.scenario.keeptop&#39; and the rest randomly.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tournament_list</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Choose the two best contenders</span>
@@ -516,29 +633,44 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Process results of prvious tournament.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ResultProcessingpp.duplicates"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp.duplicates">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ranks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List the indices of the result in the results list.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List the indices of the result in the results list.</span>
 
-<span class="sd">        :param ranks: List of objective results of previous tournament.</span>
-<span class="sd">        :type ranks: list[int]</span>
-<span class="sd">        :param rank: a single result.</span>
-<span class="sd">        :type rank: float</span>
-<span class="sd">        :returns: list of indices of this result in the results list.</span>
-<span class="sd">        :rtype: list[int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ranks : list[int]</span>
+<span class="sd">            List of objective results of previous tournament.</span>
+<span class="sd">        rank : float</span>
+<span class="sd">            A single result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[int]</span>
+<span class="sd">            List of indices of this result in the results list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ranks</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">rank</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ResultProcessingpp.get_winner"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingpp.get_winner">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_winner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> \
             <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get index of the winning configuration including last known</span>
-<span class="sd">        intermidiate outputs to break ties. Additionally output complete</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get index of the winning configuration including last known</span>
+<span class="sd">        intermediate outputs to break ties. Additionally outputs complete</span>
 <span class="sd">        ranking to compute more detailed assessment with trueskill.</span>
 
-<span class="sd">        :param times: List of time results of previous tournament.</span>
-<span class="sd">        :type times: list[float]</span>
-<span class="sd">        :param res: List of objective results of previous tournament.</span>
-<span class="sd">        :type res: list[float]</span>
-<span class="sd">        :returns: Index of winner and ranks.</span>
-<span class="sd">        :rtype: tuple[int, list[int]]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        times : list[float]</span>
+<span class="sd">            List of time results of previous tournament.</span>
+<span class="sd">        res : list[float]</span>
+<span class="sd">            List of objective results of previous tournament.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            - **winner** : int,</span>
+<span class="sd">              Index of the winner.</span>
+<span class="sd">            - **ranks** : list[int],</span>
+<span class="sd">              Ranks of the contenders..</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">objective_min</span><span class="p">:</span>
             <span class="n">winner</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">))</span>
@@ -613,16 +745,21 @@
 
 
 <div class="viewcode-block" id="ResultProcessingCPPL"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ResultProcessingCPPL</span><span class="p">(</span><span class="n">AbstractResultProcessing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process results of previous tournament.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process results of previous tournament.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize tournament result processing class as necessary for</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament result processing class as necessary for</span>
 <span class="sd">        CPPL implementation.</span>
-
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
-<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">        :type: RTACLogs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
@@ -644,8 +781,35 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bandit_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">bandit_models</span>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.init_cppl"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_cppl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">random_config_gen</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span>
-                  <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.init_cppl"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.init_cppl">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_cppl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+                  <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span>
+                  <span class="n">random_config_gen</span><span class="p">:</span> <span class="n">RandomConfigGen</span><span class="p">,</span>
+                  <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span>
+                  <span class="n">queue</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize cppl in isolated mode. The bandit functions are called and </span>
+<span class="sd">        executed in a separate thread so no build up in background threads of </span>
+<span class="sd">        libraries that numpy, scipy and sklearn depend on is possible.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scenario : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+<span class="sd">        pool : dict[str, Configuration]</span>
+<span class="sd">            Initial pool of Configurations. Loaded from logas or randomly </span>
+<span class="sd">            generated.</span>
+<span class="sd">        random_config_gen : RandomConfigGen</span>
+<span class="sd">            Random configuration generator.</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            List of contenders in the upcoming tournament. Loaded from logas or </span>
+<span class="sd">            randomly selected.</span>
+<span class="sd">        queue : multiprocessing.Queue</span>
+<span class="sd">            Queue to send data back to main thread.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ranking</span><span class="w"> </span><span class="kn">import</span> <span class="n">cppl</span>
 
         <span class="n">cppl</span> <span class="o">=</span> <span class="n">cppl</span><span class="o">.</span><span class="n">CPPL</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">)</span>
@@ -658,15 +822,27 @@
 
         <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">bandit</span><span class="p">,</span> <span class="n">bandit_models</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.process_tourn"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_tourn">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_tourn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
+                      <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage result processing.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manage result processing.</span>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary</span>
 <span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :returns: ID of the configuration to have won the previous tournament</span>
-<span class="sd">        :rtype: str</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament. </span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        tourn_nr: int</span>
+<span class="sd">            Number of the tournament that is processed. Defaults to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
 
@@ -675,7 +851,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">winner</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">select_contenders</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtac_data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">newtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -687,9 +863,41 @@
 
         <span class="k">return</span> <span class="n">winner</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.cppl_process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">,</span>
-                             <span class="n">instance</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">ob</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span> 
+                             <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+                             <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
+                             <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span> 
+                             <span class="n">ob</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">queue</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in the pool and select contenders for the next tournament/problem </span>
+<span class="sd">        instance within a separate thread.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            List of contenders in the upcoming tournament. Loaded from logas or </span>
+<span class="sd">            randomly selected.</span>
+<span class="sd">        scenario : argparse.Namespace</span>
+<span class="sd">            Namespace containing all settings for the RTAC.</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary</span>
+<span class="sd">            throughout the rtac modules.</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament. </span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        pool : dict[str, Configuration]</span>
+<span class="sd">            Initial pool of Configurations. Loaded from logas or randomly </span>
+<span class="sd">            generated.</span>
+<span class="sd">        ob : bool</span>
+<span class="sd">            True if scenario is objective value minimization, False if not.</span>
+<span class="sd">        queue : multiprocessing.Queue</span>
+<span class="sd">            Queue to send data back to main thread.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -714,14 +922,28 @@
 
         <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">bandit</span><span class="p">,</span> <span class="n">bandit_models</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">times</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.process_results"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.process_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span>
+                        <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform tournament result processing necessary to replace contenders</span>
-<span class="sd">        in pool and select contenders for next tournament/problem instance.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform tournament result processing necessary to replace contenders</span>
+<span class="sd">        in the pool and select contenders for the next tournament/problem </span>
+<span class="sd">        instance.</span>
 
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary</span>
 <span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            ID of the configuration to have won the previous tournament. </span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        tourn_nr: int</span>
+<span class="sd">            Number of the tournament that is processed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
@@ -769,6 +991,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
             <span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res_time</span><span class="p">[:])</span>
             <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ta_res</span><span class="p">[:])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">core</span><span class="p">,</span> <span class="n">contender</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="n">contender</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">RuntimeFeatures</span><span class="p">[</span><span class="n">core</span><span class="p">]</span>
             <span class="n">tourn_results</span> <span class="o">=</span> \
                 <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="p">[[</span><span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">times</span><span class="p">)]]</span>
 
@@ -782,7 +1007,23 @@
                 <span class="n">tr_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">general_log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Results of this tournament: </span><span class="si">{</span><span class="n">tr_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.cppl_manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">],</span> 
+                         <span class="n">queue</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace contenders in pool if necessary. Runs in separate thread.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            List of contenders in the upcoming tournament. Loaded from logas or </span>
+<span class="sd">            randomly selected.</span>
+<span class="sd">        queue : multiprocessing.Queue</span>
+<span class="sd">            Queue to send data back to main thread.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -796,7 +1037,13 @@
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cppl</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ResultProcessingCPPL.manage_pool"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.manage_pool">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">manage_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace contenders in pool if necessary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace contenders in pool if necessary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
             <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cppl_manage_pool</span><span class="p">,</span>
@@ -809,7 +1056,19 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cppl</span><span class="o">.</span><span class="n">manage_pool</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.cppl_select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.cppl_select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.cppl_select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cppl_select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select contenders for next tournament/problem instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        queue : multiprocessing.Queue</span>
+<span class="sd">            Queue to send data back to main thread.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;cpplclass.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">cppl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -822,9 +1081,14 @@
 
         <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">contender_dict</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ResultProcessingCPPL.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select contenders for next tournament/problem instance.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ResultProcessingCPPL.select_contenders"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.ResultProcessingCPPL.select_contenders">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">select_contenders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select contenders for next tournament/problem instance.</span>
 
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">isolate_bandit</span><span class="p">:</span>
             <span class="n">queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cppl_select_contenders</span><span class="p">,</span>
@@ -842,16 +1106,28 @@
                   <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">contender_dict</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="processing_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.processing_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">processing_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractResultProcessing</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized class with data structures</span>
-<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+<div class="viewcode-block" id="processing_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.result_processing.html#rtac.ac_functionalities.result_processing.processing_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">processing_factory</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+        <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultProcessing</span> <span class="o">|</span> <span class="n">ResultProcessingpp</span> <span class="o">|</span> <span class="n">ResultProcessingCPPL</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class factory to return the initialized class with data structures</span>
+<span class="sd">    appropriate to the RTAC method `scenario.ac`.</span>
 
-<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">    :type scenario: argparse.Namespace</span>
-<span class="sd">    :returns: Inititialized BaseTARunner object matching the RTAC method of</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ResultProcessing or ResultProcessingpp or ResultProcessingCPPL</span>
+<span class="sd">        Initialized BaseTARunner object matching the RTAC method of</span>
 <span class="sd">        the scenario.</span>
-<span class="sd">    :rtype: BaseTARunner</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">is</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ResultProcessing</span><span class="p">(</span><span class="n">scenario</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
 

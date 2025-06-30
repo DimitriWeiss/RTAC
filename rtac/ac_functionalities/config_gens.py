@@ -21,7 +21,14 @@ from rtac.ac_functionalities.rtac_data import (
 
 
 class AbstractConfigGen(ABC):
-    """Abstract class for generation of configurations."""
+    """
+    Abstract class for generation of configurations.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
 
     @abstractmethod
     def __init__(self, scenario: argparse.Namespace):
@@ -29,27 +36,46 @@ class AbstractConfigGen(ABC):
 
     @abstractmethod
     def generate(self) -> Configuration:
-        """Generates and returns configuration."""
+        """
+        Generates and returns configuration.
+
+        Returns
+        -------
+        Configuration
+            Newly generated Configuration.
+        """
 
 
 class DefaultConfigGen(AbstractConfigGen):
-    """Generate default configuration."""
+    """
+    Generates default Configurationa.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
 
     def __init__(self, scenario: argparse.Namespace):
-        """Initialize default configuration class.
+        """Initialize default configuration class."""
 
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        """
         self.scenario = scenario
         self.config_space = scenario.config_space
         self.default_config = {}
 
     def generate(self, tourn) -> Configuration:
-        """Generates and stores default configuration.
+        """
+        Generates and stores default Configuration.
 
-        :returns: Default configuration.
-        :rtype: ac_functionalities.rtac_data.Configuration
+        Parameters
+        ----------
+        tourn : int
+            Number of tournament since RTAC initialization.
+
+        Returns
+        -------
+        Configuration
+            Default Configuration.
         """
         if not self.default_config:
             if '.json' in f'{self.scenario.param_file}':
@@ -80,22 +106,33 @@ class DefaultConfigGen(AbstractConfigGen):
 
 
 class RandomConfigGen(AbstractConfigGen):
-    """Generate random configuration."""
+    """
+    Generates random Configuration.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
 
     def __init__(self, scenario: argparse.Namespace):
-        """Initialize random configuration class.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
-        """
+        """Initialize random configuration class."""
         self.scenario = scenario
         self.config_space = scenario.config_space
 
     def generate(self, tourn) -> Configuration:
-        """Generates random configuration.
+        """
+        Generates random Configuration.
 
-        :returns: Random configuration.
-        :rtype: ac_functionalities.rtac_data.Configuration
+        Parameters
+        ----------
+        tourn : int
+            Number of tournament since RTAC initialization.
+
+        Returns
+        -------
+        Configuration
+            Randomly generated Configuration.
         """
 
         if '.json' in f'{self.scenario.param_file}':

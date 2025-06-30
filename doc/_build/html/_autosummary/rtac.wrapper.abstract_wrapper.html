@@ -121,17 +121,24 @@ algorithm is checked to determine if the problem instance is solved.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ta_output</strong> (<em>bytes</em>) – Output of the target algorithm.</p></li>
-<li><p><strong>nnr</strong> (<em>non_nlock_read</em>) – Non blocking read function for accessing the
-subprocess.PIPE output of the target algorithm</p></li>
-<li><p><strong>proc</strong> (<em>subprocess.Popen</em>) – Target algorithm run via subprocess.Popen process</p></li>
+<li><p><strong>nnr</strong> (<em>non_nlock_read</em>) – Non-blocking read function for accessing the subprocess.PIPE output
+of the target algorithm.</p></li>
+<li><p><strong>proc</strong> (<em>subprocess.Popen</em>) – Target algorithm run via subprocess.Popen process.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Target algorithm result, runtime needed and event
-(0 or 1, if solved), or None</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>result</strong> : int | float,
+Objective value.</p></li>
+<li><p><strong>time</strong> : float,
+Runtime needed.</p></li>
+<li><p><strong>event</strong> : int,
+0 or 1, if solved.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[int | float, float, int]</p>
+<dd class="field-odd"><p>tuple or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -145,17 +152,23 @@ subprocess.PIPE.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>params</strong> (<em>Any</em>) – Parameters in a format as needed for target algorithm.</p></li>
-<li><p><strong>timelimit</strong> (<em>int</em>) – Maximum runtime allowed for target algorithm run in
-seconds.</p></li>
+<li><p><strong>timelimit</strong> (<em>int</em>) – Maximum runtime allowed for target algorithm run in seconds.</p></li>
 <li><p><strong>instance</strong> (<em>str</em>) – Path to problem instance.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Target algorithm via subprocess.Popen process and starting</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>proc</strong> : subbrocess.Process,
+The process started with the target algorithm</p></li>
+<li><p><strong>proc_cpu_time</strong> : int,
+CPU time of the subprocess.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
-<p>time of the process
-:rtype: tuple[subprocess.Popen, int]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -165,8 +178,15 @@ seconds.</p></li>
 needed by the wrapper to pass to the target algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object of parameter values to run
-problem instance with.v</p>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><em>Configuration</em></a>) – Configuration object of parameter values to run problem instance
+with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any form of the configuration that is needed by the target
+algorithm.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
 </dd>
 </dl>
 </dd></dl>

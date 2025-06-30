@@ -81,14 +81,18 @@
 
 
 <div class="viewcode-block" id="validateparams"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.json_validation.html#rtac.utils.json_validation.validateparams">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">validateparams</span><span class="p">(</span><span class="n">config_space</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the configuration space definition.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate the configuration space definition.</span>
 
-<span class="sd">    :param config_space: Configuration space definition.</span>
-<span class="sd">    :type config_space: dict</span>
-<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">    :type: RTACLogs</span>
-<span class="sd">    :returns: If configuration space is valid.</span>
-<span class="sd">    :rtype: bool</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    config_space : dict</span>
+<span class="sd">        Configuration space definition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        Whether the configuration space is valid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">/RTACParamSchema.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

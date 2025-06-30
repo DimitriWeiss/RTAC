@@ -111,16 +111,21 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.feature_gen.tsp_feats.</span></span><span class="sig-name descname"><span class="pre">TSPFeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/feature_gen/tsp_feats.html#TSPFeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.feature_gen.tsp_feats.TSPFeats" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Dummy TSP feature generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to feature files directory.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.feature_gen.tsp_feats.TSPFeats.get_features">
-<span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/rtac/feature_gen/tsp_feats.html#TSPFeats.get_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.feature_gen.tsp_feats.TSPFeats.get_features" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/rtac/feature_gen/tsp_feats.html#TSPFeats.get_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.feature_gen.tsp_feats.TSPFeats.get_features" title="Permalink to this definition"></a></dt>
 <dd><p>Get features for instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Name of instance.</p>
+<dd class="field-odd"><p><strong>instance</strong> (<em>str</em>) – Path to the problem instance to get the features for.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of features for instance.</p>
+<dd class="field-even"><p>A list of the problem instance features.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>

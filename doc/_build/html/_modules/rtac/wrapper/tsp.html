@@ -89,18 +89,26 @@
 
 
 <div class="viewcode-block" id="TSP_RT"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_RT</span><span class="p">(</span><span class="n">AbstractWrapper</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
-<span class="sd">    &#39;a&#39; is fixed to have a fair comparison of runtime performance.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
+<span class="sd">    &#39;a&#39; is fixed to have a fair comparison of runtime performance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TSP_RT.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.translate_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert dictionary representation of the configuration to a list of</span>
-<span class="sd">        parameter name and value alternating.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert dictionary representation of the configuration to a list of</span>
+<span class="sd">        parameter names and values alternating.</span>
 
-<span class="sd">        :param config: Configuration object - parameter values to run problem</span>
-<span class="sd">            instance with.</span>
-<span class="sd">        :type config: Configuration</span>
-<span class="sd">        :returns: list of strings representation of the configuration</span>
-<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : Configuration</span>
+<span class="sd">            Configuration object - parameter values to run problem instance </span>
+<span class="sd">            with.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of str</span>
+<span class="sd">            List of strings representation of the configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;-a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>  <span class="c1"># runtime scenario: fixed annealing factor</span>
@@ -112,22 +120,26 @@
 
 <div class="viewcode-block" id="TSP_RT.start"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
               <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start CaDiCaL via subprocess.Popen with stdout to</span>
-<span class="sd">        subprocess.PIPE, configuration &lt;config&gt; on instance &lt;instance&gt; with</span>
-<span class="sd">            timelimit &lt;timeout&gt;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start CaDiCaL via subprocess.Popen with stdout set to subprocess.PIPE,</span>
+<span class="sd">        using the given configuration on the specified instance with a time </span>
+<span class="sd">        limit.</span>
 
-<span class="sd">        :param config: Parameters in a format as needed for target algorithm.</span>
-<span class="sd">        :type config: Any</span>
-<span class="sd">        :param timeout: Maximum runtime allowed for target algorithm run in</span>
-<span class="sd">            seconds.</span>
-<span class="sd">        :type timeout: int</span>
-<span class="sd">        :param instance: Path to problem instance.</span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :returns: Target algorithm via subprocess.Popen process and starting</span>
-<span class="sd">        time of the process</span>
-<span class="sd">        :rtype: tuple[subprocess.Popen, int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : Any</span>
+<span class="sd">            Parameters in the format required by the target algorithm.</span>
+<span class="sd">        timeout : int</span>
+<span class="sd">            Maximum runtime allowed for the target algorithm run in seconds.</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple of (subprocess.Popen, int)</span>
+<span class="sd">            Target algorithm subprocess.Popen process and the start time of </span>
+<span class="sd">            the process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># Absolute path to the current file</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
 
@@ -150,19 +162,25 @@
 <div class="viewcode-block" id="TSP_RT.check_if_solved"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RT.check_if_solved">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_solved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nnr</span><span class="p">:</span> <span class="n">non_block_read</span><span class="p">,</span>
                         <span class="n">proc</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
                             <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bytes output of the subprocess.Popen process running CaDiCaL is</span>
-<span class="sd">        checked to determine if the problem instance is solved (res).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the bytes output of the subprocess.Popen process running CaDiCaL</span>
+<span class="sd">        to determine if the problem instance is solved.</span>
 
-<span class="sd">        :param ta_output: Output of the target algorithm.</span>
-<span class="sd">        :type ta_output: bytes</span>
-<span class="sd">        :param nnr: Non blocking read function for accessing the</span>
-<span class="sd">            subprocess.PIPE output of the target algorithm</span>
-<span class="sd">        :type nnr: non_nlock_read</span>
-<span class="sd">        :param proc: Target algorithm run via subprocess.Popen process</span>
-<span class="sd">        :type proc: subprocess.Popen</span>
-<span class="sd">        :returns: Target algorithm result (1 if solved, 0 else), runtime</span>
-<span class="sd">            needed and event (0 or 1, if solved), or None</span>
-<span class="sd">        :rtype: tuple[int | float, float, int]</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ta_output : bytes</span>
+<span class="sd">            Output of the target algorithm.</span>
+<span class="sd">        nnr : non_nlock_read</span>
+<span class="sd">            Non-blocking read function for accessing the subprocess.PIPE </span>
+<span class="sd">            output.</span>
+<span class="sd">        proc : subprocess.Popen</span>
+<span class="sd">            Target algorithm run via subprocess.Popen process.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple of (int or float, float, int) or None</span>
+<span class="sd">            Target algorithm result (1 if solved, 0 otherwise), runtime needed,</span>
+<span class="sd">            and event (0 or 1, indicating if solved), or None if no result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
@@ -196,19 +214,28 @@
 
 
 <div class="viewcode-block" id="TSP_Q"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Q">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_Q</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
 <span class="sd">    is not fixed. If TA is much faster than the time limit but still yields a</span>
-<span class="sd">    better solution it is not a problem.&quot;&quot;&quot;</span>
+<span class="sd">    better solution it is not a problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TSP_Q.translate_config"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Q.translate_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overriding TSP_RT function: Convert dictionary representation of</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overriding TSP_RT function: Convert dictionary representation of</span>
 <span class="sd">        the configuration to a list of parameter name and value alternating.</span>
 
-<span class="sd">        :param config: Configuration object - parameter values to run problem</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : Configuration</span>
+<span class="sd">            Configuration object – parameter values to run the problem </span>
 <span class="sd">            instance with.</span>
-<span class="sd">        :type config: Configuration</span>
-<span class="sd">        :returns: list of strings representation of the configuration</span>
-<span class="sd">        :rtype: list[str]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of str</span>
+<span class="sd">            List representation of the configuration with parameter names and </span>
+<span class="sd">            values alternating.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -219,30 +246,41 @@
 
 
 <div class="viewcode-block" id="TSP_RTpp"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_RTpp</span><span class="p">(</span><span class="n">TSP_RT</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python-TSP Wrapper for runtime minimization scenario. Annealing factor</span>
 <span class="sd">    &#39;a&#39; is fixed to have a fair comparison of runtime performance. Additional</span>
-<span class="sd">    functions for ReACTR++ implementation.&quot;&quot;&quot;</span>
+<span class="sd">    functions for ReACTR++ implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TSP_RTpp.interim_info"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp.interim_info">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gives information about whether a higher or a lower level of the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives information about whether a higher or a lower level of the</span>
 <span class="sd">        entry is a sign of higher quality of the configuration regarding the</span>
 <span class="sd">        target algorithm run.</span>
 
-<span class="sd">        :return: List of InterimMeaning - is a higher or lower value better.</span>
-<span class="sd">        :rtype: list[InterimMeaning] or None</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of InterimMeaning or None</span>
+<span class="sd">            Indicates if a higher or lower value is better.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span></div>
 
 <div class="viewcode-block" id="TSP_RTpp.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_RTpp.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parsing runtime output of the target algorithm.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse runtime output of the target algorithm.</span>
 
-<span class="sd">        :param ta_output: Output of the target algorithm.</span>
-<span class="sd">        :type ta_output: bytes</span>
-<span class="sd">        :return: List of intermediate output values if provided by TA.</span>
-<span class="sd">        :rtype: list[float] or None</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ta_output : bytes</span>
+<span class="sd">            Output of the target algorithm.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of float or None</span>
+<span class="sd">            List of intermediate output values if provided by the target </span>
+<span class="sd">            algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
@@ -263,18 +301,23 @@
 
 
 <div class="viewcode-block" id="TSP_Qpp"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TSP_Qpp</span><span class="p">(</span><span class="n">TSP_Q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python-TSP Wrapper for cost minimization scenario. Annealing factor</span>
 <span class="sd">    is not fixed. If TA is much faster than the time limit but still yields a</span>
 <span class="sd">    better solution it is not a problem. Additional functions for ReACTR++</span>
-<span class="sd">    implementation.&quot;&quot;&quot;</span>
+<span class="sd">    implementation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TSP_Qpp.interim_info"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp.interim_info">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">interim_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterimMeaning</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gives information about whether a higher or a lower level of the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives information about whether a higher or a lower level of the</span>
 <span class="sd">        entry is a sign of higher quality of the configuration regarding the</span>
 <span class="sd">        target algorithm run.</span>
 
-<span class="sd">        :return: List of InterimMeaning - is a higher or lower value better.</span>
-<span class="sd">        :rtype: list[InterimMeaning] or None</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of InterimMeaning or None</span>
+<span class="sd">            Indicates if a higher or lower value is better.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span> <span class="o">=</span> <span class="p">[</span><span class="n">InterimMeaning</span><span class="o">.</span><span class="n">decrease</span><span class="p">,</span>
                                 <span class="n">InterimMeaning</span><span class="o">.</span><span class="n">increase</span><span class="p">,</span>
@@ -284,12 +327,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span></div>
 
 <div class="viewcode-block" id="TSP_Qpp.check_output"><a class="viewcode-back" href="../../../_autosummary/rtac.wrapper.tsp.html#rtac.wrapper.tsp.TSP_Qpp.check_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parsing runtime output of the target algorithm.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse runtime output of the target algorithm.</span>
 
-<span class="sd">        :param ta_output: Output of the target algorithm.</span>
-<span class="sd">        :type ta_output: bytes</span>
-<span class="sd">        :return: List of intermediate output values if provided by TA.</span>
-<span class="sd">        :rtype: list[float] or None</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ta_output : bytes</span>
+<span class="sd">            Output of the target algorithm.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of float or None</span>
+<span class="sd">            List of intermediate output values if provided by the target </span>
+<span class="sd">            algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ta_output</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ta_output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>

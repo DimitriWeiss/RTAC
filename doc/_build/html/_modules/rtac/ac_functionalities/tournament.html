@@ -92,28 +92,41 @@
     <span class="n">TARunStatus</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTARunner</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">ACMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">RTACData</span><span class="p">,</span>
+    <span class="n">ACMethod</span><span class="p">,</span>
+    <span class="n">RTACDatapp</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 
 <div class="viewcode-block" id="AbstractTournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTournament</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class for tournaments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    ta_runner : BaseTARunner</span>
+<span class="sd">        Target algorithm runner object.</span>
+<span class="sd">    rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">        Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">        modules.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span>
-                 <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes tournament class for ReACTR tournaments.</span>
-<span class="sd">        If self.scenario.baselineperf the configuration used is the default</span>
-<span class="sd">        configuration according to the configuration space definitin json.</span>
+                 <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the tournament class for ReACTR tournaments.</span>
 
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
-<span class="sd">        :param ta_runner: Target algorithm runner object.</span>
-<span class="sd">        :type: BaseTARunner</span>
-<span class="sd">        :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">        :type rtac_data: RTACData</span>
-<span class="sd">        :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">        :type: RTACLogs</span>
+<span class="sd">        If `self.scenario.baselineperf` is set, the configuration used is the</span>
+<span class="sd">        default configuration according to the configuration space definition </span>
+<span class="sd">        JSON.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner_class</span> <span class="o">=</span> <span class="n">ta_runner</span>
@@ -130,30 +143,44 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">start_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                          <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
                          <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up tournament data and information and starts the tournament</span>
-<span class="sd">        with scenario.number_cores configured target algorithms running in</span>
-<span class="sd">        paralel with settings according to the RTAC method used.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up tournament data and information and starts the tournament with</span>
+<span class="sd">        `scenario.number_cores` configured target algorithms running in parallel,</span>
+<span class="sd">        using settings according to the RTAC method.</span>
 
-<span class="sd">        :param instance: path to the problem instance to solve.</span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :param contender_dict: Dictonary containing configurations to run in</span>
-<span class="sd">            the tournament with configuration id as key and Configuration</span>
-<span class="sd">            object as value.</span>
-<span class="sd">        :type instance: dict[str: Configuration]</span>
-<span class="sd">        :param tourn_nr: Number of the tournament during this RTAC run.</span>
-<span class="sd">        :type tourn_nr: int</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            Dictionary containing configurations to run in the tournament, with</span>
+<span class="sd">            configuration IDs as keys and Configuration objects as values.</span>
+<span class="sd">        tourn_nr : int</span>
+<span class="sd">            Number of the tournament during this RTAC run.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="AbstractTournament.watch_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.watch_tournament">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
-<span class="sd">        scenario.timeout if reached according to the RTAC method used.&quot;&quot;&quot;</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached according to the RTAC method used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="AbstractTournament.close_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.close_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function that initiates termination of all target algorithm runs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initiates termination of all target algorithm runs.</span>
 
-<span class="sd">        :param process: Target algorithm run process.</span>
-<span class="sd">        :type process: subprocess.Popen</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">ev</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="mi">1</span>
@@ -169,12 +196,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">terminate_run</span><span class="p">(</span><span class="n">core</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="AbstractTournament.terminate_run"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.terminate_run">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">terminate_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">core</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">process</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function that enforces termination of a target algorithm run.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enforces termination of a target algorithm run.</span>
 
-<span class="sd">        :param core: Index of the process in the list of processes.</span>
-<span class="sd">        :type core: int</span>
-<span class="sd">        :param process: Target algorithm run process.</span>
-<span class="sd">        :type process: subprocess.Popen</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        core : int</span>
+<span class="sd">            Index of the process in the list of processes.</span>
+<span class="sd">        process : subprocess.Popen</span>
+<span class="sd">            Target algorithm run process to terminate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">core</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>             
@@ -197,7 +231,18 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">core</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AbstractTournament.pid_alive"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.pid_alive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pid_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractTournament.pid_alive"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.AbstractTournament.pid_alive">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pid_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if process is till alive using PID.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pid : int</span>
+<span class="sd">            Unique identifier for process.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -206,23 +251,33 @@
 
 
 <div class="viewcode-block" id="Tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournament</span><span class="p">(</span><span class="n">AbstractTournament</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament class with functions needed for ReACTR method tournaments.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tournament class with functions needed for ReACTR method tournaments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Tournament.start_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.start_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                          <span class="n">contender_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">],</span>
-                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up tournament data and information and starts the tournament</span>
-<span class="sd">        with scenario.number_cores configured target algorithms running in</span>
-<span class="sd">        paralel according to the ReACTR method.</span>
+                         <span class="n">tourn_nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up tournament data and starts the tournament with</span>
+<span class="sd">        `scenario.number_cores` configured target algorithms running in </span>
+<span class="sd">        parallel according to the ReACTR method.</span>
 
-<span class="sd">        :param instance: path to the problem instance to solve.</span>
-<span class="sd">        :type instance: str</span>
-<span class="sd">        :param contender_dict: Dictonary containing configurations to run in</span>
-<span class="sd">            the tournament with configuration id as key and Configuration</span>
-<span class="sd">            object as value.</span>
-<span class="sd">        :type instance: dict[str: Configuration]</span>
-<span class="sd">        :param tourn_nr: Number of the tournament during this RTAC run.</span>
-<span class="sd">        :type tourn_nr: int</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to the problem instance to solve.</span>
+<span class="sd">        contender_dict : dict[str, Configuration]</span>
+<span class="sd">            Dictionary containing configurations to run in the tournament, with</span>
+<span class="sd">            configuration IDs as keys and Configuration objects as values.</span>
+<span class="sd">        tourn_nr : int</span>
+<span class="sd">            Number of the tournament during this RTAC run.</span>
+<span class="sd">        cores_start : list[int]</span>
+<span class="sd">            List of cores which to start the contenders on.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">terminated_configs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
@@ -273,7 +328,19 @@
         <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
             <span class="n">set_affinity_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="n">core</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tournament.fill_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.fill_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="Tournament.fill_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.fill_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fill_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cores_start</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fills up the remaining cores to be used in an early started tournament.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cores_start : list[int]</span>
+<span class="sd">            List of cores which to start the contenders on.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">cores_start</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span> <span class="o">=</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">,</span> <span class="n">core</span><span class="p">)</span>
@@ -298,8 +365,14 @@
             <span class="n">set_affinity_recursive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">core</span><span class="p">],</span> <span class="n">core</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tournament.watch_tournament"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament.watch_tournament">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
-<span class="sd">        scenario.timeout if reached.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">while</span> <span class="nb">any</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">process</span><span class="p">):</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Timeout is int, so checking every second is enough</span>
@@ -311,12 +384,25 @@
 
 
 <div class="viewcode-block" id="Tournament_GB"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournament_GB</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that contains gray-box tournament functions to be inserted into </span>
-<span class="sd">    tournament classes if scenario.gray_box is True.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that contains gray-box tournament functions to be inserted into </span>
+<span class="sd">    tournament classes if scenario.gray_box is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Tournament_GB.watch_tournament_gray_box"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB.watch_tournament_gray_box">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament_gray_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">early_tournament</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to observe the tournament and enforce the timelimit</span>
-<span class="sd">        scenario.timeout if reached.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Tournament_GB.watch_tournament_gray_box"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournament_GB.watch_tournament_gray_box">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">watch_tournament_gray_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">early_tournament</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to observe the tournament and enforce the timelimit</span>
+<span class="sd">        scenario.timeout if reached.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        early_tournament : bool</span>
+<span class="sd">            True if tournament is early starter, False if not.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">gb_check_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gb_pw_inst_archive</span> <span class="o">=</span> <span class="p">[]</span>
@@ -362,26 +448,34 @@
 
 
 <div class="viewcode-block" id="Tournamentpp"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.Tournamentpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tournamentpp</span><span class="p">(</span><span class="n">Tournament</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tournament class with functions needed for ReACTR method tournaments.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tournament class with functions needed for ReACTR method tournaments.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="tournament_factory"><a class="viewcode-back" href="../../../_autosummary/rtac.ac_functionalities.tournament.html#rtac.ac_functionalities.tournament.tournament_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tournament_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ta_runner</span><span class="p">:</span> <span class="n">BaseTARunner</span><span class="p">,</span>
-                       <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tournament</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized TournamentManager class</span>
-<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+                       <span class="n">rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">RTACLogs</span>
+                       <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tournament</span> <span class="o">|</span> <span class="n">Tournamentpp</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class factory to return the initialized TournamentManager class</span>
+<span class="sd">    appropriate to the RTAC method `scenario.ac`.</span>
 
-<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">    :type scenario: argparse.Namespace</span>
-<span class="sd">    :param ta_runner: Target algorithm runner object.</span>
-<span class="sd">    :type: BaseTARunner</span>
-<span class="sd">    :param rtac_data: Object containing data and objects necessary</span>
-<span class="sd">            throughout the rtac modules.</span>
-<span class="sd">    :type rtac_data: RTACData</span>
-<span class="sd">    :param logs: Object containing loggers and logging functions.</span>
-<span class="sd">    :type: RTACLogs</span>
-<span class="sd">    :returns: Inititialized Tournament object matching the RTAC method</span>
-<span class="sd">        of the scenario.</span>
-<span class="sd">    :rtype: Tournament</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    ta_runner : BaseTARunner</span>
+<span class="sd">        Target algorithm runner object.</span>
+<span class="sd">    rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">        Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">        modules.</span>
+<span class="sd">    logs : RTACLogs</span>
+<span class="sd">        Object containing loggers and logging functions.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tournament or Tournamentpp</span>
+<span class="sd">        Initialized Tournament object matching the RTAC method of the scenario.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">):</span>
         <span class="n">tournament</span> <span class="o">=</span> <span class="n">Tournament</span>

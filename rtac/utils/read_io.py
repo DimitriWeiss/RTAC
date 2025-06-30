@@ -26,16 +26,22 @@ from rtac.ac_functionalities.rtac_data import (
 sys.path.append(os.getcwd())
 
 
-def translate_params(config_space: dict[str, dict]) \
+def translate_params(
+    config_space: dict[str, dict]) \
         -> dict[str, DiscreteParameter | ContinuousParameter
                 | CategoricalParameter | BinaryParameter]:
-    """Translate configuration space nested dict to dict of dataclasses.
+    """
+    Translate configuration space nested dict to dict of dataclasses.
 
-    :param config_space: Configuration space definition.
-    :type config_space: dict of dicts
+    Parameters
+    ----------
+    config_space : dict of dicts
+        Configuration space definition.
 
-    :returns: config_space.
-    :rtype: dict of dataclasses
+    Returns
+    -------
+    dict[str, DiscreteParameter | ContinuousParameter | CategoricalParameter | BinaryParameter]
+        Translated configuration space.
     """
     for param, definition in config_space.items():
         config_space[param] = definition = argparse.Namespace(**definition)
@@ -55,16 +61,22 @@ def translate_params(config_space: dict[str, dict]) \
 
 def read_args(scenario: str = None,
               sysargs: list = None) -> argparse.Namespace:
-    """Read in scenario arguments.
-
-    :param scenario: Path to scenario text file.
-    :type scenario: str
-    :param sysargs: sys.argv passed from main.
-    :type sysargs: list
-
-    :returns: Scenario arguments set.
-    :rtype: argparse.Namespace
     """
+    Read in scenario arguments.
+
+    Parameters
+    ----------
+    scenario : str
+        Path to scenario text file. Defaults to None.
+    sysargs : list of str
+        sys.argv passed from main. Defaults to None.
+
+    Returns
+    -------
+    argparse.Namespace
+        Scenario arguments set.
+    """
+
     if sysargs is not None:
         sysargs = list(sysargs[1:])
     parser = argparse.ArgumentParser()

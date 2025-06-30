@@ -77,8 +77,20 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
 
 
-<div class="viewcode-block" id="is_file_open"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.is_file_open">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_file_open</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if any process is using the file.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="is_file_open"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.is_file_open">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_file_open</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if any process is using the file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str</span>
+<span class="sd">        Path to the file we want to know if it is open.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if file is open, False if not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">process_iter</span><span class="p">([</span><span class="s1">&#39;open_files&#39;</span><span class="p">]):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;open_files&#39;</span><span class="p">]</span>
@@ -91,7 +103,19 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="remove_fuse_hidden_files"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.remove_fuse_hidden_files">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">remove_fuse_hidden_files</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_fuse_hidden_files"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.clean_logs.html#rtac.utils.clean_logs.remove_fuse_hidden_files">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">remove_fuse_hidden_files</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes hidden fuse files that may clutter the log directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">        Path to the directory to declutter from fuse files.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.fuse_hidden&#39;</span><span class="p">):</span>
             <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>

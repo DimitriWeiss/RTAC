@@ -114,10 +114,10 @@
 <td><p>Abstract class for generation of configurations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#rtac.ac_functionalities.config_gens.DefaultConfigGen" title="rtac.ac_functionalities.config_gens.DefaultConfigGen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultConfigGen</span></code></a>(scenario)</p></td>
-<td><p>Generate default configuration.</p></td>
+<td><p>Generates default Configurationa.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.ac_functionalities.config_gens.RandomConfigGen" title="rtac.ac_functionalities.config_gens.RandomConfigGen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomConfigGen</span></code></a>(scenario)</p></td>
-<td><p>Generate random configuration.</p></td>
+<td><p>Generates random Configuration.</p></td>
 </tr>
 </tbody>
 </table>
@@ -126,10 +126,23 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.config_gens.</span></span><span class="sig-name descname"><span class="pre">AbstractConfigGen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#AbstractConfigGen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.AbstractConfigGen" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract class for generation of configurations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.config_gens.AbstractConfigGen.generate">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#AbstractConfigGen.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.AbstractConfigGen.generate" title="Permalink to this definition"></a></dt>
 <dd><p>Generates and returns configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Newly generated Configuration.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -138,17 +151,25 @@
 <dt class="sig sig-object py" id="rtac.ac_functionalities.config_gens.DefaultConfigGen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.config_gens.</span></span><span class="sig-name descname"><span class="pre">DefaultConfigGen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#DefaultConfigGen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.DefaultConfigGen" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.config_gens.AbstractConfigGen" title="rtac.ac_functionalities.config_gens.AbstractConfigGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConfigGen</span></code></a></p>
-<p>Generate default configuration.</p>
+<p>Generates default Configurationa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.config_gens.DefaultConfigGen.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tourn</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#DefaultConfigGen.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.DefaultConfigGen.generate" title="Permalink to this definition"></a></dt>
-<dd><p>Generates and stores default configuration.</p>
+<dd><p>Generates and stores default Configuration.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Default configuration.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tourn</strong> (<em>int</em>) – Number of tournament since RTAC initialization.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">ac_functionalities.rtac_data.Configuration</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Default Configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -159,17 +180,25 @@
 <dt class="sig sig-object py" id="rtac.ac_functionalities.config_gens.RandomConfigGen">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">rtac.ac_functionalities.config_gens.</span></span><span class="sig-name descname"><span class="pre">RandomConfigGen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#RandomConfigGen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.RandomConfigGen" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rtac.ac_functionalities.config_gens.AbstractConfigGen" title="rtac.ac_functionalities.config_gens.AbstractConfigGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConfigGen</span></code></a></p>
-<p>Generate random configuration.</p>
+<p>Generates random Configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scenario</strong> (<em>argparse.Namespace</em>) – Namespace containing all settings for the RTAC.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="rtac.ac_functionalities.config_gens.RandomConfigGen.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tourn</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration"><span class="pre">Configuration</span></a></span></span><a class="reference internal" href="../_modules/rtac/ac_functionalities/config_gens.html#RandomConfigGen.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.ac_functionalities.config_gens.RandomConfigGen.generate" title="Permalink to this definition"></a></dt>
-<dd><p>Generates random configuration.</p>
+<dd><p>Generates random Configuration.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Random configuration.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tourn</strong> (<em>int</em>) – Number of tournament since RTAC initialization.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">ac_functionalities.rtac_data.Configuration</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Randomly generated Configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="rtac.ac_functionalities.rtac_data.html#rtac.ac_functionalities.rtac_data.Configuration" title="rtac.ac_functionalities.rtac_data.Configuration">Configuration</a></p>
 </dd>
 </dl>
 </dd></dl>

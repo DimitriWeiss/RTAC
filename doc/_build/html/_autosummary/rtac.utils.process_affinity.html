@@ -106,14 +106,26 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#rtac.utils.process_affinity.set_affinity_recursive" title="rtac.utils.process_affinity.set_affinity_recursive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_affinity_recursive</span></code></a>(proc, core)</p></td>
-<td><p></p></td>
+<td><p>Bind the given process to the given core.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="rtac.utils.process_affinity.set_affinity_recursive">
-<span class="sig-prename descclassname"><span class="pre">rtac.utils.process_affinity.</span></span><span class="sig-name descname"><span class="pre">set_affinity_recursive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rtac/utils/process_affinity.html#set_affinity_recursive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.process_affinity.set_affinity_recursive" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">rtac.utils.process_affinity.</span></span><span class="sig-name descname"><span class="pre">set_affinity_recursive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Popen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/rtac/utils/process_affinity.html#set_affinity_recursive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rtac.utils.process_affinity.set_affinity_recursive" title="Permalink to this definition"></a></dt>
+<dd><p>Bind the given process to the given core.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>proc</strong> (<em>subprocess.Process</em>) – Process that is to be bound.</p></li>
+<li><p><strong>core</strong> (<em>int</em>) – Core that the process is to be bound to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

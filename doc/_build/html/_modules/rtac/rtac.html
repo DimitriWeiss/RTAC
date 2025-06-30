@@ -88,7 +88,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing.sharedctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Synchronized</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.ta_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">ta_runner_factory</span> <span class="k">as</span> <span class="n">ta_runner</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">rtacdata_factory</span> <span class="k">as</span> <span class="n">rtacdata</span><span class="p">,</span> <span class="n">ACMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.rtac_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">rtacdata_factory</span> <span class="k">as</span> <span class="n">rtacdata</span><span class="p">,</span> <span class="n">ACMethod</span><span class="p">,</span> <span class="n">RTACData</span><span class="p">,</span> <span class="n">RTACDatapp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.tournament_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">tourn_manager_factory</span> <span class="k">as</span> <span class="n">TM</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rtac.ac_functionalities.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTACLogs</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">faulthandler</span>
@@ -96,14 +96,19 @@
 
 
 <div class="viewcode-block" id="AbstractRTAC"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbstractRTAC</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Realtime Algorithm Configuration class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Realtime Algorithm Configuration class.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Realtime algorithm configuration class to be used to solve problem</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realtime algorithm configuration class to be used to solve problem</span>
 <span class="sd">        instances successively.</span>
-
-<span class="sd">        :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">        :type scenario: argparse.Namespace</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">huge_float</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="mf">1e-100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span> <span class="o">=</span> <span class="n">scenario</span>
@@ -117,45 +122,98 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">early_instance</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
 
 <div class="viewcode-block" id="AbstractRTAC.init_tournament_manager"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.init_tournament_manager">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_tournament_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament manager object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtacdata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tournament_manager</span> <span class="o">=</span> <span class="n">TM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ta_runner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">,</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AbstractRTAC.init_rtac_data"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.init_rtac_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_rtac_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes new RTAC data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize new RTAC data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournament_manager</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> <span class="n">rtacdata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AbstractRTAC.solve_instance"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.solve_instance">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves problem instance and performs all associated</span>
-<span class="sd">        functionalities.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves problem instance and performs all associated</span>
+<span class="sd">        functionalities.</span>
 
-<div class="viewcode-block" id="AbstractRTAC.plot_performances"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.AbstractRTAC.plot_performances">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_performances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                          <span class="n">times</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots results of the logged RTAC run and saves figure.&quot;&quot;&quot;</span></div></div>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="RTAC"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RTAC</span><span class="p">(</span><span class="n">AbstractRTAC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of ReACTR.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of ReACTR.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize RTAC object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">AbstractRTAC</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_thread</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 <div class="viewcode-block" id="RTAC.solve_instance"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.solve_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">next_instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                       <span class="n">early_rtac_data</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                       <span class="n">early_rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve problem instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance.</span>
+<span class="sd">        next_instance : str</span>
+<span class="sd">            Path to next problem instance. Defaults to None.</span>
+<span class="sd">        early_rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">gray_box</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gray_box</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">next_instance</span><span class="p">,</span> <span class="n">early_rtac_data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">black_box</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RTAC.black_box"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.black_box">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">black_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves problem instance and performs all associated functionalities.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves problem instance and performs all associated functionalities.</span>
 
-<span class="sd">        :param instance: Path to the problem instance file.</span>
-<span class="sd">        :type instance: str</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance. Defaults to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_rtac_data</span><span class="p">()</span>
 
@@ -167,11 +225,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">result_output</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RTAC.gray_box"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.gray_box">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">gray_box</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">next_instance</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">early_rtac_data</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves problem instance and performs all associated functionalities.</span>
+                 <span class="n">early_rtac_data</span><span class="p">:</span> <span class="n">RTACData</span> <span class="o">|</span> <span class="n">RTACDatapp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves problem instance and performs all associated functionalities.</span>
 
-<span class="sd">        :param instance: Path to the problem instance file.</span>
-<span class="sd">        :type instance: str</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance.</span>
+<span class="sd">        next_instance : str</span>
+<span class="sd">            Path to next problem instance. Defaults to None.</span>
+<span class="sd">        early_rtac_data : RTACData | RTACDatapp</span>
+<span class="sd">            Object containing data and objects necessary throughout the RTAC </span>
+<span class="sd">            modules.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">early_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
@@ -199,10 +269,30 @@
                     <span class="s1">&#39;es_rtac_data&#39;</span><span class="p">:</span> <span class="n">es_rtac_data</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtac_thread</span><span class="p">[</span><span class="n">thread_idx</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RTAC.provide_early_instance"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.provide_early_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">provide_early_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">early_instance</span><span class="p">):</span>
+<div class="viewcode-block" id="RTAC.provide_early_instance"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.provide_early_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">provide_early_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">early_instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If next instance is available early, use this function to pass it to </span>
+<span class="sd">        the gray-box RAC method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        early_instance : str</span>
+<span class="sd">            Path to next problem instance. Defaults to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">early_instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">early_instance</span></div>
 
-<div class="viewcode-block" id="RTAC.wrap_up_gb"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.wrap_up_gb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_up_gb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RTAC.wrap_up_gb"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.wrap_up_gb">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_up_gb</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wrap up gray-box RAC method for this ionstance / instance-pair.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">rtac_thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_thread</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rtac_thread</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
                 <span class="n">rtac_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -210,7 +300,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">result_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">early_instance</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="RTAC.result_output"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.result_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">result_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<div class="viewcode-block" id="RTAC.result_output"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.result_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">result_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print result to terminal.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : str</span>
+<span class="sd">            Path to problem instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="o">.</span><span class="n">skip</span><span class="p">:</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -238,23 +340,42 @@
 
 <div class="viewcode-block" id="RTAC.plot_performances"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTAC.plot_performances">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">plot_performances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                           <span class="n">times</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot results of the logged RTAC run and save figure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots results of the logged RTAC run and saves figure.</span>
 
-<span class="sd">        :param results: True if scenario was objective quality minimization.</span>
-<span class="sd">        :type results: bool</span>
-<span class="sd">        :param times: True if scenario was runtime minimization.</span>
-<span class="sd">        :type times: bool</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        results : bool</span>
+<span class="sd">            True if objective value minimization scenario. Defaults to False.</span>
+<span class="sd">        times : bool</span>
+<span class="sd">            True if runtime minimization scenario. Defaults to False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            This method is not implemented yet.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
-            <span class="o">...</span>
-        <span class="k">elif</span> <span class="n">times</span><span class="p">:</span>
-            <span class="o">...</span></div></div>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method is not implemented yet.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="RTACpp"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTACpp">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RTACpp</span><span class="p">(</span><span class="n">RTAC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of ReACTR++.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of ReACTR++.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RTACpp.init_tournament_manager"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTACpp.init_tournament_manager">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_tournament_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize tournament manager object for ReACTR++.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">wrapper</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="o">.</span><span class="n">wrapper_name</span>
         <span class="n">wrapper</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
@@ -265,21 +386,33 @@
                                      <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RTACpp.init_rtac_data"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.RTACpp.init_rtac_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_rtac_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes new RTAC data. Override for ReACTR++ implementation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize new RTAC data for ReACTR++.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tournament_manager</span><span class="o">.</span><span class="n">tourn_nr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rtac_data</span> <span class="o">=</span> \
                 <span class="n">rtacdata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario</span><span class="p">,</span> <span class="n">interim_meaning</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interim_meaning</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="rtac_factory"><a class="viewcode-back" href="../../_autosummary/rtac.rtac.html#rtac.rtac.rtac_factory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">rtac_factory</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractRTAC</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class factory to return the initialized RTAC class</span>
-<span class="sd">    appropriate to the RTAC method scenario.ac.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class factory to return the initialized RTAC class</span>
+<span class="sd">    appropriate to the RTAC method `scenario.ac`.</span>
 
-<span class="sd">    :param scenario: Namespace containing all settings for the RTAC.</span>
-<span class="sd">    :type scenario: argparse.Namespace</span>
-<span class="sd">    :returns: Inititialized AbstractRTAC object matching the RTAC method</span>
-<span class="sd">        of the scenario.</span>
-<span class="sd">    :rtype: AbstractRTAC</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : argparse.Namespace</span>
+<span class="sd">        Namespace containing all settings for the RTAC.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    AbstractRTAC</span>
+<span class="sd">        Initialized AbstractRTAC object matching the RTAC method of the </span>
+<span class="sd">        scenario.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scenario</span><span class="o">.</span><span class="n">ac</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ACMethod</span><span class="o">.</span><span class="n">ReACTR</span><span class="p">,</span> <span class="n">ACMethod</span><span class="o">.</span><span class="n">CPPL</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">RTAC</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>

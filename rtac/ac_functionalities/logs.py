@@ -13,6 +13,7 @@ from logging.handlers import RotatingFileHandler, BaseRotatingHandler
 from rtac.ac_functionalities.rtac_data import (
     Configuration,
     RTACData,
+    RTACDatapp,
     TournamentStats,
     ACMethod,
     Generator
@@ -31,15 +32,20 @@ class NewRotatingFileHandler(RotatingFileHandler):
 
 
 class AbstractLogs(ABC):
-    """Class with all functions and loggers concerning logging and loading
-    RTAC and tournament data."""
+    """
+    Class with all functions and loggers concerning logging and loading
+    RTAC and tournament data.
+
+    Parameters
+    ----------
+    scenario : argparse.Namespace
+        Namespace containing all settings for the RTAC.
+    """
 
     def __init__(self, scenario: argparse.Namespace):
-        """Initializes logging class, check if log directory exists and create
+        """
+        Initializes logging class, check if log directory exists and create
         it if needed.
-
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
         """
         self.scenario = scenario
         self.ranking = scenario.ac
@@ -69,8 +75,14 @@ class AbstractLogs(ABC):
         print(f'Logging to {self.log_path}')
 
     def init_rtac_logs(self) -> None:
-        """Initializes loggers for realtime algorithm configuration data
-        concerning all methods."""
+        """
+        Initializes loggers for realtime algorithm configuration data
+        that are shared by all methods.
+
+        Returns
+        -------
+        None
+        """
         if not self.objective_min:
             self.times = {}
         else:
@@ -146,31 +158,49 @@ class AbstractLogs(ABC):
     def general_log(self, message: str) -> None:
         """Log message.
 
-        :param message: Any message provided.
-        :type message: str
+        Parameters
+        ----------
+        message : str
+            Any message provided as a string.
+
+        Returns
+        -------
+        None
         """
         self.main_log.info(f'{message}')
 
     def scenario_log(self, scenario: argparse.Namespace) -> None:
-        """Save scenario.
+        """Save RTAC scenario.
 
-        :param scenario: Namespace containing all settings for the RTAC.
-        :type scenario: argparse.Namespace
+        Parameters
+        ----------
+        scenario : argparse.Namespace
+            Namespace containing all settings for the RTAC.
+
+        Returns
+        -------
+        None
         """
         with open(f'{self.log_path}/scenario.log', 'w') as sf:
             sf.write(str(scenario))
 
-    def rtac_log(self, rtac_data: RTACData,
+    def rtac_log(self, rtac_data: RTACData | RTACDatapp,
                  tourn_stats: TournamentStats) -> None:
-        """Logs for realtime algorithm configuration data
+        """
+        Logs for realtime algorithm configuration data
         concerning all methods.
 
-        :param rtac_data: Object containing data and objects necessary
-            throughout the rtac modules.
-        :type rtac_data: RTACData
-        :param tourn_stats: Object containing statistics about the previous
-            tournament.
-        :type tourn_stats: TournamentStats
+        Parameters
+        ----------
+        rtac_data : RTACData | RTACDatapp
+            Object containing data and objects necessary throughout the rtac 
+            modules.
+        tourn_stats : TournamentStats
+            Object containing statistics about the previous tournament.
+
+        Returns
+        -------
+        None
         """
         self.winner_trajectory.info(f'{rtac_data.winner.value}' + '\n')
         self.tourn_stats_log.info(str(tourn_stats) + '\n')
@@ -188,11 +218,19 @@ class AbstractLogs(ABC):
 
 
 class RTACLogs(AbstractLogs):
-    """Class with all functions and loggers concerning logging and loading
-    RTAC and tournament data for ReACTR implementation."""
+    """
+    Class with all functions and loggers concerning logging and loading
+    RTAC and tournament data for ReACTR implementation.
+    """
 
     def init_ranking_logs(self) -> None:
-        """Initializes loggers for data concerning ReACTR."""
+        """
+        Initializes loggers for data concerning ReACTR.
+
+        Returns
+        -------
+        None
+        """
 
         # Set up pool logging
         self.pool_log = logging.getLogger('pool_log')
@@ -216,29 +254,39 @@ class RTACLogs(AbstractLogs):
             b_fh.setLevel(logging.INFO)
             self.bandit_log.addHandler(b_fh)
 
-    def ranking_log(self, pool: dict[str: Configuration],
-                    assessment: dict[str: Any], tourn_nr: int,
-                    contender_dict: dict[str: Configuration],
+    def ranking_log(self, pool: dict[str, Configuration],
+                    assessment: dict[str, Any], tourn_nr: int,
+                    contender_dict: dict[str, Configuration],
                     **kwargs) -> None:
-        """Logs data concerning ReACTR.
+        """
+        Logs data concerning RAC method.
 
-        :param pool: Dictionary with configuration id as key and configuration
-            as value with scenario.contenders == #items .
-        :type pool: dict
-        :param assessment: Dictionary with configuration id as key and 
+        Parameters
+        ----------
+        pool : dict[str, Configuration]
+            Dictionary with configuration id as key and configuration
+            as value with scenario.contenders == #items.
+        assessment : dict[str, Any]
+            Dictionary with configuration id as key and 
             assessment depending on the AC method used, e.g., trueskill scores,
             or bandit model.
-        :type assessment: dict
-        :param contender_dict: Dictionary with configuration id as key and
+        tourn:nr : int
+            Number of tournament after which logs are done.
+        contender_dict : dict[str, Configuration]
+            Dictionary with configuration id as key and
             configuration as value: contenders of the previous tournament.
-        :type contender_dict: dict
-        **kwargs : dict, optional
+        **kwargs
             Additional keyword arguments. Possible keys include:
-            
-            - `standard_scaler` sklearn
-            - `min_max_scaler` sklearn
-            - `pca_obj_params` sklearn
+
+            - `standard_scaler`  sklearn.preprocessing.StandardScaler  
+            - `min_max_scaler` sklearn.preprocessing.MinMaxScaler  
+            - `pca_obj_params` sklearn.decomposition.PCA
+
+        Returns
+        -------
+        None
         """
+
         self.contender_dict_log.handlers.clear()
         cl_fh = logging.FileHandler(
             f'{self.log_path}/contender_dict_tourn_{tourn_nr}.log')
@@ -301,7 +349,25 @@ class RTACLogs(AbstractLogs):
             self.bandit_log.addHandler(b_fh)
             self.bandit_log.info(str(assessment))
 
-    def parse_array(self, val):
+    def parse_array(self, val: str) -> int | float:
+        """
+        Helper function for loading logs of nd.arrays.
+
+        Parameters
+        ----------
+        val : str
+            Loaded string to decode and transform.
+
+        Returns
+        -------
+        int or float
+            Decoded and transformed form of val.
+
+        Raises
+        ------
+        ValueError
+            If val could not be parsed.
+        """
         if not isinstance(val, str):
             return val
 
@@ -319,17 +385,34 @@ class RTACLogs(AbstractLogs):
             raise ValueError(f"Cannot parse value: {val}")
 
     def load_data(self, tourn_nr: int | None = None) \
-        -> tuple[dict[str: Configuration], dict[str: Any],
-                 dict[str: Configuration], int,
+        -> tuple[dict[str, Configuration], dict[str, Any],
+                 dict[str, Configuration], int,
                  Optional[Any]]:
-        """Loads data necessary for resuming the algorithm configuration from
+        """
+        Loads data necessary for resuming the algorithm configuration from
         last logged state of ReACTR.
 
-        :returns: Configuration pool, scores and contender list of previously
-            logged tournament, number of previously logged tournament.
-        :rtype: tuple[dict[str: Configuration], dict[str: tuple[int, int]],
-            dict[str: Configuration], int]
+        Parameters
+        ----------
+        tourn_nr : int | None
+            Either int to load logs of tournament nr. tourn_nr or None if 
+            loading tournament nr. 0 for experimental mode.
+
+        Returns
+        -------
+        tuple
+            - **pool** : dict[str, Configuration],
+              Configuration pool.
+            - **assessment** : dict[str, Any],
+              Scores/ Skills, confidences of logged tournament.
+            - **contender_dict** : dict[str, Configuration],
+              List of contending Configurations from logged tournament.
+            - **tourn_nr** : int,
+              Number of logged tournament.
+            - **bandit_models** : dict[str, Any],
+              All objects needed for CPPL model employment.
         """
+
         if tourn_nr is None:
             with open(f'{self.log_path}/tourn_nr.log') as f:
                 tourn_nr = int(f.readline().strip())

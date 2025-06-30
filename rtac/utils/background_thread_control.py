@@ -7,9 +7,13 @@ numbers to 1. It has to happen before any of the modules are loaded.'''
 import os
 
 
-def set_background_thread_nr():
+def set_background_thread_nr() -> None:
     '''
     Set thread number of background libraries for numpy, scipy, sklearn to 1.
+
+    Returns
+    -------
+    None
     '''
 
     # Set max threads for various backends

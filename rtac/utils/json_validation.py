@@ -6,14 +6,18 @@ import os
 
 
 def validateparams(config_space: dict) -> bool:
-    """Validate the configuration space definition.
+    """
+    Validate the configuration space definition.
 
-    :param config_space: Configuration space definition.
-    :type config_space: dict
-    :param logs: Object containing loggers and logging functions.
-    :type: RTACLogs
-    :returns: If configuration space is valid.
-    :rtype: bool
+    Parameters
+    ----------
+    config_space : dict
+        Configuration space definition.
+
+    Returns
+    -------
+    bool
+        Whether the configuration space is valid.
     """
     path = os.path.dirname(__file__)
     with open(f'{path}/RTACParamSchema.json', 'r') as f:

@@ -101,16 +101,22 @@
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="translate_params"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.translate_params">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">translate_params</span><span class="p">(</span><span class="n">config_space</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> \
+<div class="viewcode-block" id="translate_params"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.translate_params">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">translate_params</span><span class="p">(</span>
+    <span class="n">config_space</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> \
         <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DiscreteParameter</span> <span class="o">|</span> <span class="n">ContinuousParameter</span>
                 <span class="o">|</span> <span class="n">CategoricalParameter</span> <span class="o">|</span> <span class="n">BinaryParameter</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Translate configuration space nested dict to dict of dataclasses.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translate configuration space nested dict to dict of dataclasses.</span>
 
-<span class="sd">    :param config_space: Configuration space definition.</span>
-<span class="sd">    :type config_space: dict of dicts</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    config_space : dict of dicts</span>
+<span class="sd">        Configuration space definition.</span>
 
-<span class="sd">    :returns: config_space.</span>
-<span class="sd">    :rtype: dict of dataclasses</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict[str, DiscreteParameter | ContinuousParameter | CategoricalParameter | BinaryParameter]</span>
+<span class="sd">        Translated configuration space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">config_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">config_space</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">definition</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="n">definition</span><span class="p">)</span>
@@ -130,16 +136,22 @@
 
 <div class="viewcode-block" id="read_args"><a class="viewcode-back" href="../../../_autosummary/rtac.utils.read_io.html#rtac.utils.read_io.read_args">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_args</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">sysargs</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read in scenario arguments.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read in scenario arguments.</span>
 
-<span class="sd">    :param scenario: Path to scenario text file.</span>
-<span class="sd">    :type scenario: str</span>
-<span class="sd">    :param sysargs: sys.argv passed from main.</span>
-<span class="sd">    :type sysargs: list</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scenario : str</span>
+<span class="sd">        Path to scenario text file. Defaults to None.</span>
+<span class="sd">    sysargs : list of str</span>
+<span class="sd">        sys.argv passed from main. Defaults to None.</span>
 
-<span class="sd">    :returns: Scenario arguments set.</span>
-<span class="sd">    :rtype: argparse.Namespace</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    argparse.Namespace</span>
+<span class="sd">        Scenario arguments set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="n">sysargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sysargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sysargs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
